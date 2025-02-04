@@ -17,7 +17,7 @@ Clone the repo
 git clone https://github.com/Amoghk04/HPE-grpc.git
 ```
 
-Make sure you have downloaded the protobuf and grpc modules beforehand
+Make sure you have downloaded the protobuf and grpc modules beforehand, else run the below commands
 ```console 
 sudo apt update
 sudo apt install -y cmake g++ autoconf libtool pkg-config
