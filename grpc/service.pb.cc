@@ -47,8 +47,43 @@ struct HelloReplyDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
+PROTOBUF_CONSTEXPR IPConfigRequest::IPConfigRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.requested_dns_)*/{}
+  , /*decltype(_impl_.interface_name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.requested_ip_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.requested_subnet_mask_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.requested_gateway_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.use_dhcp_)*/false
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct IPConfigRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR IPConfigRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~IPConfigRequestDefaultTypeInternal() {}
+  union {
+    IPConfigRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigRequestDefaultTypeInternal _IPConfigRequest_default_instance_;
+PROTOBUF_CONSTEXPR IPConfigResponse::IPConfigResponse(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.dns_servers_)*/{}
+  , /*decltype(_impl_.ip_address_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.subnet_mask_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.default_gateway_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.status_message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct IPConfigResponseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR IPConfigResponseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~IPConfigResponseDefaultTypeInternal() {}
+  union {
+    IPConfigResponse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigResponseDefaultTypeInternal _IPConfigResponse_default_instance_;
 }  // namespace myservice
-static ::_pb::Metadata file_level_metadata_service_2eproto[2];
+static ::_pb::Metadata file_level_metadata_service_2eproto[4];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_service_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_service_2eproto = nullptr;
 
@@ -67,29 +102,67 @@ const uint32_t TableStruct_service_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _impl_.message_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.interface_name_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.use_dhcp_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_ip_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_subnet_mask_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_gateway_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_dns_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.ip_address_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.subnet_mask_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.default_gateway_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.dns_servers_),
+  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.status_message_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::myservice::HelloRequest)},
   { 7, -1, -1, sizeof(::myservice::HelloReply)},
+  { 14, -1, -1, sizeof(::myservice::IPConfigRequest)},
+  { 26, -1, -1, sizeof(::myservice::IPConfigResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::myservice::_HelloRequest_default_instance_._instance,
   &::myservice::_HelloReply_default_instance_._instance,
+  &::myservice::_IPConfigRequest_default_instance_._instance,
+  &::myservice::_IPConfigResponse_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_service_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\rservice.proto\022\tmyservice\"\034\n\014HelloReque"
   "st\022\014\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007messag"
-  "e\030\001 \001(\t2E\n\007Greeter\022:\n\010SayHello\022\027.myservi"
-  "ce.HelloRequest\032\025.myservice.HelloReplyb\006"
-  "proto3"
+  "e\030\001 \001(\t\"\242\001\n\017IPConfigRequest\022\026\n\016interface"
+  "_name\030\001 \001(\t\022\020\n\010use_dhcp\030\002 \001(\010\022\024\n\014request"
+  "ed_ip\030\003 \001(\t\022\035\n\025requested_subnet_mask\030\004 \001"
+  "(\t\022\031\n\021requested_gateway\030\005 \001(\t\022\025\n\rrequest"
+  "ed_dns\030\006 \003(\t\"\201\001\n\020IPConfigResponse\022\022\n\nip_"
+  "address\030\001 \001(\t\022\023\n\013subnet_mask\030\002 \001(\t\022\027\n\017de"
+  "fault_gateway\030\003 \001(\t\022\023\n\013dns_servers\030\004 \003(\t"
+  "\022\026\n\016status_message\030\005 \001(\t2\206\001\n\007Greeter\022:\n\010"
+  "SayHello\022\027.myservice.HelloRequest\032\025.myse"
+  "rvice.HelloReply\022\?\n\rSayHelloAgain\022\027.myse"
+  "rvice.HelloRequest\032\025.myservice.HelloRepl"
+  "y2W\n\rNetworkConfig\022F\n\013ConfigureIP\022\032.myse"
+  "rvice.IPConfigRequest\032\033.myservice.IPConf"
+  "igResponseb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_service_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_service_2eproto = {
-    false, false, 166, descriptor_table_protodef_service_2eproto,
+    false, false, 618, descriptor_table_protodef_service_2eproto,
     "service.proto",
-    &descriptor_table_service_2eproto_once, nullptr, 0, 2,
+    &descriptor_table_service_2eproto_once, nullptr, 0, 4,
     schemas, file_default_instances, TableStruct_service_2eproto::offsets,
     file_level_metadata_service_2eproto, file_level_enum_descriptors_service_2eproto,
     file_level_service_descriptors_service_2eproto,
@@ -508,6 +581,817 @@ void HelloReply::InternalSwap(HelloReply* other) {
       file_level_metadata_service_2eproto[1]);
 }
 
+// ===================================================================
+
+class IPConfigRequest::_Internal {
+ public:
+};
+
+IPConfigRequest::IPConfigRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:myservice.IPConfigRequest)
+}
+IPConfigRequest::IPConfigRequest(const IPConfigRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  IPConfigRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.requested_dns_){from._impl_.requested_dns_}
+    , decltype(_impl_.interface_name_){}
+    , decltype(_impl_.requested_ip_){}
+    , decltype(_impl_.requested_subnet_mask_){}
+    , decltype(_impl_.requested_gateway_){}
+    , decltype(_impl_.use_dhcp_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.interface_name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.interface_name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_interface_name().empty()) {
+    _this->_impl_.interface_name_.Set(from._internal_interface_name(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.requested_ip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_ip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_requested_ip().empty()) {
+    _this->_impl_.requested_ip_.Set(from._internal_requested_ip(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.requested_subnet_mask_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_subnet_mask_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_requested_subnet_mask().empty()) {
+    _this->_impl_.requested_subnet_mask_.Set(from._internal_requested_subnet_mask(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.requested_gateway_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_gateway_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_requested_gateway().empty()) {
+    _this->_impl_.requested_gateway_.Set(from._internal_requested_gateway(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.use_dhcp_ = from._impl_.use_dhcp_;
+  // @@protoc_insertion_point(copy_constructor:myservice.IPConfigRequest)
+}
+
+inline void IPConfigRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.requested_dns_){arena}
+    , decltype(_impl_.interface_name_){}
+    , decltype(_impl_.requested_ip_){}
+    , decltype(_impl_.requested_subnet_mask_){}
+    , decltype(_impl_.requested_gateway_){}
+    , decltype(_impl_.use_dhcp_){false}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.interface_name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.interface_name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.requested_ip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_ip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.requested_subnet_mask_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_subnet_mask_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.requested_gateway_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.requested_gateway_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+IPConfigRequest::~IPConfigRequest() {
+  // @@protoc_insertion_point(destructor:myservice.IPConfigRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void IPConfigRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.requested_dns_.~RepeatedPtrField();
+  _impl_.interface_name_.Destroy();
+  _impl_.requested_ip_.Destroy();
+  _impl_.requested_subnet_mask_.Destroy();
+  _impl_.requested_gateway_.Destroy();
+}
+
+void IPConfigRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void IPConfigRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:myservice.IPConfigRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.requested_dns_.Clear();
+  _impl_.interface_name_.ClearToEmpty();
+  _impl_.requested_ip_.ClearToEmpty();
+  _impl_.requested_subnet_mask_.ClearToEmpty();
+  _impl_.requested_gateway_.ClearToEmpty();
+  _impl_.use_dhcp_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* IPConfigRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string interface_name = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_interface_name();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.interface_name"));
+        } else
+          goto handle_unusual;
+        continue;
+      // bool use_dhcp = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.use_dhcp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string requested_ip = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_requested_ip();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_ip"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string requested_subnet_mask = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_requested_subnet_mask();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_subnet_mask"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string requested_gateway = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_requested_gateway();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_gateway"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated string requested_dns = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_requested_dns();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_dns"));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<50>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* IPConfigRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:myservice.IPConfigRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string interface_name = 1;
+  if (!this->_internal_interface_name().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_interface_name().data(), static_cast<int>(this->_internal_interface_name().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigRequest.interface_name");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_interface_name(), target);
+  }
+
+  // bool use_dhcp = 2;
+  if (this->_internal_use_dhcp() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(2, this->_internal_use_dhcp(), target);
+  }
+
+  // string requested_ip = 3;
+  if (!this->_internal_requested_ip().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_requested_ip().data(), static_cast<int>(this->_internal_requested_ip().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigRequest.requested_ip");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_requested_ip(), target);
+  }
+
+  // string requested_subnet_mask = 4;
+  if (!this->_internal_requested_subnet_mask().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_requested_subnet_mask().data(), static_cast<int>(this->_internal_requested_subnet_mask().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigRequest.requested_subnet_mask");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_requested_subnet_mask(), target);
+  }
+
+  // string requested_gateway = 5;
+  if (!this->_internal_requested_gateway().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_requested_gateway().data(), static_cast<int>(this->_internal_requested_gateway().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigRequest.requested_gateway");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_requested_gateway(), target);
+  }
+
+  // repeated string requested_dns = 6;
+  for (int i = 0, n = this->_internal_requested_dns_size(); i < n; i++) {
+    const auto& s = this->_internal_requested_dns(i);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      s.data(), static_cast<int>(s.length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigRequest.requested_dns");
+    target = stream->WriteString(6, s, target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:myservice.IPConfigRequest)
+  return target;
+}
+
+size_t IPConfigRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:myservice.IPConfigRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated string requested_dns = 6;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.requested_dns_.size());
+  for (int i = 0, n = _impl_.requested_dns_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.requested_dns_.Get(i));
+  }
+
+  // string interface_name = 1;
+  if (!this->_internal_interface_name().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_interface_name());
+  }
+
+  // string requested_ip = 3;
+  if (!this->_internal_requested_ip().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_requested_ip());
+  }
+
+  // string requested_subnet_mask = 4;
+  if (!this->_internal_requested_subnet_mask().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_requested_subnet_mask());
+  }
+
+  // string requested_gateway = 5;
+  if (!this->_internal_requested_gateway().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_requested_gateway());
+  }
+
+  // bool use_dhcp = 2;
+  if (this->_internal_use_dhcp() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData IPConfigRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    IPConfigRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*IPConfigRequest::GetClassData() const { return &_class_data_; }
+
+
+void IPConfigRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<IPConfigRequest*>(&to_msg);
+  auto& from = static_cast<const IPConfigRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:myservice.IPConfigRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.requested_dns_.MergeFrom(from._impl_.requested_dns_);
+  if (!from._internal_interface_name().empty()) {
+    _this->_internal_set_interface_name(from._internal_interface_name());
+  }
+  if (!from._internal_requested_ip().empty()) {
+    _this->_internal_set_requested_ip(from._internal_requested_ip());
+  }
+  if (!from._internal_requested_subnet_mask().empty()) {
+    _this->_internal_set_requested_subnet_mask(from._internal_requested_subnet_mask());
+  }
+  if (!from._internal_requested_gateway().empty()) {
+    _this->_internal_set_requested_gateway(from._internal_requested_gateway());
+  }
+  if (from._internal_use_dhcp() != 0) {
+    _this->_internal_set_use_dhcp(from._internal_use_dhcp());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void IPConfigRequest::CopyFrom(const IPConfigRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:myservice.IPConfigRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool IPConfigRequest::IsInitialized() const {
+  return true;
+}
+
+void IPConfigRequest::InternalSwap(IPConfigRequest* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.requested_dns_.InternalSwap(&other->_impl_.requested_dns_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.interface_name_, lhs_arena,
+      &other->_impl_.interface_name_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.requested_ip_, lhs_arena,
+      &other->_impl_.requested_ip_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.requested_subnet_mask_, lhs_arena,
+      &other->_impl_.requested_subnet_mask_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.requested_gateway_, lhs_arena,
+      &other->_impl_.requested_gateway_, rhs_arena
+  );
+  swap(_impl_.use_dhcp_, other->_impl_.use_dhcp_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata IPConfigRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
+      file_level_metadata_service_2eproto[2]);
+}
+
+// ===================================================================
+
+class IPConfigResponse::_Internal {
+ public:
+};
+
+IPConfigResponse::IPConfigResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:myservice.IPConfigResponse)
+}
+IPConfigResponse::IPConfigResponse(const IPConfigResponse& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  IPConfigResponse* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.dns_servers_){from._impl_.dns_servers_}
+    , decltype(_impl_.ip_address_){}
+    , decltype(_impl_.subnet_mask_){}
+    , decltype(_impl_.default_gateway_){}
+    , decltype(_impl_.status_message_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.ip_address_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.ip_address_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_ip_address().empty()) {
+    _this->_impl_.ip_address_.Set(from._internal_ip_address(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.subnet_mask_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.subnet_mask_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_subnet_mask().empty()) {
+    _this->_impl_.subnet_mask_.Set(from._internal_subnet_mask(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.default_gateway_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.default_gateway_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_default_gateway().empty()) {
+    _this->_impl_.default_gateway_.Set(from._internal_default_gateway(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.status_message_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.status_message_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_status_message().empty()) {
+    _this->_impl_.status_message_.Set(from._internal_status_message(), 
+      _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:myservice.IPConfigResponse)
+}
+
+inline void IPConfigResponse::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.dns_servers_){arena}
+    , decltype(_impl_.ip_address_){}
+    , decltype(_impl_.subnet_mask_){}
+    , decltype(_impl_.default_gateway_){}
+    , decltype(_impl_.status_message_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.ip_address_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.ip_address_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.subnet_mask_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.subnet_mask_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.default_gateway_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.default_gateway_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.status_message_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.status_message_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+IPConfigResponse::~IPConfigResponse() {
+  // @@protoc_insertion_point(destructor:myservice.IPConfigResponse)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void IPConfigResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.dns_servers_.~RepeatedPtrField();
+  _impl_.ip_address_.Destroy();
+  _impl_.subnet_mask_.Destroy();
+  _impl_.default_gateway_.Destroy();
+  _impl_.status_message_.Destroy();
+}
+
+void IPConfigResponse::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void IPConfigResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:myservice.IPConfigResponse)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.dns_servers_.Clear();
+  _impl_.ip_address_.ClearToEmpty();
+  _impl_.subnet_mask_.ClearToEmpty();
+  _impl_.default_gateway_.ClearToEmpty();
+  _impl_.status_message_.ClearToEmpty();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* IPConfigResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string ip_address = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_ip_address();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.ip_address"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string subnet_mask = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_subnet_mask();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.subnet_mask"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string default_gateway = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_default_gateway();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.default_gateway"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated string dns_servers = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_dns_servers();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.dns_servers"));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // string status_message = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_status_message();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.status_message"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* IPConfigResponse::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:myservice.IPConfigResponse)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string ip_address = 1;
+  if (!this->_internal_ip_address().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_ip_address().data(), static_cast<int>(this->_internal_ip_address().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigResponse.ip_address");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_ip_address(), target);
+  }
+
+  // string subnet_mask = 2;
+  if (!this->_internal_subnet_mask().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_subnet_mask().data(), static_cast<int>(this->_internal_subnet_mask().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigResponse.subnet_mask");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_subnet_mask(), target);
+  }
+
+  // string default_gateway = 3;
+  if (!this->_internal_default_gateway().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_default_gateway().data(), static_cast<int>(this->_internal_default_gateway().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigResponse.default_gateway");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_default_gateway(), target);
+  }
+
+  // repeated string dns_servers = 4;
+  for (int i = 0, n = this->_internal_dns_servers_size(); i < n; i++) {
+    const auto& s = this->_internal_dns_servers(i);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      s.data(), static_cast<int>(s.length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigResponse.dns_servers");
+    target = stream->WriteString(4, s, target);
+  }
+
+  // string status_message = 5;
+  if (!this->_internal_status_message().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_status_message().data(), static_cast<int>(this->_internal_status_message().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "myservice.IPConfigResponse.status_message");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_status_message(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:myservice.IPConfigResponse)
+  return target;
+}
+
+size_t IPConfigResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:myservice.IPConfigResponse)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated string dns_servers = 4;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.dns_servers_.size());
+  for (int i = 0, n = _impl_.dns_servers_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.dns_servers_.Get(i));
+  }
+
+  // string ip_address = 1;
+  if (!this->_internal_ip_address().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_ip_address());
+  }
+
+  // string subnet_mask = 2;
+  if (!this->_internal_subnet_mask().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_subnet_mask());
+  }
+
+  // string default_gateway = 3;
+  if (!this->_internal_default_gateway().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_default_gateway());
+  }
+
+  // string status_message = 5;
+  if (!this->_internal_status_message().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_status_message());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData IPConfigResponse::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    IPConfigResponse::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*IPConfigResponse::GetClassData() const { return &_class_data_; }
+
+
+void IPConfigResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<IPConfigResponse*>(&to_msg);
+  auto& from = static_cast<const IPConfigResponse&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:myservice.IPConfigResponse)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.dns_servers_.MergeFrom(from._impl_.dns_servers_);
+  if (!from._internal_ip_address().empty()) {
+    _this->_internal_set_ip_address(from._internal_ip_address());
+  }
+  if (!from._internal_subnet_mask().empty()) {
+    _this->_internal_set_subnet_mask(from._internal_subnet_mask());
+  }
+  if (!from._internal_default_gateway().empty()) {
+    _this->_internal_set_default_gateway(from._internal_default_gateway());
+  }
+  if (!from._internal_status_message().empty()) {
+    _this->_internal_set_status_message(from._internal_status_message());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void IPConfigResponse::CopyFrom(const IPConfigResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:myservice.IPConfigResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool IPConfigResponse::IsInitialized() const {
+  return true;
+}
+
+void IPConfigResponse::InternalSwap(IPConfigResponse* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.dns_servers_.InternalSwap(&other->_impl_.dns_servers_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.ip_address_, lhs_arena,
+      &other->_impl_.ip_address_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.subnet_mask_, lhs_arena,
+      &other->_impl_.subnet_mask_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.default_gateway_, lhs_arena,
+      &other->_impl_.default_gateway_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.status_message_, lhs_arena,
+      &other->_impl_.status_message_, rhs_arena
+  );
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata IPConfigResponse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
+      file_level_metadata_service_2eproto[3]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace myservice
 PROTOBUF_NAMESPACE_OPEN
@@ -518,6 +1402,14 @@ Arena::CreateMaybeMessage< ::myservice::HelloRequest >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::myservice::HelloReply*
 Arena::CreateMaybeMessage< ::myservice::HelloReply >(Arena* arena) {
   return Arena::CreateMessageInternal< ::myservice::HelloReply >(arena);
+}
+template<> PROTOBUF_NOINLINE ::myservice::IPConfigRequest*
+Arena::CreateMaybeMessage< ::myservice::IPConfigRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::myservice::IPConfigRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::myservice::IPConfigResponse*
+Arena::CreateMaybeMessage< ::myservice::IPConfigResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::myservice::IPConfigResponse >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

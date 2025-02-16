@@ -43,11 +43,20 @@ class Greeter final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>> PrepareAsyncSayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>>(PrepareAsyncSayHelloRaw(context, request, cq));
     }
+    virtual ::grpc::Status SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::myservice::HelloReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>> AsyncSayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>>(AsyncSayHelloAgainRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>> PrepareAsyncSayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>>(PrepareAsyncSayHelloAgainRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void SayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void SayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -55,6 +64,8 @@ class Greeter final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>* AsyncSayHelloRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>* PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>* AsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::HelloReply>* PrepareAsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -66,11 +77,20 @@ class Greeter final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>> PrepareAsyncSayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>>(PrepareAsyncSayHelloRaw(context, request, cq));
     }
+    ::grpc::Status SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::myservice::HelloReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>> AsyncSayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>>(AsyncSayHelloAgainRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>> PrepareAsyncSayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>>(PrepareAsyncSayHelloAgainRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
       void SayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, std::function<void(::grpc::Status)>) override;
       void SayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, std::function<void(::grpc::Status)>) override;
+      void SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -84,7 +104,10 @@ class Greeter final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* AsyncSayHelloRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* AsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* PrepareAsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_SayHello_;
+    const ::grpc::internal::RpcMethod rpcmethod_SayHelloAgain_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -93,6 +116,7 @@ class Greeter final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status SayHello(::grpc::ServerContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response);
+    virtual ::grpc::Status SayHelloAgain(::grpc::ServerContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_SayHello : public BaseClass {
@@ -114,7 +138,27 @@ class Greeter final {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_SayHello<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSayHelloAgain(::grpc::ServerContext* context, ::myservice::HelloRequest* request, ::grpc::ServerAsyncResponseWriter< ::myservice::HelloReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_SayHello<WithAsyncMethod_SayHelloAgain<Service > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_SayHello : public BaseClass {
    private:
@@ -142,7 +186,34 @@ class Greeter final {
     virtual ::grpc::ServerUnaryReactor* SayHello(
       ::grpc::CallbackServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_SayHello<Service > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::myservice::HelloRequest, ::myservice::HelloReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response) { return this->SayHelloAgain(context, request, response); }));}
+    void SetMessageAllocatorFor_SayHelloAgain(
+        ::grpc::MessageAllocator< ::myservice::HelloRequest, ::myservice::HelloReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::myservice::HelloRequest, ::myservice::HelloReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* SayHelloAgain(
+      ::grpc::CallbackServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_SayHello<WithCallbackMethod_SayHelloAgain<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_SayHello : public BaseClass {
@@ -157,6 +228,23 @@ class Greeter final {
     }
     // disable synchronous version of this method
     ::grpc::Status SayHello(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -182,6 +270,26 @@ class Greeter final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSayHelloAgain(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_SayHello : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -201,6 +309,28 @@ class Greeter final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* SayHello(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SayHelloAgain(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* SayHelloAgain(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -230,9 +360,243 @@ class Greeter final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedSayHello(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::myservice::HelloRequest,::myservice::HelloReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_SayHello<Service > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_SayHelloAgain : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_SayHelloAgain() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::myservice::HelloRequest, ::myservice::HelloReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::myservice::HelloRequest, ::myservice::HelloReply>* streamer) {
+                       return this->StreamedSayHelloAgain(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_SayHelloAgain() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status SayHelloAgain(::grpc::ServerContext* /*context*/, const ::myservice::HelloRequest* /*request*/, ::myservice::HelloReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedSayHelloAgain(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::myservice::HelloRequest,::myservice::HelloReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_SayHello<WithStreamedUnaryMethod_SayHelloAgain<Service > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_SayHello<Service > StreamedService;
+  typedef WithStreamedUnaryMethod_SayHello<WithStreamedUnaryMethod_SayHelloAgain<Service > > StreamedService;
+};
+
+class NetworkConfig final {
+ public:
+  static constexpr char const* service_full_name() {
+    return "myservice.NetworkConfig";
+  }
+  class StubInterface {
+   public:
+    virtual ~StubInterface() {}
+    virtual ::grpc::Status ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::myservice::IPConfigResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>> AsyncConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>>(AsyncConfigureIPRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>> PrepareAsyncConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>>(PrepareAsyncConfigureIPRaw(context, request, cq));
+    }
+    class async_interface {
+     public:
+      virtual ~async_interface() {}
+      virtual void ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+    };
+    typedef class async_interface experimental_async_interface;
+    virtual class async_interface* async() { return nullptr; }
+    class async_interface* experimental_async() { return async(); }
+   private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>* AsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::myservice::IPConfigResponse>* PrepareAsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) = 0;
+  };
+  class Stub final : public StubInterface {
+   public:
+    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::myservice::IPConfigResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>> AsyncConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>>(AsyncConfigureIPRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>> PrepareAsyncConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>>(PrepareAsyncConfigureIPRaw(context, request, cq));
+    }
+    class async final :
+      public StubInterface::async_interface {
+     public:
+      void ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, std::function<void(::grpc::Status)>) override;
+      void ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+     private:
+      friend class Stub;
+      explicit async(Stub* stub): stub_(stub) { }
+      Stub* stub() { return stub_; }
+      Stub* stub_;
+    };
+    class async* async() override { return &async_stub_; }
+
+   private:
+    std::shared_ptr< ::grpc::ChannelInterface> channel_;
+    class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>* AsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>* PrepareAsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_ConfigureIP_;
+  };
+  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+
+  class Service : public ::grpc::Service {
+   public:
+    Service();
+    virtual ~Service();
+    virtual ::grpc::Status ConfigureIP(::grpc::ServerContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureIP(::grpc::ServerContext* context, ::myservice::IPConfigRequest* request, ::grpc::ServerAsyncResponseWriter< ::myservice::IPConfigResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_ConfigureIP<Service > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::myservice::IPConfigRequest, ::myservice::IPConfigResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response) { return this->ConfigureIP(context, request, response); }));}
+    void SetMessageAllocatorFor_ConfigureIP(
+        ::grpc::MessageAllocator< ::myservice::IPConfigRequest, ::myservice::IPConfigResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::myservice::IPConfigRequest, ::myservice::IPConfigResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureIP(
+      ::grpc::CallbackServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_ConfigureIP<Service > CallbackService;
+  typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestConfigureIP(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ConfigureIP(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ConfigureIP(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ConfigureIP : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ConfigureIP() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::myservice::IPConfigRequest, ::myservice::IPConfigResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::myservice::IPConfigRequest, ::myservice::IPConfigResponse>* streamer) {
+                       return this->StreamedConfigureIP(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ConfigureIP() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ConfigureIP(::grpc::ServerContext* /*context*/, const ::myservice::IPConfigRequest* /*request*/, ::myservice::IPConfigResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedConfigureIP(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::myservice::IPConfigRequest,::myservice::IPConfigResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_ConfigureIP<Service > StreamedUnaryService;
+  typedef Service SplitStreamedService;
+  typedef WithStreamedUnaryMethod_ConfigureIP<Service > StreamedService;
 };
 
 }  // namespace myservice
