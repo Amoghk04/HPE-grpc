@@ -51,10 +51,18 @@ extern HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
 class HelloRequest;
 struct HelloRequestDefaultTypeInternal;
 extern HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
+class IPConfigRequest;
+struct IPConfigRequestDefaultTypeInternal;
+extern IPConfigRequestDefaultTypeInternal _IPConfigRequest_default_instance_;
+class IPConfigResponse;
+struct IPConfigResponseDefaultTypeInternal;
+extern IPConfigResponseDefaultTypeInternal _IPConfigResponse_default_instance_;
 }  // namespace myservice
 PROTOBUF_NAMESPACE_OPEN
 template<> ::myservice::HelloReply* Arena::CreateMaybeMessage<::myservice::HelloReply>(Arena*);
 template<> ::myservice::HelloRequest* Arena::CreateMaybeMessage<::myservice::HelloRequest>(Arena*);
+template<> ::myservice::IPConfigRequest* Arena::CreateMaybeMessage<::myservice::IPConfigRequest>(Arena*);
+template<> ::myservice::IPConfigResponse* Arena::CreateMaybeMessage<::myservice::IPConfigResponse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace myservice {
 
@@ -364,6 +372,471 @@ class HelloReply final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_service_2eproto;
 };
+// -------------------------------------------------------------------
+
+class IPConfigRequest final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:myservice.IPConfigRequest) */ {
+ public:
+  inline IPConfigRequest() : IPConfigRequest(nullptr) {}
+  ~IPConfigRequest() override;
+  explicit PROTOBUF_CONSTEXPR IPConfigRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  IPConfigRequest(const IPConfigRequest& from);
+  IPConfigRequest(IPConfigRequest&& from) noexcept
+    : IPConfigRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline IPConfigRequest& operator=(const IPConfigRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline IPConfigRequest& operator=(IPConfigRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const IPConfigRequest& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const IPConfigRequest* internal_default_instance() {
+    return reinterpret_cast<const IPConfigRequest*>(
+               &_IPConfigRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(IPConfigRequest& a, IPConfigRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(IPConfigRequest* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(IPConfigRequest* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  IPConfigRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<IPConfigRequest>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const IPConfigRequest& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const IPConfigRequest& from) {
+    IPConfigRequest::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(IPConfigRequest* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "myservice.IPConfigRequest";
+  }
+  protected:
+  explicit IPConfigRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kRequestedDnsFieldNumber = 6,
+    kInterfaceNameFieldNumber = 1,
+    kRequestedIpFieldNumber = 3,
+    kRequestedSubnetMaskFieldNumber = 4,
+    kRequestedGatewayFieldNumber = 5,
+    kUseDhcpFieldNumber = 2,
+  };
+  // repeated string requested_dns = 6;
+  int requested_dns_size() const;
+  private:
+  int _internal_requested_dns_size() const;
+  public:
+  void clear_requested_dns();
+  const std::string& requested_dns(int index) const;
+  std::string* mutable_requested_dns(int index);
+  void set_requested_dns(int index, const std::string& value);
+  void set_requested_dns(int index, std::string&& value);
+  void set_requested_dns(int index, const char* value);
+  void set_requested_dns(int index, const char* value, size_t size);
+  std::string* add_requested_dns();
+  void add_requested_dns(const std::string& value);
+  void add_requested_dns(std::string&& value);
+  void add_requested_dns(const char* value);
+  void add_requested_dns(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& requested_dns() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_requested_dns();
+  private:
+  const std::string& _internal_requested_dns(int index) const;
+  std::string* _internal_add_requested_dns();
+  public:
+
+  // string interface_name = 1;
+  void clear_interface_name();
+  const std::string& interface_name() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_interface_name(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_interface_name();
+  PROTOBUF_NODISCARD std::string* release_interface_name();
+  void set_allocated_interface_name(std::string* interface_name);
+  private:
+  const std::string& _internal_interface_name() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_interface_name(const std::string& value);
+  std::string* _internal_mutable_interface_name();
+  public:
+
+  // string requested_ip = 3;
+  void clear_requested_ip();
+  const std::string& requested_ip() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_requested_ip(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_requested_ip();
+  PROTOBUF_NODISCARD std::string* release_requested_ip();
+  void set_allocated_requested_ip(std::string* requested_ip);
+  private:
+  const std::string& _internal_requested_ip() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_requested_ip(const std::string& value);
+  std::string* _internal_mutable_requested_ip();
+  public:
+
+  // string requested_subnet_mask = 4;
+  void clear_requested_subnet_mask();
+  const std::string& requested_subnet_mask() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_requested_subnet_mask(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_requested_subnet_mask();
+  PROTOBUF_NODISCARD std::string* release_requested_subnet_mask();
+  void set_allocated_requested_subnet_mask(std::string* requested_subnet_mask);
+  private:
+  const std::string& _internal_requested_subnet_mask() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_requested_subnet_mask(const std::string& value);
+  std::string* _internal_mutable_requested_subnet_mask();
+  public:
+
+  // string requested_gateway = 5;
+  void clear_requested_gateway();
+  const std::string& requested_gateway() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_requested_gateway(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_requested_gateway();
+  PROTOBUF_NODISCARD std::string* release_requested_gateway();
+  void set_allocated_requested_gateway(std::string* requested_gateway);
+  private:
+  const std::string& _internal_requested_gateway() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_requested_gateway(const std::string& value);
+  std::string* _internal_mutable_requested_gateway();
+  public:
+
+  // bool use_dhcp = 2;
+  void clear_use_dhcp();
+  bool use_dhcp() const;
+  void set_use_dhcp(bool value);
+  private:
+  bool _internal_use_dhcp() const;
+  void _internal_set_use_dhcp(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:myservice.IPConfigRequest)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> requested_dns_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr interface_name_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr requested_ip_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr requested_subnet_mask_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr requested_gateway_;
+    bool use_dhcp_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_service_2eproto;
+};
+// -------------------------------------------------------------------
+
+class IPConfigResponse final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:myservice.IPConfigResponse) */ {
+ public:
+  inline IPConfigResponse() : IPConfigResponse(nullptr) {}
+  ~IPConfigResponse() override;
+  explicit PROTOBUF_CONSTEXPR IPConfigResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  IPConfigResponse(const IPConfigResponse& from);
+  IPConfigResponse(IPConfigResponse&& from) noexcept
+    : IPConfigResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline IPConfigResponse& operator=(const IPConfigResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline IPConfigResponse& operator=(IPConfigResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const IPConfigResponse& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const IPConfigResponse* internal_default_instance() {
+    return reinterpret_cast<const IPConfigResponse*>(
+               &_IPConfigResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(IPConfigResponse& a, IPConfigResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(IPConfigResponse* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(IPConfigResponse* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  IPConfigResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<IPConfigResponse>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const IPConfigResponse& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const IPConfigResponse& from) {
+    IPConfigResponse::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(IPConfigResponse* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "myservice.IPConfigResponse";
+  }
+  protected:
+  explicit IPConfigResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kDnsServersFieldNumber = 4,
+    kIpAddressFieldNumber = 1,
+    kSubnetMaskFieldNumber = 2,
+    kDefaultGatewayFieldNumber = 3,
+    kStatusMessageFieldNumber = 5,
+  };
+  // repeated string dns_servers = 4;
+  int dns_servers_size() const;
+  private:
+  int _internal_dns_servers_size() const;
+  public:
+  void clear_dns_servers();
+  const std::string& dns_servers(int index) const;
+  std::string* mutable_dns_servers(int index);
+  void set_dns_servers(int index, const std::string& value);
+  void set_dns_servers(int index, std::string&& value);
+  void set_dns_servers(int index, const char* value);
+  void set_dns_servers(int index, const char* value, size_t size);
+  std::string* add_dns_servers();
+  void add_dns_servers(const std::string& value);
+  void add_dns_servers(std::string&& value);
+  void add_dns_servers(const char* value);
+  void add_dns_servers(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& dns_servers() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_dns_servers();
+  private:
+  const std::string& _internal_dns_servers(int index) const;
+  std::string* _internal_add_dns_servers();
+  public:
+
+  // string ip_address = 1;
+  void clear_ip_address();
+  const std::string& ip_address() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_ip_address(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_ip_address();
+  PROTOBUF_NODISCARD std::string* release_ip_address();
+  void set_allocated_ip_address(std::string* ip_address);
+  private:
+  const std::string& _internal_ip_address() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_ip_address(const std::string& value);
+  std::string* _internal_mutable_ip_address();
+  public:
+
+  // string subnet_mask = 2;
+  void clear_subnet_mask();
+  const std::string& subnet_mask() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_subnet_mask(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_subnet_mask();
+  PROTOBUF_NODISCARD std::string* release_subnet_mask();
+  void set_allocated_subnet_mask(std::string* subnet_mask);
+  private:
+  const std::string& _internal_subnet_mask() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_subnet_mask(const std::string& value);
+  std::string* _internal_mutable_subnet_mask();
+  public:
+
+  // string default_gateway = 3;
+  void clear_default_gateway();
+  const std::string& default_gateway() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_default_gateway(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_default_gateway();
+  PROTOBUF_NODISCARD std::string* release_default_gateway();
+  void set_allocated_default_gateway(std::string* default_gateway);
+  private:
+  const std::string& _internal_default_gateway() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_default_gateway(const std::string& value);
+  std::string* _internal_mutable_default_gateway();
+  public:
+
+  // string status_message = 5;
+  void clear_status_message();
+  const std::string& status_message() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_status_message(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_status_message();
+  PROTOBUF_NODISCARD std::string* release_status_message();
+  void set_allocated_status_message(std::string* status_message);
+  private:
+  const std::string& _internal_status_message() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_status_message(const std::string& value);
+  std::string* _internal_mutable_status_message();
+  public:
+
+  // @@protoc_insertion_point(class_scope:myservice.IPConfigResponse)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> dns_servers_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr ip_address_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr subnet_mask_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr default_gateway_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr status_message_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_service_2eproto;
+};
 // ===================================================================
 
 
@@ -479,9 +952,591 @@ inline void HelloReply::set_allocated_message(std::string* message) {
   // @@protoc_insertion_point(field_set_allocated:myservice.HelloReply.message)
 }
 
+// -------------------------------------------------------------------
+
+// IPConfigRequest
+
+// string interface_name = 1;
+inline void IPConfigRequest::clear_interface_name() {
+  _impl_.interface_name_.ClearToEmpty();
+}
+inline const std::string& IPConfigRequest::interface_name() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.interface_name)
+  return _internal_interface_name();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigRequest::set_interface_name(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.interface_name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.interface_name)
+}
+inline std::string* IPConfigRequest::mutable_interface_name() {
+  std::string* _s = _internal_mutable_interface_name();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigRequest.interface_name)
+  return _s;
+}
+inline const std::string& IPConfigRequest::_internal_interface_name() const {
+  return _impl_.interface_name_.Get();
+}
+inline void IPConfigRequest::_internal_set_interface_name(const std::string& value) {
+  
+  _impl_.interface_name_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::_internal_mutable_interface_name() {
+  
+  return _impl_.interface_name_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::release_interface_name() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigRequest.interface_name)
+  return _impl_.interface_name_.Release();
+}
+inline void IPConfigRequest::set_allocated_interface_name(std::string* interface_name) {
+  if (interface_name != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.interface_name_.SetAllocated(interface_name, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.interface_name_.IsDefault()) {
+    _impl_.interface_name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigRequest.interface_name)
+}
+
+// bool use_dhcp = 2;
+inline void IPConfigRequest::clear_use_dhcp() {
+  _impl_.use_dhcp_ = false;
+}
+inline bool IPConfigRequest::_internal_use_dhcp() const {
+  return _impl_.use_dhcp_;
+}
+inline bool IPConfigRequest::use_dhcp() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.use_dhcp)
+  return _internal_use_dhcp();
+}
+inline void IPConfigRequest::_internal_set_use_dhcp(bool value) {
+  
+  _impl_.use_dhcp_ = value;
+}
+inline void IPConfigRequest::set_use_dhcp(bool value) {
+  _internal_set_use_dhcp(value);
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.use_dhcp)
+}
+
+// string requested_ip = 3;
+inline void IPConfigRequest::clear_requested_ip() {
+  _impl_.requested_ip_.ClearToEmpty();
+}
+inline const std::string& IPConfigRequest::requested_ip() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.requested_ip)
+  return _internal_requested_ip();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigRequest::set_requested_ip(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.requested_ip_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.requested_ip)
+}
+inline std::string* IPConfigRequest::mutable_requested_ip() {
+  std::string* _s = _internal_mutable_requested_ip();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigRequest.requested_ip)
+  return _s;
+}
+inline const std::string& IPConfigRequest::_internal_requested_ip() const {
+  return _impl_.requested_ip_.Get();
+}
+inline void IPConfigRequest::_internal_set_requested_ip(const std::string& value) {
+  
+  _impl_.requested_ip_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::_internal_mutable_requested_ip() {
+  
+  return _impl_.requested_ip_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::release_requested_ip() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigRequest.requested_ip)
+  return _impl_.requested_ip_.Release();
+}
+inline void IPConfigRequest::set_allocated_requested_ip(std::string* requested_ip) {
+  if (requested_ip != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.requested_ip_.SetAllocated(requested_ip, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.requested_ip_.IsDefault()) {
+    _impl_.requested_ip_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigRequest.requested_ip)
+}
+
+// string requested_subnet_mask = 4;
+inline void IPConfigRequest::clear_requested_subnet_mask() {
+  _impl_.requested_subnet_mask_.ClearToEmpty();
+}
+inline const std::string& IPConfigRequest::requested_subnet_mask() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.requested_subnet_mask)
+  return _internal_requested_subnet_mask();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigRequest::set_requested_subnet_mask(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.requested_subnet_mask_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.requested_subnet_mask)
+}
+inline std::string* IPConfigRequest::mutable_requested_subnet_mask() {
+  std::string* _s = _internal_mutable_requested_subnet_mask();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigRequest.requested_subnet_mask)
+  return _s;
+}
+inline const std::string& IPConfigRequest::_internal_requested_subnet_mask() const {
+  return _impl_.requested_subnet_mask_.Get();
+}
+inline void IPConfigRequest::_internal_set_requested_subnet_mask(const std::string& value) {
+  
+  _impl_.requested_subnet_mask_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::_internal_mutable_requested_subnet_mask() {
+  
+  return _impl_.requested_subnet_mask_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::release_requested_subnet_mask() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigRequest.requested_subnet_mask)
+  return _impl_.requested_subnet_mask_.Release();
+}
+inline void IPConfigRequest::set_allocated_requested_subnet_mask(std::string* requested_subnet_mask) {
+  if (requested_subnet_mask != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.requested_subnet_mask_.SetAllocated(requested_subnet_mask, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.requested_subnet_mask_.IsDefault()) {
+    _impl_.requested_subnet_mask_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigRequest.requested_subnet_mask)
+}
+
+// string requested_gateway = 5;
+inline void IPConfigRequest::clear_requested_gateway() {
+  _impl_.requested_gateway_.ClearToEmpty();
+}
+inline const std::string& IPConfigRequest::requested_gateway() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.requested_gateway)
+  return _internal_requested_gateway();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigRequest::set_requested_gateway(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.requested_gateway_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.requested_gateway)
+}
+inline std::string* IPConfigRequest::mutable_requested_gateway() {
+  std::string* _s = _internal_mutable_requested_gateway();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigRequest.requested_gateway)
+  return _s;
+}
+inline const std::string& IPConfigRequest::_internal_requested_gateway() const {
+  return _impl_.requested_gateway_.Get();
+}
+inline void IPConfigRequest::_internal_set_requested_gateway(const std::string& value) {
+  
+  _impl_.requested_gateway_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::_internal_mutable_requested_gateway() {
+  
+  return _impl_.requested_gateway_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigRequest::release_requested_gateway() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigRequest.requested_gateway)
+  return _impl_.requested_gateway_.Release();
+}
+inline void IPConfigRequest::set_allocated_requested_gateway(std::string* requested_gateway) {
+  if (requested_gateway != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.requested_gateway_.SetAllocated(requested_gateway, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.requested_gateway_.IsDefault()) {
+    _impl_.requested_gateway_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigRequest.requested_gateway)
+}
+
+// repeated string requested_dns = 6;
+inline int IPConfigRequest::_internal_requested_dns_size() const {
+  return _impl_.requested_dns_.size();
+}
+inline int IPConfigRequest::requested_dns_size() const {
+  return _internal_requested_dns_size();
+}
+inline void IPConfigRequest::clear_requested_dns() {
+  _impl_.requested_dns_.Clear();
+}
+inline std::string* IPConfigRequest::add_requested_dns() {
+  std::string* _s = _internal_add_requested_dns();
+  // @@protoc_insertion_point(field_add_mutable:myservice.IPConfigRequest.requested_dns)
+  return _s;
+}
+inline const std::string& IPConfigRequest::_internal_requested_dns(int index) const {
+  return _impl_.requested_dns_.Get(index);
+}
+inline const std::string& IPConfigRequest::requested_dns(int index) const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigRequest.requested_dns)
+  return _internal_requested_dns(index);
+}
+inline std::string* IPConfigRequest::mutable_requested_dns(int index) {
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigRequest.requested_dns)
+  return _impl_.requested_dns_.Mutable(index);
+}
+inline void IPConfigRequest::set_requested_dns(int index, const std::string& value) {
+  _impl_.requested_dns_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::set_requested_dns(int index, std::string&& value) {
+  _impl_.requested_dns_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::set_requested_dns(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.requested_dns_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::set_requested_dns(int index, const char* value, size_t size) {
+  _impl_.requested_dns_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:myservice.IPConfigRequest.requested_dns)
+}
+inline std::string* IPConfigRequest::_internal_add_requested_dns() {
+  return _impl_.requested_dns_.Add();
+}
+inline void IPConfigRequest::add_requested_dns(const std::string& value) {
+  _impl_.requested_dns_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::add_requested_dns(std::string&& value) {
+  _impl_.requested_dns_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::add_requested_dns(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.requested_dns_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:myservice.IPConfigRequest.requested_dns)
+}
+inline void IPConfigRequest::add_requested_dns(const char* value, size_t size) {
+  _impl_.requested_dns_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:myservice.IPConfigRequest.requested_dns)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+IPConfigRequest::requested_dns() const {
+  // @@protoc_insertion_point(field_list:myservice.IPConfigRequest.requested_dns)
+  return _impl_.requested_dns_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+IPConfigRequest::mutable_requested_dns() {
+  // @@protoc_insertion_point(field_mutable_list:myservice.IPConfigRequest.requested_dns)
+  return &_impl_.requested_dns_;
+}
+
+// -------------------------------------------------------------------
+
+// IPConfigResponse
+
+// string ip_address = 1;
+inline void IPConfigResponse::clear_ip_address() {
+  _impl_.ip_address_.ClearToEmpty();
+}
+inline const std::string& IPConfigResponse::ip_address() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigResponse.ip_address)
+  return _internal_ip_address();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigResponse::set_ip_address(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.ip_address_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.ip_address)
+}
+inline std::string* IPConfigResponse::mutable_ip_address() {
+  std::string* _s = _internal_mutable_ip_address();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigResponse.ip_address)
+  return _s;
+}
+inline const std::string& IPConfigResponse::_internal_ip_address() const {
+  return _impl_.ip_address_.Get();
+}
+inline void IPConfigResponse::_internal_set_ip_address(const std::string& value) {
+  
+  _impl_.ip_address_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::_internal_mutable_ip_address() {
+  
+  return _impl_.ip_address_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::release_ip_address() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigResponse.ip_address)
+  return _impl_.ip_address_.Release();
+}
+inline void IPConfigResponse::set_allocated_ip_address(std::string* ip_address) {
+  if (ip_address != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.ip_address_.SetAllocated(ip_address, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.ip_address_.IsDefault()) {
+    _impl_.ip_address_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigResponse.ip_address)
+}
+
+// string subnet_mask = 2;
+inline void IPConfigResponse::clear_subnet_mask() {
+  _impl_.subnet_mask_.ClearToEmpty();
+}
+inline const std::string& IPConfigResponse::subnet_mask() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigResponse.subnet_mask)
+  return _internal_subnet_mask();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigResponse::set_subnet_mask(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.subnet_mask_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.subnet_mask)
+}
+inline std::string* IPConfigResponse::mutable_subnet_mask() {
+  std::string* _s = _internal_mutable_subnet_mask();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigResponse.subnet_mask)
+  return _s;
+}
+inline const std::string& IPConfigResponse::_internal_subnet_mask() const {
+  return _impl_.subnet_mask_.Get();
+}
+inline void IPConfigResponse::_internal_set_subnet_mask(const std::string& value) {
+  
+  _impl_.subnet_mask_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::_internal_mutable_subnet_mask() {
+  
+  return _impl_.subnet_mask_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::release_subnet_mask() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigResponse.subnet_mask)
+  return _impl_.subnet_mask_.Release();
+}
+inline void IPConfigResponse::set_allocated_subnet_mask(std::string* subnet_mask) {
+  if (subnet_mask != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.subnet_mask_.SetAllocated(subnet_mask, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.subnet_mask_.IsDefault()) {
+    _impl_.subnet_mask_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigResponse.subnet_mask)
+}
+
+// string default_gateway = 3;
+inline void IPConfigResponse::clear_default_gateway() {
+  _impl_.default_gateway_.ClearToEmpty();
+}
+inline const std::string& IPConfigResponse::default_gateway() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigResponse.default_gateway)
+  return _internal_default_gateway();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigResponse::set_default_gateway(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.default_gateway_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.default_gateway)
+}
+inline std::string* IPConfigResponse::mutable_default_gateway() {
+  std::string* _s = _internal_mutable_default_gateway();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigResponse.default_gateway)
+  return _s;
+}
+inline const std::string& IPConfigResponse::_internal_default_gateway() const {
+  return _impl_.default_gateway_.Get();
+}
+inline void IPConfigResponse::_internal_set_default_gateway(const std::string& value) {
+  
+  _impl_.default_gateway_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::_internal_mutable_default_gateway() {
+  
+  return _impl_.default_gateway_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::release_default_gateway() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigResponse.default_gateway)
+  return _impl_.default_gateway_.Release();
+}
+inline void IPConfigResponse::set_allocated_default_gateway(std::string* default_gateway) {
+  if (default_gateway != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.default_gateway_.SetAllocated(default_gateway, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.default_gateway_.IsDefault()) {
+    _impl_.default_gateway_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigResponse.default_gateway)
+}
+
+// repeated string dns_servers = 4;
+inline int IPConfigResponse::_internal_dns_servers_size() const {
+  return _impl_.dns_servers_.size();
+}
+inline int IPConfigResponse::dns_servers_size() const {
+  return _internal_dns_servers_size();
+}
+inline void IPConfigResponse::clear_dns_servers() {
+  _impl_.dns_servers_.Clear();
+}
+inline std::string* IPConfigResponse::add_dns_servers() {
+  std::string* _s = _internal_add_dns_servers();
+  // @@protoc_insertion_point(field_add_mutable:myservice.IPConfigResponse.dns_servers)
+  return _s;
+}
+inline const std::string& IPConfigResponse::_internal_dns_servers(int index) const {
+  return _impl_.dns_servers_.Get(index);
+}
+inline const std::string& IPConfigResponse::dns_servers(int index) const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigResponse.dns_servers)
+  return _internal_dns_servers(index);
+}
+inline std::string* IPConfigResponse::mutable_dns_servers(int index) {
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigResponse.dns_servers)
+  return _impl_.dns_servers_.Mutable(index);
+}
+inline void IPConfigResponse::set_dns_servers(int index, const std::string& value) {
+  _impl_.dns_servers_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::set_dns_servers(int index, std::string&& value) {
+  _impl_.dns_servers_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::set_dns_servers(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.dns_servers_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::set_dns_servers(int index, const char* value, size_t size) {
+  _impl_.dns_servers_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:myservice.IPConfigResponse.dns_servers)
+}
+inline std::string* IPConfigResponse::_internal_add_dns_servers() {
+  return _impl_.dns_servers_.Add();
+}
+inline void IPConfigResponse::add_dns_servers(const std::string& value) {
+  _impl_.dns_servers_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::add_dns_servers(std::string&& value) {
+  _impl_.dns_servers_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::add_dns_servers(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.dns_servers_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:myservice.IPConfigResponse.dns_servers)
+}
+inline void IPConfigResponse::add_dns_servers(const char* value, size_t size) {
+  _impl_.dns_servers_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:myservice.IPConfigResponse.dns_servers)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+IPConfigResponse::dns_servers() const {
+  // @@protoc_insertion_point(field_list:myservice.IPConfigResponse.dns_servers)
+  return _impl_.dns_servers_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+IPConfigResponse::mutable_dns_servers() {
+  // @@protoc_insertion_point(field_mutable_list:myservice.IPConfigResponse.dns_servers)
+  return &_impl_.dns_servers_;
+}
+
+// string status_message = 5;
+inline void IPConfigResponse::clear_status_message() {
+  _impl_.status_message_.ClearToEmpty();
+}
+inline const std::string& IPConfigResponse::status_message() const {
+  // @@protoc_insertion_point(field_get:myservice.IPConfigResponse.status_message)
+  return _internal_status_message();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void IPConfigResponse::set_status_message(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.status_message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:myservice.IPConfigResponse.status_message)
+}
+inline std::string* IPConfigResponse::mutable_status_message() {
+  std::string* _s = _internal_mutable_status_message();
+  // @@protoc_insertion_point(field_mutable:myservice.IPConfigResponse.status_message)
+  return _s;
+}
+inline const std::string& IPConfigResponse::_internal_status_message() const {
+  return _impl_.status_message_.Get();
+}
+inline void IPConfigResponse::_internal_set_status_message(const std::string& value) {
+  
+  _impl_.status_message_.Set(value, GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::_internal_mutable_status_message() {
+  
+  return _impl_.status_message_.Mutable(GetArenaForAllocation());
+}
+inline std::string* IPConfigResponse::release_status_message() {
+  // @@protoc_insertion_point(field_release:myservice.IPConfigResponse.status_message)
+  return _impl_.status_message_.Release();
+}
+inline void IPConfigResponse::set_allocated_status_message(std::string* status_message) {
+  if (status_message != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.status_message_.SetAllocated(status_message, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.status_message_.IsDefault()) {
+    _impl_.status_message_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:myservice.IPConfigResponse.status_message)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

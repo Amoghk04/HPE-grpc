@@ -5,6 +5,12 @@ package myservice;
 // gRPC service
 service Greeter {
     rpc SayHello (HelloRequest) returns (HelloReply);
+
+    rpc SayHelloAgain (HelloRequest) returns (HelloReply);
+}
+
+service NetworkConfig {
+    rpc ConfigureIP (IPConfigRequest) returns (IPConfigResponse);
 }
 
 // request message
@@ -15,4 +21,23 @@ message HelloRequest {
 // response message
 message HelloReply {
     string message = 1;
+}
+
+message IPConfigRequest {
+    string interface_name = 1;
+    bool use_dhcp = 2;
+
+    // Fields used if static configuration is requested.
+    string requested_ip = 3;
+    string requested_subnet_mask = 4;
+    string requested_gateway = 5;
+    repeated string requested_dns = 6;
+}
+
+message IPConfigResponse {
+    string ip_address = 1;
+    string subnet_mask = 2;
+    string default_gateway = 3;
+    repeated string dns_servers = 4;
+    string status_message = 5;
 }

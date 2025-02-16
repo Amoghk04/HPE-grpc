@@ -23,6 +23,7 @@ namespace myservice {
 
 static const char* Greeter_method_names[] = {
   "/myservice.Greeter/SayHello",
+  "/myservice.Greeter/SayHelloAgain",
 };
 
 std::unique_ptr< Greeter::Stub> Greeter::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -33,6 +34,7 @@ std::unique_ptr< Greeter::Stub> Greeter::NewStub(const std::shared_ptr< ::grpc::
 
 Greeter::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_SayHello_(Greeter_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SayHelloAgain_(Greeter_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Greeter::Stub::SayHello(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::myservice::HelloReply* response) {
@@ -58,6 +60,29 @@ void Greeter::Stub::async::SayHello(::grpc::ClientContext* context, const ::myse
   return result;
 }
 
+::grpc::Status Greeter::Stub::SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::myservice::HelloReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::myservice::HelloRequest, ::myservice::HelloReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SayHelloAgain_, context, request, response);
+}
+
+void Greeter::Stub::async::SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::myservice::HelloRequest, ::myservice::HelloReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SayHelloAgain_, context, request, response, std::move(f));
+}
+
+void Greeter::Stub::async::SayHelloAgain(::grpc::ClientContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SayHelloAgain_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* Greeter::Stub::PrepareAsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::myservice::HelloReply, ::myservice::HelloRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SayHelloAgain_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::HelloReply>* Greeter::Stub::AsyncSayHelloAgainRaw(::grpc::ClientContext* context, const ::myservice::HelloRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncSayHelloAgainRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Greeter::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Greeter_method_names[0],
@@ -69,12 +94,90 @@ Greeter::Service::Service() {
              ::myservice::HelloReply* resp) {
                return service->SayHello(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Greeter_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Greeter::Service, ::myservice::HelloRequest, ::myservice::HelloReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Greeter::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::myservice::HelloRequest* req,
+             ::myservice::HelloReply* resp) {
+               return service->SayHelloAgain(ctx, req, resp);
+             }, this)));
 }
 
 Greeter::Service::~Service() {
 }
 
 ::grpc::Status Greeter::Service::SayHello(::grpc::ServerContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Greeter::Service::SayHelloAgain(::grpc::ServerContext* context, const ::myservice::HelloRequest* request, ::myservice::HelloReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
+static const char* NetworkConfig_method_names[] = {
+  "/myservice.NetworkConfig/ConfigureIP",
+};
+
+std::unique_ptr< NetworkConfig::Stub> NetworkConfig::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< NetworkConfig::Stub> stub(new NetworkConfig::Stub(channel, options));
+  return stub;
+}
+
+NetworkConfig::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_ConfigureIP_(NetworkConfig_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status NetworkConfig::Stub::ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::myservice::IPConfigResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::myservice::IPConfigRequest, ::myservice::IPConfigResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ConfigureIP_, context, request, response);
+}
+
+void NetworkConfig::Stub::async::ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::myservice::IPConfigRequest, ::myservice::IPConfigResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureIP_, context, request, response, std::move(f));
+}
+
+void NetworkConfig::Stub::async::ConfigureIP(::grpc::ClientContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ConfigureIP_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>* NetworkConfig::Stub::PrepareAsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::myservice::IPConfigResponse, ::myservice::IPConfigRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ConfigureIP_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::IPConfigResponse>* NetworkConfig::Stub::AsyncConfigureIPRaw(::grpc::ClientContext* context, const ::myservice::IPConfigRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncConfigureIPRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+NetworkConfig::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NetworkConfig_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NetworkConfig::Service, ::myservice::IPConfigRequest, ::myservice::IPConfigResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](NetworkConfig::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::myservice::IPConfigRequest* req,
+             ::myservice::IPConfigResponse* resp) {
+               return service->ConfigureIP(ctx, req, resp);
+             }, this)));
+}
+
+NetworkConfig::Service::~Service() {
+}
+
+::grpc::Status NetworkConfig::Service::ConfigureIP(::grpc::ServerContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response) {
   (void) context;
   (void) request;
   (void) response;
