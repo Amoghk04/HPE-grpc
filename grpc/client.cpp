@@ -82,7 +82,14 @@ string read_file(const string& filename) {
     return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 }
 
-int main() {
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        cerr << "Usage: " << argv[0] << " <server_address>" << endl;
+        cerr << "Example: " << argv[0] << " example.com:50051" << endl;
+        return 1;
+    }
+    string server_address(argv[1]);
+
     string root_cert = read_file("ca.crt");
     string client_cert = read_file("client.crt");
     string client_key = read_file("client.key");
@@ -95,8 +102,8 @@ int main() {
     ssl_opts.pem_cert_chain = client_cert;
 
     auto channel_creds = grpc::SslCredentials(ssl_opts);
-    auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
-    cout << "[CLIENT] Connected to server using SSL🚀" << endl;
+    auto channel = grpc::CreateChannel(server_address, channel_creds);
+    cout << "[CLIENT] Connected to server at " << server_address << " using SSL🚀" << endl;
 
     GreeterClient greeter_client(channel);
     NetworkConfigClient network_client(channel);

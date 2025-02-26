@@ -1,0 +1,60 @@
+# Build stage
+FROM ubuntu:22.04 AS builder
+
+# Install build dependencies for gRPC and Protobuf
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    g++ \
+    autoconf \
+    libtool \
+    git \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgrpc++-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone and build gRPC
+RUN git clone --recurse-submodules -b v1.70.1 https://github.com/grpc/grpc && \
+    cd grpc && \
+    mkdir -p cmake/build && cd cmake/build && \
+    cmake -DgRPC_INSTALL=ON \
+          -DgRPC_BUILD_TESTS=OFF \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          ../.. && \
+    make -j$(nproc) && make install
+
+WORKDIR /app
+ENV LD_LIBRARY_PATH=/usr/local/lib
+COPY . .
+
+# Build the protobuf files and client
+RUN protoc --proto_path=grpc/ --cpp_out=grpc/ --grpc_out=grpc/ --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) grpc/service.proto \
+    && rm -rf grpc/build \
+    && mkdir -p grpc/build \
+    && cd grpc/build \
+    && cmake .. \
+    && make -j$(nproc)
+
+# Runtime stage
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y libssl-dev && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/lib /usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
+WORKDIR /app
+
+# Copy only the client executable
+COPY --from=builder /app/grpc/build/client /app/client
+
+# Copy SSL certificates
+COPY --from=builder /app/ca.crt /app/ca.crt
+COPY --from=builder /app/client.crt /app/client.crt
+COPY --from=builder /app/client.key /app/client.key
+
+ENTRYPOINT ["/app/client"] 
