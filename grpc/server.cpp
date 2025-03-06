@@ -41,7 +41,7 @@ public:
         return Status::OK;
     }
 
-    Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) {
+    Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
         string client_peer = context->peer();
         cout << "[SERVER] Received request from: " << client_peer << endl;
 
@@ -140,7 +140,9 @@ void RunGrpcServer() {
 }
 
 void RunHttpServer() {
-    httplib::SSLServer svr("server.crt", "server.key");
+    httplib::Server svr;
+
+    svr.set_mount_point("/", "./public"); // Serve files from the "public" directory
 
     svr.Get("/", [](const httplib::Request&, httplib::Response& res) {
         res.set_content("<html><body><h1>Hello from HTTPS server!</h1></body></html>", "text/html");

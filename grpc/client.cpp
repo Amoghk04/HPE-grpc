@@ -3,52 +3,56 @@
 #include <grpcpp/grpcpp.h>
 #include "service.grpc.pb.h"
 #include <fstream>
+#include <httplib.h>
+#include <nlohmann/json.hpp>
+#include <cstdlib> // For exit()
 
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
 using namespace std;
 using namespace myservice;
+using json = nlohmann::json;
 
 class GreeterClient {
-    public:
-        GreeterClient(shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
-        
-        string SayHello(const string& name) {
-            HelloRequest request;
-            request.set_name(name);
-            HelloReply reply;
-            ClientContext context;
+public:
+    GreeterClient(shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
 
-            cout << "[CLIENT] Sending request to server: " << name << endl;
-            Status status = stub_->SayHello(&context, request, &reply);
+    string SayHello(const string& name) {
+        HelloRequest request;
+        request.set_name(name);
+        HelloReply reply;
+        ClientContext context;
 
-            if (status.ok()) {
-                return reply.message();
-            } else {
-                cerr << "[CLIENT] RPC failed: " << status.error_message() << endl;
-                return "RPC failed";
-            }
+        cout << "[CLIENT] Sending request to server: " << name << endl;
+        Status status = stub_->SayHello(&context, request, &reply);
+
+        if (status.ok()) {
+            return reply.message();
+        } else {
+            cerr << "[CLIENT] RPC failed: " << status.error_message() << endl;
+            return "RPC failed";
         }
+    }
 
-        string SayHelloAgain(const string& name) {
-            HelloRequest request;
-            request.set_name(name);
-            HelloReply reply;
-            ClientContext context;
+    string SayHelloAgain(const string& name) {
+        HelloRequest request;
+        request.set_name(name);
+        HelloReply reply;
+        ClientContext context;
 
-            cout << "[CLIENT] Sending another request to server: " << name << endl;
-            Status again = stub_->SayHelloAgain(&context, request, &reply);
+        cout << "[CLIENT] Sending another request to server: " << name << endl;
+        Status again = stub_->SayHelloAgain(&context, request, &reply);
 
-            if (again.ok()) {
-                return reply.message();
-            } else {
-                cerr << "[CLIENT] RPC failed: " << again.error_message() << endl; 
-                return "RPC failed";
-            }
+        if (again.ok()) {
+            return reply.message();
+        } else {
+            cerr << "[CLIENT] RPC failed: " << again.error_message() << endl;
+            return "RPC failed";
         }
-    private:
-        unique_ptr<Greeter::Stub> stub_;
+    }
+private:
+    unique_ptr<Greeter::Stub> stub_;
 };
 
 class NetworkConfigClient {
@@ -76,10 +80,30 @@ private:
 string read_file(const string& filename) {
     ifstream file(filename, ios::binary);
     if (!file) {
-        cerr << "[CLIENT] Error: Could not open file " << filename <<endl;
+        cerr << "[CLIENT] Error: Could not open file " << filename << endl;
         exit(1);
     }
     return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+}
+
+void MakeHttpsGetRequest(const string& server_address) {
+    httplib::Client cli(server_address.c_str());
+    auto res = cli.Get("/");
+    if (res && res->status == 200) {
+        cout << "[CLIENT] HTTPS GET Response: " << res->body << endl;
+    } else {
+        cerr << "[CLIENT] HTTPS GET Request failed" << endl;
+    }
+}
+
+void MakeHttpsPostRequest(const string& server_address, const json& data) {
+    httplib::Client cli(server_address.c_str());
+    auto res = cli.Post("/data", data.dump(), "application/json");
+    if (res && res->status == 200) {
+        cout << "[CLIENT] HTTPS POST Response: " << res->body << endl;
+    } else {
+        cerr << "[CLIENT] HTTPS POST Request failed" << endl;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -111,7 +135,7 @@ int main(int argc, char** argv) {
     string my_name;
     cout << "Enter your name: " << endl;
     cin >> my_name;
-    
+
     string response = greeter_client.SayHello(my_name);
     string again = greeter_client.SayHelloAgain(my_name);
     cout << "[CLIENT] Final Hello Response: " << response << endl;
@@ -127,7 +151,7 @@ int main(int argc, char** argv) {
 
     cout << "Use DHCP? (y/n): " << endl;
     cin >> dhcp_choice;
-    if(dhcp_choice == 'y' || dhcp_choice == 'Y') {
+    if (dhcp_choice == 'y' || dhcp_choice == 'Y') {
         request.set_use_dhcp(true);
     } else {
         request.set_use_dhcp(false);
@@ -139,7 +163,7 @@ int main(int argc, char** argv) {
         cout << "Enter desired default gateway: " << endl;
         cin >> gateway;
         cout << "Enter desired DNS server (enter one at a time, type 'done' when finished): " << endl;
-        while(cin >> dns && dns != "done") {
+        while (cin >> dns && dns != "done") {
             request.add_requested_dns(dns);
             cout << "Enter another DNS server or 'done': " << endl;
         }
@@ -154,10 +178,15 @@ int main(int argc, char** argv) {
     cout << "Subnet Mask: " << ip_response.subnet_mask() << endl;
     cout << "Default Gateway: " << ip_response.default_gateway() << endl;
     cout << "DNS Servers: ";
-    for (const auto &dns : ip_response.dns_servers())
+    for (const auto& dns : ip_response.dns_servers())
         cout << dns << " ";
     cout << endl;
     cout << "Status: " << ip_response.status_message() << endl;
+
+    // Make HTTPS GET and POST requests
+    MakeHttpsGetRequest("localhost:8080");
+    json post_data = {{"name", my_name}, {"message", "Hello from client"}};
+    MakeHttpsPostRequest("localhost:8080", post_data);
 
     return 0;
 }
