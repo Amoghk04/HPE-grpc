@@ -1,0 +1,30 @@
+^C:\USERS\SHAMA\DESKTOP\GRPC HPE\HPE-GRPC\GRPC\BUILD\CMAKEFILES\37FBFA5AF007945287E51403D774EC0C\SERVICE.PB.H.RULE
+setlocal
+C:\vcpkg\installed\x64-windows\tools\protobuf\protoc.exe --cpp_out ":C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build" -I "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc" "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/service.proto"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\SHAMA\DESKTOP\GRPC HPE\HPE-GRPC\GRPC\BUILD\CMAKEFILES\37FBFA5AF007945287E51403D774EC0C\SERVICE.GRPC.PB.H.RULE
+setlocal
+C:\vcpkg\installed\x64-windows\tools\protobuf\protoc.exe --grpc_out ":C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build" --plugin=protoc-gen-grpc=C:/vcpkg/installed/x64-windows/tools/grpc/grpc_cpp_plugin.exe -I "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc" "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/service.proto"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\SHAMA\DESKTOP\GRPC HPE\HPE-GRPC\GRPC\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc" "-BC:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build" --check-stamp-file "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\service.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\service.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\service.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\service.grpc.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\CMakeFiles\37fbfa5af007945287e51403d774ec0c\service.pb.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\build\CMakeFiles\37fbfa5af007945287e51403d774ec0c\service.grpc.pb.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\vcpkg\installed\x64-windows\share\nlohmann_json\nlohmann_json.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0C544901-AB0A-3DFC-A9D4-9A589259AB2C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DB66665C-BC86-3F34-953F-D759BA529830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{29DD845E-5FA9-3A05-B183-078B246684FE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
