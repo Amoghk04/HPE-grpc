@@ -1,0 +1,10 @@
+^C:\USERS\SHAMA\DESKTOP\GRPC HPE\HPE-GRPC\GRPC\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc" "-BC:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build" --check-stamp-file "C:/Users/shama/Desktop/gRPC HPE/HPE-grpc/grpc/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

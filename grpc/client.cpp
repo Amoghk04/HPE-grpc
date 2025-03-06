@@ -4,6 +4,10 @@
 #include "service.grpc.pb.h"
 #include <fstream>
 
+// Define CPPHTTPLIB_OPENSSL_SUPPORT before including httplib.h
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "httplib.h" // Include the cpp-httplib header
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
@@ -11,44 +15,44 @@ using namespace std;
 using namespace myservice;
 
 class GreeterClient {
-    public:
-        GreeterClient(shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
-        
-        string SayHello(const string& name) {
-            HelloRequest request;
-            request.set_name(name);
-            HelloReply reply;
-            ClientContext context;
+public:
+    GreeterClient(shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
+    
+    string SayHello(const string& name) {
+        HelloRequest request;
+        request.set_name(name);
+        HelloReply reply;
+        ClientContext context;
 
-            cout << "[CLIENT] Sending request to server: " << name << endl;
-            Status status = stub_->SayHello(&context, request, &reply);
+        cout << "[CLIENT] Sending request to server: " << name << endl;
+        Status status = stub_->SayHello(&context, request, &reply);
 
-            if (status.ok()) {
-                return reply.message();
-            } else {
-                cerr << "[CLIENT] RPC failed: " << status.error_message() << endl;
-                return "RPC failed";
-            }
+        if (status.ok()) {
+            return reply.message();
+        } else {
+            cerr << "[CLIENT] RPC failed: " << status.error_message() << endl;
+            return "RPC failed";
         }
+    }
 
-        string SayHelloAgain(const string& name) {
-            HelloRequest request;
-            request.set_name(name);
-            HelloReply reply;
-            ClientContext context;
+    string SayHelloAgain(const string& name) {
+        HelloRequest request;
+        request.set_name(name);
+        HelloReply reply;
+        ClientContext context;
 
-            cout << "[CLIENT] Sending another request to server: " << name << endl;
-            Status again = stub_->SayHelloAgain(&context, request, &reply);
+        cout << "[CLIENT] Sending another request to server: " << name << endl;
+        Status again = stub_->SayHelloAgain(&context, request, &reply);
 
-            if (again.ok()) {
-                return reply.message();
-            } else {
-                cerr << "[CLIENT] RPC failed: " << again.error_message() << endl; 
-                return "RPC failed";
-            }
+        if (again.ok()) {
+            return reply.message();
+        } else {
+            cerr << "[CLIENT] RPC failed: " << again.error_message() << endl; 
+            return "RPC failed";
         }
-    private:
-        unique_ptr<Greeter::Stub> stub_;
+    }
+private:
+    unique_ptr<Greeter::Stub> stub_;
 };
 
 class NetworkConfigClient {
@@ -80,6 +84,29 @@ string read_file(const string& filename) {
         exit(1);
     }
     return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+}
+
+void PerformHttpRequests() {
+    httplib::Client cli("localhost", 8080);
+    cli.set_ca_cert_path("ca.crt");
+
+    // Perform a GET request
+    auto res = cli.Get("/hi");
+    if (res && res->status == 200) {
+        cout << "[CLIENT] GET /hi Response: " << res->body << endl;
+    } else {
+        cerr << "[CLIENT] GET /hi Request failed" << endl;
+    }
+
+    // Perform a POST request
+    httplib::Headers headers = { {"Content-Type", "application/json"} };
+    std::string json_body = R"({"name": "example"})";
+    res = cli.Post("/echo", headers, json_body, "application/json");
+    if (res && res->status == 200) {
+        cout << "[CLIENT] POST /echo Response: " << res->body << endl;
+    } else {
+        cerr << "[CLIENT] POST /echo Request failed" << endl;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -158,6 +185,9 @@ int main(int argc, char** argv) {
         cout << dns << " ";
     cout << endl;
     cout << "Status: " << ip_response.status_message() << endl;
+
+    // Perform HTTP requests
+    PerformHttpRequests();
 
     return 0;
 }

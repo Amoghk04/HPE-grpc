@@ -1,13 +1,33 @@
 cmake_minimum_required(VERSION 3.16)
-project(gRPCExample CXX)
+project(gRPC_Https_Server CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Protobuf REQUIRED)
-find_package(gRPC REQUIRED)
+# Set vcpkg toolchain file (adjust path if needed)
+set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
-add_executable(server server.cpp service.pb.cc service.grpc.pb.cc)
-target_link_libraries(server gRPC::grpc++ protobuf::libprotobuf)
+# Find dependencies
+find_package(Protobuf CONFIG REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
-add_executable(client client.cpp service.pb.cc service.grpc.pb.cc)
-target_link_libraries(client gRPC::grpc++ protobuf::libprotobuf)
+# Manually include the cpp-httplib header file
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Manually specify the generated source files
+set(PROTO_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/service.pb.cc)
+set(GRPC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/service.grpc.pb.cc)
+
+# Compile gRPC server
+add_executable(server server.cpp ${PROTO_SRCS} ${GRPC_SRCS})
+target_include_directories(server PRIVATE ${Protobuf_INCLUDE_DIRS})
+target_link_libraries(server PRIVATE gRPC::grpc++ protobuf::libprotobuf OpenSSL::SSL OpenSSL::Crypto)
+
+# Compile gRPC client
+add_executable(client client.cpp ${PROTO_SRCS} ${GRPC_SRCS})
+target_include_directories(client PRIVATE ${Protobuf_INCLUDE_DIRS})
+target_link_libraries(client PRIVATE gRPC::grpc++ protobuf::libprotobuf OpenSSL::SSL OpenSSL::Crypto)
+
+# Output messages
+message(STATUS "Building gRPC and HTTPS server with vcpkg dependencies")

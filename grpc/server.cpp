@@ -9,52 +9,56 @@
 #include <atomic>
 #include <chrono>
 
+// Define CPPHTTPLIB_OPENSSL_SUPPORT before including httplib.h
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "httplib.h"
+#include <nlohmann/json.hpp>
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using namespace std;
 using namespace myservice;
+using json = nlohmann::json;
 
 unique_ptr<Server> g_server = nullptr;
 atomic<bool> shutdown_requested(false);
 
 void SignalHandler(int signum) {
-
     cout << "\n[SERVER] Caught signal (" << signum << "). Shutting down..." << endl;
     shutdown_requested.store(true);
     cout << "[SERVER] Server shut down successfully." << endl;
-    
 }
 
 class GreeterServiceImpl final : public myservice::Greeter::Service {
-    public:
-        Status SayHello(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
-            string client_peer = context->peer();
-            cout << "[SERVER] Received request from: " << client_peer << endl;
+public:
+    Status SayHello(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
+        string client_peer = context->peer();
+        cout << "[SERVER] Received request from: " << client_peer << endl;
 
-            string greeting = "Hello, " + request->name();
-            reply->set_message(greeting);
+        string greeting = "Hello, " + request->name();
+        reply->set_message(greeting);
 
-            cout << "[SERVER] Sent Response: " << greeting << endl;
-            return Status::OK;
-        }
+        cout << "[SERVER] Sent Response: " << greeting << endl;
+        return Status::OK;
+    }
 
-        Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) {
-            string client_peer = context->peer();
-            cout << "[SERVER] Received request from: " << client_peer << endl;
+    Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
+        string client_peer = context->peer();
+        cout << "[SERVER] Received request from: " << client_peer << endl;
 
-            string greeting = "Hello again, " + request->name();
-            reply->set_message(greeting);
+        string greeting = "Hello again, " + request->name();
+        reply->set_message(greeting);
 
-            cout << "[SERVER] Sent Response: " << greeting << endl;
-            return Status::OK;
-        }
+        cout << "[SERVER] Sent Response: " << greeting << endl;
+        return Status::OK;
+    }
 };
 
 // The new service implementation for network config.
 class NetworkConfigServiceImpl final : public NetworkConfig::Service {
-    public:
+public:
     Status ConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* reply) override {
         string client_peer = context->peer();
         cout << "[SERVER] Received ConfigureIP request from: " << client_peer << endl;
@@ -93,7 +97,7 @@ string read_file(const string& filename) {
     return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 }
 
-void RunServer() {
+void RunGrpcServer() {
     string server_address("0.0.0.0:50051");
 
     signal(SIGINT, SignalHandler);
@@ -138,7 +142,31 @@ void RunServer() {
     g_server.reset();
 }
 
+void RunHttpServer() {
+    httplib::Server svr;
+
+    svr.set_mount_point("/", "./public"); // Serve files from the "public" directory
+
+    svr.Get("/", [](const httplib::Request&, httplib::Response& res) {
+        res.set_content("<html><body><h1>Hello from HTTPS server!</h1></body></html>", "text/html");
+    });
+
+    svr.Post("/data", [](const httplib::Request& req, httplib::Response& res) {
+        auto json_req = json::parse(req.body);
+        json json_res;
+        json_res["message"] = "Received data: " + json_req.dump();
+        res.set_content(json_res.dump(), "application/json");
+    });
+
+    svr.listen("0.0.0.0", 8080);
+}
+
 int main() {
-    RunServer();
+    std::thread grpc_thread(RunGrpcServer);
+    std::thread http_thread(RunHttpServer);
+
+    grpc_thread.join();
+    http_thread.join();
+
     return 0;
 }

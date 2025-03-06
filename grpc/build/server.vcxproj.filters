@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\service.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\service.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\shama\Desktop\gRPC HPE\HPE-grpc\grpc\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{29DD845E-5FA9-3A05-B183-078B246684FE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
