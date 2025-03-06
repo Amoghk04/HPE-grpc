@@ -4,350 +4,413 @@
 #include "service.pb.h"
 
 #include <algorithm>
-
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
-#include <google/protobuf/reflection_ops.h>
-#include <google/protobuf/wire_format.h>
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/extension_set.h"
+#include "google/protobuf/wire_format_lite.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/reflection_ops.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/generated_message_tctable_impl.h"
 // @@protoc_insertion_point(includes)
-#include <google/protobuf/port_def.inc>
 
+// Must be included last.
+#include "google/protobuf/port_def.inc"
 PROTOBUF_PRAGMA_INIT_SEG
-
-namespace _pb = ::PROTOBUF_NAMESPACE_ID;
-namespace _pbi = _pb::internal;
-
+namespace _pb = ::google::protobuf;
+namespace _pbi = ::google::protobuf::internal;
+namespace _fl = ::google::protobuf::internal::field_layout;
 namespace myservice {
-PROTOBUF_CONSTEXPR HelloRequest::HelloRequest(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct HelloRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR HelloRequestDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~HelloRequestDefaultTypeInternal() {}
-  union {
-    HelloRequest _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
-PROTOBUF_CONSTEXPR HelloReply::HelloReply(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct HelloReplyDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR HelloReplyDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~HelloReplyDefaultTypeInternal() {}
-  union {
-    HelloReply _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
-PROTOBUF_CONSTEXPR IPConfigRequest::IPConfigRequest(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.requested_dns_)*/{}
-  , /*decltype(_impl_.interface_name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.requested_ip_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.requested_subnet_mask_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.requested_gateway_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.use_dhcp_)*/false
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct IPConfigRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR IPConfigRequestDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~IPConfigRequestDefaultTypeInternal() {}
-  union {
-    IPConfigRequest _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigRequestDefaultTypeInternal _IPConfigRequest_default_instance_;
-PROTOBUF_CONSTEXPR IPConfigResponse::IPConfigResponse(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.dns_servers_)*/{}
-  , /*decltype(_impl_.ip_address_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.subnet_mask_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.default_gateway_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.status_message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+
+inline constexpr IPConfigResponse::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : dns_servers_{},
+        ip_address_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        subnet_mask_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        default_gateway_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        status_message_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR IPConfigResponse::IPConfigResponse(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
 struct IPConfigResponseDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR IPConfigResponseDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
+  PROTOBUF_CONSTEXPR IPConfigResponseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
   ~IPConfigResponseDefaultTypeInternal() {}
   union {
     IPConfigResponse _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigResponseDefaultTypeInternal _IPConfigResponse_default_instance_;
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigResponseDefaultTypeInternal _IPConfigResponse_default_instance_;
+
+inline constexpr IPConfigRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : requested_dns_{},
+        interface_name_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        requested_ip_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        requested_subnet_mask_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        requested_gateway_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        use_dhcp_{false},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR IPConfigRequest::IPConfigRequest(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct IPConfigRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR IPConfigRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~IPConfigRequestDefaultTypeInternal() {}
+  union {
+    IPConfigRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 IPConfigRequestDefaultTypeInternal _IPConfigRequest_default_instance_;
+
+inline constexpr HelloRequest::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : name_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR HelloRequest::HelloRequest(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct HelloRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR HelloRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~HelloRequestDefaultTypeInternal() {}
+  union {
+    HelloRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
+
+inline constexpr HelloReply::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : message_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR HelloReply::HelloReply(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct HelloReplyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR HelloReplyDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~HelloReplyDefaultTypeInternal() {}
+  union {
+    HelloReply _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
 }  // namespace myservice
 static ::_pb::Metadata file_level_metadata_service_2eproto[4];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_service_2eproto = nullptr;
-static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_service_2eproto = nullptr;
-
-const uint32_t TableStruct_service_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::myservice::HelloRequest, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::myservice::HelloRequest, _impl_.name_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _impl_.message_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.interface_name_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.use_dhcp_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_ip_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_subnet_mask_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_gateway_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_dns_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.ip_address_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.subnet_mask_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.default_gateway_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.dns_servers_),
-  PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.status_message_),
+static constexpr const ::_pb::EnumDescriptor**
+    file_level_enum_descriptors_service_2eproto = nullptr;
+static constexpr const ::_pb::ServiceDescriptor**
+    file_level_service_descriptors_service_2eproto = nullptr;
+const ::uint32_t TableStruct_service_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::myservice::HelloRequest, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::myservice::HelloRequest, _impl_.name_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _impl_.message_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.interface_name_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.use_dhcp_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_ip_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_subnet_mask_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_gateway_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _impl_.requested_dns_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.ip_address_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.subnet_mask_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.default_gateway_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.dns_servers_),
+    PROTOBUF_FIELD_OFFSET(::myservice::IPConfigResponse, _impl_.status_message_),
 };
-static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::myservice::HelloRequest)},
-  { 7, -1, -1, sizeof(::myservice::HelloReply)},
-  { 14, -1, -1, sizeof(::myservice::IPConfigRequest)},
-  { 26, -1, -1, sizeof(::myservice::IPConfigResponse)},
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::myservice::HelloRequest)},
+        {9, -1, -1, sizeof(::myservice::HelloReply)},
+        {18, -1, -1, sizeof(::myservice::IPConfigRequest)},
+        {32, -1, -1, sizeof(::myservice::IPConfigResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::myservice::_HelloRequest_default_instance_._instance,
-  &::myservice::_HelloReply_default_instance_._instance,
-  &::myservice::_IPConfigRequest_default_instance_._instance,
-  &::myservice::_IPConfigResponse_default_instance_._instance,
+    &::myservice::_HelloRequest_default_instance_._instance,
+    &::myservice::_HelloReply_default_instance_._instance,
+    &::myservice::_IPConfigRequest_default_instance_._instance,
+    &::myservice::_IPConfigResponse_default_instance_._instance,
 };
-
-const char descriptor_table_protodef_service_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rservice.proto\022\tmyservice\"\034\n\014HelloReque"
-  "st\022\014\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007messag"
-  "e\030\001 \001(\t\"\242\001\n\017IPConfigRequest\022\026\n\016interface"
-  "_name\030\001 \001(\t\022\020\n\010use_dhcp\030\002 \001(\010\022\024\n\014request"
-  "ed_ip\030\003 \001(\t\022\035\n\025requested_subnet_mask\030\004 \001"
-  "(\t\022\031\n\021requested_gateway\030\005 \001(\t\022\025\n\rrequest"
-  "ed_dns\030\006 \003(\t\"\201\001\n\020IPConfigResponse\022\022\n\nip_"
-  "address\030\001 \001(\t\022\023\n\013subnet_mask\030\002 \001(\t\022\027\n\017de"
-  "fault_gateway\030\003 \001(\t\022\023\n\013dns_servers\030\004 \003(\t"
-  "\022\026\n\016status_message\030\005 \001(\t2\206\001\n\007Greeter\022:\n\010"
-  "SayHello\022\027.myservice.HelloRequest\032\025.myse"
-  "rvice.HelloReply\022\?\n\rSayHelloAgain\022\027.myse"
-  "rvice.HelloRequest\032\025.myservice.HelloRepl"
-  "y2W\n\rNetworkConfig\022F\n\013ConfigureIP\022\032.myse"
-  "rvice.IPConfigRequest\032\033.myservice.IPConf"
-  "igResponseb\006proto3"
-  ;
-static ::_pbi::once_flag descriptor_table_service_2eproto_once;
+const char descriptor_table_protodef_service_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+    "\n\rservice.proto\022\tmyservice\"\034\n\014HelloReque"
+    "st\022\014\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007messag"
+    "e\030\001 \001(\t\"\242\001\n\017IPConfigRequest\022\026\n\016interface"
+    "_name\030\001 \001(\t\022\020\n\010use_dhcp\030\002 \001(\010\022\024\n\014request"
+    "ed_ip\030\003 \001(\t\022\035\n\025requested_subnet_mask\030\004 \001"
+    "(\t\022\031\n\021requested_gateway\030\005 \001(\t\022\025\n\rrequest"
+    "ed_dns\030\006 \003(\t\"\201\001\n\020IPConfigResponse\022\022\n\nip_"
+    "address\030\001 \001(\t\022\023\n\013subnet_mask\030\002 \001(\t\022\027\n\017de"
+    "fault_gateway\030\003 \001(\t\022\023\n\013dns_servers\030\004 \003(\t"
+    "\022\026\n\016status_message\030\005 \001(\t2\206\001\n\007Greeter\022:\n\010"
+    "SayHello\022\027.myservice.HelloRequest\032\025.myse"
+    "rvice.HelloReply\022\?\n\rSayHelloAgain\022\027.myse"
+    "rvice.HelloRequest\032\025.myservice.HelloRepl"
+    "y2W\n\rNetworkConfig\022F\n\013ConfigureIP\022\032.myse"
+    "rvice.IPConfigRequest\032\033.myservice.IPConf"
+    "igResponseb\006proto3"
+};
+static ::absl::once_flag descriptor_table_service_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_service_2eproto = {
-    false, false, 618, descriptor_table_protodef_service_2eproto,
+    false,
+    false,
+    618,
+    descriptor_table_protodef_service_2eproto,
     "service.proto",
-    &descriptor_table_service_2eproto_once, nullptr, 0, 4,
-    schemas, file_default_instances, TableStruct_service_2eproto::offsets,
-    file_level_metadata_service_2eproto, file_level_enum_descriptors_service_2eproto,
+    &descriptor_table_service_2eproto_once,
+    nullptr,
+    0,
+    4,
+    schemas,
+    file_default_instances,
+    TableStruct_service_2eproto::offsets,
+    file_level_metadata_service_2eproto,
+    file_level_enum_descriptors_service_2eproto,
     file_level_service_descriptors_service_2eproto,
 };
+
+// This function exists to be marked as weak.
+// It can significantly speed up compilation by breaking up LLVM's SCC
+// in the .pb.cc translation units. Large translation units see a
+// reduction of more than 35% of walltime for optimized builds. Without
+// the weak attribute all the messages in the file, including all the
+// vtables and everything they use become part of the same SCC through
+// a cycle like:
+// GetMetadata -> descriptor table -> default instances ->
+//   vtables -> GetMetadata
+// By adding a weak function here we break the connection from the
+// individual vtables back into the descriptor table.
 PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_service_2eproto_getter() {
   return &descriptor_table_service_2eproto;
 }
-
 // Force running AddDescriptors() at dynamic initialization time.
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_service_2eproto(&descriptor_table_service_2eproto);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2
+static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_service_2eproto(&descriptor_table_service_2eproto);
 namespace myservice {
-
 // ===================================================================
 
 class HelloRequest::_Internal {
  public:
 };
 
-HelloRequest::HelloRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+HelloRequest::HelloRequest(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:myservice.HelloRequest)
 }
-HelloRequest::HelloRequest(const HelloRequest& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  HelloRequest* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE HelloRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : name_(arena, from.name_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_name().empty()) {
-    _this->_impl_.name_.Set(from._internal_name(), 
-      _this->GetArenaForAllocation());
-  }
+HelloRequest::HelloRequest(
+    ::google::protobuf::Arena* arena,
+    const HelloRequest& from)
+    : ::google::protobuf::Message(arena) {
+  HelloRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
   // @@protoc_insertion_point(copy_constructor:myservice.HelloRequest)
 }
+inline PROTOBUF_NDEBUG_INLINE HelloRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : name_(arena),
+        _cached_size_{0} {}
 
-inline void HelloRequest::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void HelloRequest::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
 }
-
 HelloRequest::~HelloRequest() {
   // @@protoc_insertion_point(destructor:myservice.HelloRequest)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void HelloRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.name_.Destroy();
+  _impl_.~Impl_();
 }
 
-void HelloRequest::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void HelloRequest::Clear() {
+PROTOBUF_NOINLINE void HelloRequest::Clear() {
 // @@protoc_insertion_point(message_clear_start:myservice.HelloRequest)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.name_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* HelloRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string name = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_name();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.HelloRequest.name"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* HelloRequest::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* HelloRequest::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 35, 2> HelloRequest::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_HelloRequest_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // string name = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(HelloRequest, _impl_.name_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string name = 1;
+    {PROTOBUF_FIELD_OFFSET(HelloRequest, _impl_.name_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\26\4\0\0\0\0\0\0"
+    "myservice.HelloRequest"
+    "name"
+  }},
+};
+
+::uint8_t* HelloRequest::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:myservice.HelloRequest)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string name = 1;
   if (!this->_internal_name().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.HelloRequest.name");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_name(), target);
+    const std::string& _s = this->_internal_name();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.HelloRequest.name");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:myservice.HelloRequest)
   return target;
 }
 
-size_t HelloRequest::ByteSizeLong() const {
+::size_t HelloRequest::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:myservice.HelloRequest)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string name = 1;
   if (!this->_internal_name().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_name());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_name());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData HelloRequest::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    HelloRequest::MergeImpl
+const ::google::protobuf::Message::ClassData HelloRequest::_class_data_ = {
+    HelloRequest::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*HelloRequest::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* HelloRequest::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void HelloRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void HelloRequest::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<HelloRequest*>(&to_msg);
   auto& from = static_cast<const HelloRequest&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:myservice.HelloRequest)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_name().empty()) {
     _this->_internal_set_name(from._internal_name());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void HelloRequest::CopyFrom(const HelloRequest& from) {
@@ -357,200 +420,187 @@ void HelloRequest::CopyFrom(const HelloRequest& from) {
   MergeFrom(from);
 }
 
-bool HelloRequest::IsInitialized() const {
+PROTOBUF_NOINLINE bool HelloRequest::IsInitialized() const {
   return true;
 }
 
-void HelloRequest::InternalSwap(HelloRequest* other) {
+::_pbi::CachedSize* HelloRequest::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void HelloRequest::InternalSwap(HelloRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.name_, lhs_arena,
-      &other->_impl_.name_, rhs_arena
-  );
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata HelloRequest::GetMetadata() const {
+::google::protobuf::Metadata HelloRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
       file_level_metadata_service_2eproto[0]);
 }
-
 // ===================================================================
 
 class HelloReply::_Internal {
  public:
 };
 
-HelloReply::HelloReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+HelloReply::HelloReply(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:myservice.HelloReply)
 }
-HelloReply::HelloReply(const HelloReply& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  HelloReply* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.message_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE HelloReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : message_(arena, from.message_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_message().empty()) {
-    _this->_impl_.message_.Set(from._internal_message(), 
-      _this->GetArenaForAllocation());
-  }
+HelloReply::HelloReply(
+    ::google::protobuf::Arena* arena,
+    const HelloReply& from)
+    : ::google::protobuf::Message(arena) {
+  HelloReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
   // @@protoc_insertion_point(copy_constructor:myservice.HelloReply)
 }
+inline PROTOBUF_NDEBUG_INLINE HelloReply::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : message_(arena),
+        _cached_size_{0} {}
 
-inline void HelloReply::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.message_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void HelloReply::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
 }
-
 HelloReply::~HelloReply() {
   // @@protoc_insertion_point(destructor:myservice.HelloReply)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void HelloReply::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.message_.Destroy();
+  _impl_.~Impl_();
 }
 
-void HelloReply::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void HelloReply::Clear() {
+PROTOBUF_NOINLINE void HelloReply::Clear() {
 // @@protoc_insertion_point(message_clear_start:myservice.HelloReply)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   _impl_.message_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* HelloReply::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string message = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_message();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.HelloReply.message"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* HelloReply::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* HelloReply::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 36, 2> HelloReply::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_HelloReply_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // string message = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(HelloReply, _impl_.message_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string message = 1;
+    {PROTOBUF_FIELD_OFFSET(HelloReply, _impl_.message_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\24\7\0\0\0\0\0\0"
+    "myservice.HelloReply"
+    "message"
+  }},
+};
+
+::uint8_t* HelloReply::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:myservice.HelloReply)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string message = 1;
   if (!this->_internal_message().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_message().data(), static_cast<int>(this->_internal_message().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.HelloReply.message");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_message(), target);
+    const std::string& _s = this->_internal_message();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.HelloReply.message");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:myservice.HelloReply)
   return target;
 }
 
-size_t HelloReply::ByteSizeLong() const {
+::size_t HelloReply::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:myservice.HelloReply)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // string message = 1;
   if (!this->_internal_message().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_message());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_message());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData HelloReply::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    HelloReply::MergeImpl
+const ::google::protobuf::Message::ClassData HelloReply::_class_data_ = {
+    HelloReply::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*HelloReply::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* HelloReply::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void HelloReply::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void HelloReply::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<HelloReply*>(&to_msg);
   auto& from = static_cast<const HelloReply&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:myservice.HelloReply)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (!from._internal_message().empty()) {
     _this->_internal_set_message(from._internal_message());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void HelloReply::CopyFrom(const HelloReply& from) {
@@ -560,144 +610,92 @@ void HelloReply::CopyFrom(const HelloReply& from) {
   MergeFrom(from);
 }
 
-bool HelloReply::IsInitialized() const {
+PROTOBUF_NOINLINE bool HelloReply::IsInitialized() const {
   return true;
 }
 
-void HelloReply::InternalSwap(HelloReply* other) {
+::_pbi::CachedSize* HelloReply::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void HelloReply::InternalSwap(HelloReply* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.message_, lhs_arena,
-      &other->_impl_.message_, rhs_arena
-  );
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.message_, &other->_impl_.message_, arena);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata HelloReply::GetMetadata() const {
+::google::protobuf::Metadata HelloReply::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
       file_level_metadata_service_2eproto[1]);
 }
-
 // ===================================================================
 
 class IPConfigRequest::_Internal {
  public:
 };
 
-IPConfigRequest::IPConfigRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+IPConfigRequest::IPConfigRequest(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:myservice.IPConfigRequest)
 }
-IPConfigRequest::IPConfigRequest(const IPConfigRequest& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  IPConfigRequest* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.requested_dns_){from._impl_.requested_dns_}
-    , decltype(_impl_.interface_name_){}
-    , decltype(_impl_.requested_ip_){}
-    , decltype(_impl_.requested_subnet_mask_){}
-    , decltype(_impl_.requested_gateway_){}
-    , decltype(_impl_.use_dhcp_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE IPConfigRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : requested_dns_{visibility, arena, from.requested_dns_},
+        interface_name_(arena, from.interface_name_),
+        requested_ip_(arena, from.requested_ip_),
+        requested_subnet_mask_(arena, from.requested_subnet_mask_),
+        requested_gateway_(arena, from.requested_gateway_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.interface_name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.interface_name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_interface_name().empty()) {
-    _this->_impl_.interface_name_.Set(from._internal_interface_name(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.requested_ip_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_ip_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_requested_ip().empty()) {
-    _this->_impl_.requested_ip_.Set(from._internal_requested_ip(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.requested_subnet_mask_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_subnet_mask_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_requested_subnet_mask().empty()) {
-    _this->_impl_.requested_subnet_mask_.Set(from._internal_requested_subnet_mask(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.requested_gateway_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_gateway_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_requested_gateway().empty()) {
-    _this->_impl_.requested_gateway_.Set(from._internal_requested_gateway(), 
-      _this->GetArenaForAllocation());
-  }
-  _this->_impl_.use_dhcp_ = from._impl_.use_dhcp_;
+IPConfigRequest::IPConfigRequest(
+    ::google::protobuf::Arena* arena,
+    const IPConfigRequest& from)
+    : ::google::protobuf::Message(arena) {
+  IPConfigRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+  _impl_.use_dhcp_ = from._impl_.use_dhcp_;
+
   // @@protoc_insertion_point(copy_constructor:myservice.IPConfigRequest)
 }
+inline PROTOBUF_NDEBUG_INLINE IPConfigRequest::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : requested_dns_{visibility, arena},
+        interface_name_(arena),
+        requested_ip_(arena),
+        requested_subnet_mask_(arena),
+        requested_gateway_(arena),
+        _cached_size_{0} {}
 
-inline void IPConfigRequest::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.requested_dns_){arena}
-    , decltype(_impl_.interface_name_){}
-    , decltype(_impl_.requested_ip_){}
-    , decltype(_impl_.requested_subnet_mask_){}
-    , decltype(_impl_.requested_gateway_){}
-    , decltype(_impl_.use_dhcp_){false}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.interface_name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.interface_name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.requested_ip_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_ip_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.requested_subnet_mask_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_subnet_mask_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.requested_gateway_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.requested_gateway_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void IPConfigRequest::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.use_dhcp_ = {};
 }
-
 IPConfigRequest::~IPConfigRequest() {
   // @@protoc_insertion_point(destructor:myservice.IPConfigRequest)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void IPConfigRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.requested_dns_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.interface_name_.Destroy();
   _impl_.requested_ip_.Destroy();
   _impl_.requested_subnet_mask_.Destroy();
   _impl_.requested_gateway_.Destroy();
+  _impl_.~Impl_();
 }
 
-void IPConfigRequest::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void IPConfigRequest::Clear() {
+PROTOBUF_NOINLINE void IPConfigRequest::Clear() {
 // @@protoc_insertion_point(message_clear_start:myservice.IPConfigRequest)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -707,239 +705,211 @@ void IPConfigRequest::Clear() {
   _impl_.requested_subnet_mask_.ClearToEmpty();
   _impl_.requested_gateway_.ClearToEmpty();
   _impl_.use_dhcp_ = false;
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* IPConfigRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string interface_name = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_interface_name();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.interface_name"));
-        } else
-          goto handle_unusual;
-        continue;
-      // bool use_dhcp = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          _impl_.use_dhcp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // string requested_ip = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_requested_ip();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_ip"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string requested_subnet_mask = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_requested_subnet_mask();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_subnet_mask"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string requested_gateway = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          auto str = _internal_mutable_requested_gateway();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_gateway"));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated string requested_dns = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            auto str = _internal_add_requested_dns();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-            CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigRequest.requested_dns"));
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<50>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* IPConfigRequest::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* IPConfigRequest::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 0, 111, 2> IPConfigRequest::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_IPConfigRequest_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string interface_name = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.interface_name_)}},
+    // bool use_dhcp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(IPConfigRequest, _impl_.use_dhcp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.use_dhcp_)}},
+    // string requested_ip = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_ip_)}},
+    // string requested_subnet_mask = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_subnet_mask_)}},
+    // string requested_gateway = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_gateway_)}},
+    // repeated string requested_dns = 6;
+    {::_pbi::TcParser::FastUR1,
+     {50, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_dns_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string interface_name = 1;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.interface_name_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // bool use_dhcp = 2;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.use_dhcp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // string requested_ip = 3;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_ip_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string requested_subnet_mask = 4;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_subnet_mask_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string requested_gateway = 5;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_gateway_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated string requested_dns = 6;
+    {PROTOBUF_FIELD_OFFSET(IPConfigRequest, _impl_.requested_dns_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+  }},
+  // no aux_entries
+  {{
+    "\31\16\0\14\25\21\15\0"
+    "myservice.IPConfigRequest"
+    "interface_name"
+    "requested_ip"
+    "requested_subnet_mask"
+    "requested_gateway"
+    "requested_dns"
+  }},
+};
+
+::uint8_t* IPConfigRequest::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:myservice.IPConfigRequest)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string interface_name = 1;
   if (!this->_internal_interface_name().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_interface_name().data(), static_cast<int>(this->_internal_interface_name().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigRequest.interface_name");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_interface_name(), target);
+    const std::string& _s = this->_internal_interface_name();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigRequest.interface_name");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // bool use_dhcp = 2;
   if (this->_internal_use_dhcp() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(2, this->_internal_use_dhcp(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(
+        2, this->_internal_use_dhcp(), target);
   }
 
   // string requested_ip = 3;
   if (!this->_internal_requested_ip().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_requested_ip().data(), static_cast<int>(this->_internal_requested_ip().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigRequest.requested_ip");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_requested_ip(), target);
+    const std::string& _s = this->_internal_requested_ip();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigRequest.requested_ip");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // string requested_subnet_mask = 4;
   if (!this->_internal_requested_subnet_mask().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_requested_subnet_mask().data(), static_cast<int>(this->_internal_requested_subnet_mask().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigRequest.requested_subnet_mask");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_requested_subnet_mask(), target);
+    const std::string& _s = this->_internal_requested_subnet_mask();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigRequest.requested_subnet_mask");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
   // string requested_gateway = 5;
   if (!this->_internal_requested_gateway().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_requested_gateway().data(), static_cast<int>(this->_internal_requested_gateway().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigRequest.requested_gateway");
-    target = stream->WriteStringMaybeAliased(
-        5, this->_internal_requested_gateway(), target);
+    const std::string& _s = this->_internal_requested_gateway();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigRequest.requested_gateway");
+    target = stream->WriteStringMaybeAliased(5, _s, target);
   }
 
   // repeated string requested_dns = 6;
-  for (int i = 0, n = this->_internal_requested_dns_size(); i < n; i++) {
-    const auto& s = this->_internal_requested_dns(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigRequest.requested_dns");
+  for (int i = 0, n = this->_internal_requested_dns_size(); i < n; ++i) {
+    const auto& s = this->_internal_requested_dns().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigRequest.requested_dns");
     target = stream->WriteString(6, s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:myservice.IPConfigRequest)
   return target;
 }
 
-size_t IPConfigRequest::ByteSizeLong() const {
+::size_t IPConfigRequest::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:myservice.IPConfigRequest)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated string requested_dns = 6;
-  total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.requested_dns_.size());
-  for (int i = 0, n = _impl_.requested_dns_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.requested_dns_.Get(i));
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_requested_dns().size());
+  for (int i = 0, n = _internal_requested_dns().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_requested_dns().Get(i));
   }
-
   // string interface_name = 1;
   if (!this->_internal_interface_name().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_interface_name());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_interface_name());
   }
 
   // string requested_ip = 3;
   if (!this->_internal_requested_ip().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_requested_ip());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_requested_ip());
   }
 
   // string requested_subnet_mask = 4;
   if (!this->_internal_requested_subnet_mask().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_requested_subnet_mask());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_requested_subnet_mask());
   }
 
   // string requested_gateway = 5;
   if (!this->_internal_requested_gateway().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_requested_gateway());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_requested_gateway());
   }
 
   // bool use_dhcp = 2;
   if (this->_internal_use_dhcp() != 0) {
-    total_size += 1 + 1;
+    total_size += 2;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData IPConfigRequest::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    IPConfigRequest::MergeImpl
+const ::google::protobuf::Message::ClassData IPConfigRequest::_class_data_ = {
+    IPConfigRequest::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*IPConfigRequest::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* IPConfigRequest::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void IPConfigRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void IPConfigRequest::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<IPConfigRequest*>(&to_msg);
   auto& from = static_cast<const IPConfigRequest&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:myservice.IPConfigRequest)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.requested_dns_.MergeFrom(from._impl_.requested_dns_);
+  _this->_internal_mutable_requested_dns()->MergeFrom(from._internal_requested_dns());
   if (!from._internal_interface_name().empty()) {
     _this->_internal_set_interface_name(from._internal_interface_name());
   }
@@ -955,7 +925,7 @@ void IPConfigRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const 
   if (from._internal_use_dhcp() != 0) {
     _this->_internal_set_use_dhcp(from._internal_use_dhcp());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void IPConfigRequest::CopyFrom(const IPConfigRequest& from) {
@@ -965,155 +935,95 @@ void IPConfigRequest::CopyFrom(const IPConfigRequest& from) {
   MergeFrom(from);
 }
 
-bool IPConfigRequest::IsInitialized() const {
+PROTOBUF_NOINLINE bool IPConfigRequest::IsInitialized() const {
   return true;
 }
 
-void IPConfigRequest::InternalSwap(IPConfigRequest* other) {
+::_pbi::CachedSize* IPConfigRequest::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void IPConfigRequest::InternalSwap(IPConfigRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.requested_dns_.InternalSwap(&other->_impl_.requested_dns_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.interface_name_, lhs_arena,
-      &other->_impl_.interface_name_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.requested_ip_, lhs_arena,
-      &other->_impl_.requested_ip_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.requested_subnet_mask_, lhs_arena,
-      &other->_impl_.requested_subnet_mask_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.requested_gateway_, lhs_arena,
-      &other->_impl_.requested_gateway_, rhs_arena
-  );
-  swap(_impl_.use_dhcp_, other->_impl_.use_dhcp_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.interface_name_, &other->_impl_.interface_name_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.requested_ip_, &other->_impl_.requested_ip_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.requested_subnet_mask_, &other->_impl_.requested_subnet_mask_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.requested_gateway_, &other->_impl_.requested_gateway_, arena);
+        swap(_impl_.use_dhcp_, other->_impl_.use_dhcp_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata IPConfigRequest::GetMetadata() const {
+::google::protobuf::Metadata IPConfigRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
       file_level_metadata_service_2eproto[2]);
 }
-
 // ===================================================================
 
 class IPConfigResponse::_Internal {
  public:
 };
 
-IPConfigResponse::IPConfigResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
+IPConfigResponse::IPConfigResponse(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:myservice.IPConfigResponse)
 }
-IPConfigResponse::IPConfigResponse(const IPConfigResponse& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  IPConfigResponse* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.dns_servers_){from._impl_.dns_servers_}
-    , decltype(_impl_.ip_address_){}
-    , decltype(_impl_.subnet_mask_){}
-    , decltype(_impl_.default_gateway_){}
-    , decltype(_impl_.status_message_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+inline PROTOBUF_NDEBUG_INLINE IPConfigResponse::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : dns_servers_{visibility, arena, from.dns_servers_},
+        ip_address_(arena, from.ip_address_),
+        subnet_mask_(arena, from.subnet_mask_),
+        default_gateway_(arena, from.default_gateway_),
+        status_message_(arena, from.status_message_),
+        _cached_size_{0} {}
 
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.ip_address_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.ip_address_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_ip_address().empty()) {
-    _this->_impl_.ip_address_.Set(from._internal_ip_address(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.subnet_mask_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.subnet_mask_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_subnet_mask().empty()) {
-    _this->_impl_.subnet_mask_.Set(from._internal_subnet_mask(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.default_gateway_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.default_gateway_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_default_gateway().empty()) {
-    _this->_impl_.default_gateway_.Set(from._internal_default_gateway(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.status_message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.status_message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_status_message().empty()) {
-    _this->_impl_.status_message_.Set(from._internal_status_message(), 
-      _this->GetArenaForAllocation());
-  }
+IPConfigResponse::IPConfigResponse(
+    ::google::protobuf::Arena* arena,
+    const IPConfigResponse& from)
+    : ::google::protobuf::Message(arena) {
+  IPConfigResponse* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
   // @@protoc_insertion_point(copy_constructor:myservice.IPConfigResponse)
 }
+inline PROTOBUF_NDEBUG_INLINE IPConfigResponse::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : dns_servers_{visibility, arena},
+        ip_address_(arena),
+        subnet_mask_(arena),
+        default_gateway_(arena),
+        status_message_(arena),
+        _cached_size_{0} {}
 
-inline void IPConfigResponse::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.dns_servers_){arena}
-    , decltype(_impl_.ip_address_){}
-    , decltype(_impl_.subnet_mask_){}
-    , decltype(_impl_.default_gateway_){}
-    , decltype(_impl_.status_message_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.ip_address_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.ip_address_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.subnet_mask_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.subnet_mask_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.default_gateway_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.default_gateway_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.status_message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.status_message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+inline void IPConfigResponse::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
 }
-
 IPConfigResponse::~IPConfigResponse() {
   // @@protoc_insertion_point(destructor:myservice.IPConfigResponse)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   SharedDtor();
 }
-
 inline void IPConfigResponse::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.dns_servers_.~RepeatedPtrField();
+  ABSL_DCHECK(GetArena() == nullptr);
   _impl_.ip_address_.Destroy();
   _impl_.subnet_mask_.Destroy();
   _impl_.default_gateway_.Destroy();
   _impl_.status_message_.Destroy();
+  _impl_.~Impl_();
 }
 
-void IPConfigResponse::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void IPConfigResponse::Clear() {
+PROTOBUF_NOINLINE void IPConfigResponse::Clear() {
 // @@protoc_insertion_point(message_clear_start:myservice.IPConfigResponse)
-  uint32_t cached_has_bits = 0;
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -1122,220 +1032,194 @@ void IPConfigResponse::Clear() {
   _impl_.subnet_mask_.ClearToEmpty();
   _impl_.default_gateway_.ClearToEmpty();
   _impl_.status_message_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
-const char* IPConfigResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string ip_address = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_ip_address();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.ip_address"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string subnet_mask = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_subnet_mask();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.subnet_mask"));
-        } else
-          goto handle_unusual;
-        continue;
-      // string default_gateway = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_default_gateway();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.default_gateway"));
-        } else
-          goto handle_unusual;
-        continue;
-      // repeated string dns_servers = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            auto str = _internal_add_dns_servers();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-            CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.dns_servers"));
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
-        } else
-          goto handle_unusual;
-        continue;
-      // string status_message = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          auto str = _internal_mutable_status_message();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "myservice.IPConfigResponse.status_message"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
+const char* IPConfigResponse::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
   return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
 }
 
-uint8_t* IPConfigResponse::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 5, 0, 96, 2> IPConfigResponse::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    5, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967264,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    5,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_IPConfigResponse_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string ip_address = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.ip_address_)}},
+    // string subnet_mask = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.subnet_mask_)}},
+    // string default_gateway = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.default_gateway_)}},
+    // repeated string dns_servers = 4;
+    {::_pbi::TcParser::FastUR1,
+     {34, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.dns_servers_)}},
+    // string status_message = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 63, 0, PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.status_message_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string ip_address = 1;
+    {PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.ip_address_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string subnet_mask = 2;
+    {PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.subnet_mask_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string default_gateway = 3;
+    {PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.default_gateway_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // repeated string dns_servers = 4;
+    {PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.dns_servers_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    // string status_message = 5;
+    {PROTOBUF_FIELD_OFFSET(IPConfigResponse, _impl_.status_message_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\32\12\13\17\13\16\0\0"
+    "myservice.IPConfigResponse"
+    "ip_address"
+    "subnet_mask"
+    "default_gateway"
+    "dns_servers"
+    "status_message"
+  }},
+};
+
+::uint8_t* IPConfigResponse::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:myservice.IPConfigResponse)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
 
   // string ip_address = 1;
   if (!this->_internal_ip_address().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_ip_address().data(), static_cast<int>(this->_internal_ip_address().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigResponse.ip_address");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_ip_address(), target);
+    const std::string& _s = this->_internal_ip_address();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigResponse.ip_address");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
   // string subnet_mask = 2;
   if (!this->_internal_subnet_mask().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_subnet_mask().data(), static_cast<int>(this->_internal_subnet_mask().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigResponse.subnet_mask");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_subnet_mask(), target);
+    const std::string& _s = this->_internal_subnet_mask();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigResponse.subnet_mask");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
   // string default_gateway = 3;
   if (!this->_internal_default_gateway().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_default_gateway().data(), static_cast<int>(this->_internal_default_gateway().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigResponse.default_gateway");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_default_gateway(), target);
+    const std::string& _s = this->_internal_default_gateway();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigResponse.default_gateway");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
   }
 
   // repeated string dns_servers = 4;
-  for (int i = 0, n = this->_internal_dns_servers_size(); i < n; i++) {
-    const auto& s = this->_internal_dns_servers(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigResponse.dns_servers");
+  for (int i = 0, n = this->_internal_dns_servers_size(); i < n; ++i) {
+    const auto& s = this->_internal_dns_servers().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigResponse.dns_servers");
     target = stream->WriteString(4, s, target);
   }
 
   // string status_message = 5;
   if (!this->_internal_status_message().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_status_message().data(), static_cast<int>(this->_internal_status_message().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "myservice.IPConfigResponse.status_message");
-    target = stream->WriteStringMaybeAliased(
-        5, this->_internal_status_message(), target);
+    const std::string& _s = this->_internal_status_message();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.IPConfigResponse.status_message");
+    target = stream->WriteStringMaybeAliased(5, _s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:myservice.IPConfigResponse)
   return target;
 }
 
-size_t IPConfigResponse::ByteSizeLong() const {
+::size_t IPConfigResponse::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:myservice.IPConfigResponse)
-  size_t total_size = 0;
+  ::size_t total_size = 0;
 
-  uint32_t cached_has_bits = 0;
+  ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated string dns_servers = 4;
-  total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.dns_servers_.size());
-  for (int i = 0, n = _impl_.dns_servers_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.dns_servers_.Get(i));
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_dns_servers().size());
+  for (int i = 0, n = _internal_dns_servers().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_dns_servers().Get(i));
   }
-
   // string ip_address = 1;
   if (!this->_internal_ip_address().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_ip_address());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_ip_address());
   }
 
   // string subnet_mask = 2;
   if (!this->_internal_subnet_mask().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_subnet_mask());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_subnet_mask());
   }
 
   // string default_gateway = 3;
   if (!this->_internal_default_gateway().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_default_gateway());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_default_gateway());
   }
 
   // string status_message = 5;
   if (!this->_internal_status_message().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_status_message());
+    total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                    this->_internal_status_message());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData IPConfigResponse::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    IPConfigResponse::MergeImpl
+const ::google::protobuf::Message::ClassData IPConfigResponse::_class_data_ = {
+    IPConfigResponse::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*IPConfigResponse::GetClassData() const { return &_class_data_; }
+const ::google::protobuf::Message::ClassData* IPConfigResponse::GetClassData() const {
+  return &_class_data_;
+}
 
-
-void IPConfigResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+void IPConfigResponse::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
   auto* const _this = static_cast<IPConfigResponse*>(&to_msg);
   auto& from = static_cast<const IPConfigResponse&>(from_msg);
   // @@protoc_insertion_point(class_specific_merge_from_start:myservice.IPConfigResponse)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.dns_servers_.MergeFrom(from._impl_.dns_servers_);
+  _this->_internal_mutable_dns_servers()->MergeFrom(from._internal_dns_servers());
   if (!from._internal_ip_address().empty()) {
     _this->_internal_set_ip_address(from._internal_ip_address());
   }
@@ -1348,7 +1232,7 @@ void IPConfigResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const
   if (!from._internal_status_message().empty()) {
     _this->_internal_set_status_message(from._internal_status_message());
   }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void IPConfigResponse::CopyFrom(const IPConfigResponse& from) {
@@ -1358,60 +1242,35 @@ void IPConfigResponse::CopyFrom(const IPConfigResponse& from) {
   MergeFrom(from);
 }
 
-bool IPConfigResponse::IsInitialized() const {
+PROTOBUF_NOINLINE bool IPConfigResponse::IsInitialized() const {
   return true;
 }
 
-void IPConfigResponse::InternalSwap(IPConfigResponse* other) {
+::_pbi::CachedSize* IPConfigResponse::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void IPConfigResponse::InternalSwap(IPConfigResponse* PROTOBUF_RESTRICT other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.dns_servers_.InternalSwap(&other->_impl_.dns_servers_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.ip_address_, lhs_arena,
-      &other->_impl_.ip_address_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.subnet_mask_, lhs_arena,
-      &other->_impl_.subnet_mask_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.default_gateway_, lhs_arena,
-      &other->_impl_.default_gateway_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.status_message_, lhs_arena,
-      &other->_impl_.status_message_, rhs_arena
-  );
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ip_address_, &other->_impl_.ip_address_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.subnet_mask_, &other->_impl_.subnet_mask_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.default_gateway_, &other->_impl_.default_gateway_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.status_message_, &other->_impl_.status_message_, arena);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata IPConfigResponse::GetMetadata() const {
+::google::protobuf::Metadata IPConfigResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_service_2eproto_getter, &descriptor_table_service_2eproto_once,
       file_level_metadata_service_2eproto[3]);
 }
-
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace myservice
-PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::myservice::HelloRequest*
-Arena::CreateMaybeMessage< ::myservice::HelloRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::myservice::HelloRequest >(arena);
-}
-template<> PROTOBUF_NOINLINE ::myservice::HelloReply*
-Arena::CreateMaybeMessage< ::myservice::HelloReply >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::myservice::HelloReply >(arena);
-}
-template<> PROTOBUF_NOINLINE ::myservice::IPConfigRequest*
-Arena::CreateMaybeMessage< ::myservice::IPConfigRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::myservice::IPConfigRequest >(arena);
-}
-template<> PROTOBUF_NOINLINE ::myservice::IPConfigResponse*
-Arena::CreateMaybeMessage< ::myservice::IPConfigResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::myservice::IPConfigResponse >(arena);
-}
-PROTOBUF_NAMESPACE_CLOSE
-
+namespace google {
+namespace protobuf {
+}  // namespace protobuf
+}  // namespace google
 // @@protoc_insertion_point(global_scope)
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

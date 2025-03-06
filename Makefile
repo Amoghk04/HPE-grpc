@@ -38,4 +38,4 @@ client:
 		-v $(PWD)/ca.crt:/app/ca.crt:ro \
 		-v $(PWD)/client.crt:/app/client.crt:ro \
 		-v $(PWD)/client.key:/app/client.key:ro \
-		amoghk04/grpc-client:latest 192.168.29.101:50051
+		amoghk04/grpc-client:latest 172.30.64.1:50051
