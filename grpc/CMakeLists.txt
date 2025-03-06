@@ -10,6 +10,7 @@ set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRIN
 # Find dependencies
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
+find_package(nlohmann_json REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 # Manually include the cpp-httplib header file
@@ -22,12 +23,25 @@ set(GRPC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/service.grpc.pb.cc)
 # Compile gRPC server
 add_executable(server server.cpp ${PROTO_SRCS} ${GRPC_SRCS})
 target_include_directories(server PRIVATE ${Protobuf_INCLUDE_DIRS})
-target_link_libraries(server PRIVATE gRPC::grpc++ protobuf::libprotobuf OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(server PRIVATE
+    protobuf::libprotobuf
+    gRPC::grpc++
+    gRPC::grpc++_reflection
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    nlohmann_json::nlohmann_json
+)
 
 # Compile gRPC client
 add_executable(client client.cpp ${PROTO_SRCS} ${GRPC_SRCS})
 target_include_directories(client PRIVATE ${Protobuf_INCLUDE_DIRS})
-target_link_libraries(client PRIVATE gRPC::grpc++ protobuf::libprotobuf OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(client PRIVATE
+    protobuf::libprotobuf
+    gRPC::grpc++
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    nlohmann_json::nlohmann_json
+)
 
 # Output messages
-message(STATUS "Building gRPC and HTTPS server with vcpkg dependencies")
+message(STATUS "Building gRPC and HTTP server with vcpkg dependencies")
