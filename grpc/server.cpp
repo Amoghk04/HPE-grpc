@@ -9,6 +9,7 @@
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <mutex>
+#include <google/protobuf/util/json_util.h>
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -22,6 +23,13 @@ using myservice::HelloReply;
 using myservice::NetworkConfig;
 using myservice::IPConfigRequest;
 using myservice::IPConfigResponse;
+using myservice::DataStorage;
+using myservice::DataItem;
+using myservice::StoreResponse;
+using myservice::GetDataRequest;
+using myservice::ListDataRequest;
+using myservice::ListDataResponse;
+using myservice::UpdateDataRequest;
 using json = nlohmann::json;
 
 // Global storage for our data
@@ -77,14 +85,70 @@ public:
     }
 };
 
+// Add new DataStorage service implementation
+class DataStorageServiceImpl final : public DataStorage::Service {
+private:
+    std::unordered_map<std::string, DataItem> data_store;
+    std::mutex data_store_mutex;
+
+public:
+    Status StoreData(ServerContext* context, const DataItem* request, StoreResponse* response) override {
+        std::lock_guard<std::mutex> lock(data_store_mutex);
+        
+        std::string id = request->id();
+        data_store[id] = *request;
+        
+        response->set_message("Data stored successfully");
+        response->mutable_stored_data()->CopyFrom(*request);
+        
+        return Status::OK;
+    }
+
+    Status GetData(ServerContext* context, const GetDataRequest* request, DataItem* response) override {
+        std::lock_guard<std::mutex> lock(data_store_mutex);
+        
+        auto it = data_store.find(request->id());
+        if (it != data_store.end()) {
+            response->CopyFrom(it->second);
+            return Status::OK;
+        }
+        
+        return Status(grpc::StatusCode::NOT_FOUND, "Data not found");
+    }
+
+    Status ListData(ServerContext* context, const ListDataRequest* request, ListDataResponse* response) override {
+        std::lock_guard<std::mutex> lock(data_store_mutex);
+        
+        for (const auto& [id, item] : data_store) {
+            DataItem* new_item = response->add_items();
+            new_item->CopyFrom(item);
+        }
+        
+        return Status::OK;
+    }
+
+    Status UpdateData(ServerContext* context, const UpdateDataRequest* request, DataItem* response) override {
+        std::lock_guard<std::mutex> lock(data_store_mutex);
+        
+        auto it = data_store.find(request->id());
+        if (it != data_store.end()) {
+            it->second.CopyFrom(request->data());
+            response->CopyFrom(it->second);
+            return Status::OK;
+        }
+        
+        return Status(grpc::StatusCode::NOT_FOUND, "Data not found");
+    }
+};
+
 // Forward declaration of SetupHttpRoutes function
 template <typename Server>
 void SetupHttpRoutes(Server &server);
 
 // HTTP Server with cpp-httplib
 void RunHttpServer() {
-    // Create a regular HTTP server
     httplib::Server http_server;
+    DataStorageServiceImpl data_service; // Create an instance of our service
 
     // Setup routes
     http_server.Get("/hi", [](const httplib::Request&, httplib::Response& res) {
@@ -155,65 +219,87 @@ void RunHttpServer() {
         res.set_content(status.dump(), "application/json");
     });
 
-    // GET endpoint to list all stored data (this must come BEFORE the /data/:id route)
-    http_server.Get("/data", [](const httplib::Request&, httplib::Response& res) {
+    // GET endpoint to list all data
+    http_server.Get("/data", [&data_service](const httplib::Request&, httplib::Response& res) {
         std::cout << "[SERVER] Received GET /data request" << std::endl;
         
-        json response = json::array();
-        std::lock_guard<std::mutex> lock(data_store_mutex);
-        for (const auto& [id, value] : data_store) {
-            response.push_back(value);
-        }
+        ServerContext context;
+        ListDataRequest request;
+        ListDataResponse response;
         
-        res.set_content(response.dump(), "application/json");
+        Status status = data_service.ListData(&context, &request, &response);
+        
+        if (status.ok()) {
+            std::string response_json;
+            google::protobuf::util::MessageToJsonString(response, &response_json);
+            res.set_content(response_json, "application/json");
+        } else {
+            res.status = 500;
+            json error = {
+                {"error", status.error_message()},
+                {"code", status.error_code()}
+            };
+            res.set_content(error.dump(), "application/json");
+        }
     });
 
     // GET endpoint to retrieve data by ID
-    http_server.Get(R"(/data/([^/]+))", [](const httplib::Request& req, httplib::Response& res) {
+    http_server.Get(R"(/data/([^/]+))", [&data_service](const httplib::Request& req, httplib::Response& res) {
         std::string id = req.matches[1];
         std::cout << "[SERVER] Received GET /data/" << id << " request" << std::endl;
         
-        std::lock_guard<std::mutex> lock(data_store_mutex);
-        if (data_store.find(id) != data_store.end()) {
-            res.set_content(data_store[id].dump(), "application/json");
+        ServerContext context;
+        GetDataRequest request;
+        request.set_id(id);
+        DataItem response;
+        
+        Status status = data_service.GetData(&context, &request, &response);
+        
+        if (status.ok()) {
+            std::string response_json;
+            google::protobuf::util::MessageToJsonString(response, &response_json);
+            res.set_content(response_json, "application/json");
         } else {
+            res.status = status.error_code() == grpc::StatusCode::NOT_FOUND ? 404 : 500;
             json error = {
-                {"error", "Not found"},
-                {"message", "No data found with ID: " + id}
+                {"error", status.error_message()},
+                {"code", status.error_code()}
             };
-            res.status = 404;
             res.set_content(error.dump(), "application/json");
         }
     });
 
     // POST endpoint to store data
-    http_server.Post("/data", [](const httplib::Request& req, httplib::Response& res) {
+    http_server.Post("/data", [&data_service](const httplib::Request& req, httplib::Response& res) {
         std::cout << "[SERVER] Received POST /data request" << std::endl;
+        
         try {
-            json request_data = json::parse(req.body);
-            
-            if (!request_data.contains("id")) {
-                throw std::runtime_error("Data must contain an 'id' field");
+            DataItem data_item;
+            std::string json_string = req.body;
+            google::protobuf::util::JsonStringToMessage(json_string, &data_item);
+
+            ServerContext context;
+            StoreResponse response;
+            Status status = data_service.StoreData(&context, &data_item, &response);
+
+            if (status.ok()) {
+                std::string response_json;
+                google::protobuf::util::MessageToJsonString(response, &response_json);
+                res.set_content(response_json, "application/json");
+            } else {
+                res.status = 500;
+                json error = {
+                    {"error", status.error_message()},
+                    {"code", status.error_code()}
+                };
+                res.set_content(error.dump(), "application/json");
             }
-            
-            std::string id = request_data["id"].get<std::string>();
-            
-            {
-                std::lock_guard<std::mutex> lock(data_store_mutex);
-                data_store[id] = request_data;
-            }
-            
-            json response = {
-                {"message", "Data stored successfully"},
-                {"stored_data", request_data}
-            };
-            res.set_content(response.dump(), "application/json");
         } catch (const std::exception& e) {
+            res.status = 400;
             json error = {
-                {"error", "Invalid data"},
+                {"error", "Invalid request"},
                 {"details", e.what()}
             };
-            res.status = 400;
             res.set_content(error.dump(), "application/json");
         }
     });
@@ -234,37 +320,40 @@ void RunHttpServer() {
     });
 
     // PUT endpoint to update data
-    http_server.Put(R"(/update/([^/]+))", [](const httplib::Request& req, httplib::Response& res) {
+    http_server.Put(R"(/data/([^/]+))", [&data_service](const httplib::Request& req, httplib::Response& res) {
         std::string id = req.matches[1];
-        std::cout << "[SERVER] Received PUT /update/" << id << " request" << std::endl;
+        std::cout << "[SERVER] Received PUT /data/" << id << " request" << std::endl;
         
         try {
-            json update_data = json::parse(req.body);
+            UpdateDataRequest update_request;
+            update_request.set_id(id);
             
-            std::lock_guard<std::mutex> lock(data_store_mutex);
-            if (data_store.find(id) != data_store.end()) {
-                // Update existing data
-                data_store[id].merge_patch(update_data);
-                
-                json response = {
-                    {"message", "Update successful"},
-                    {"updated_data", data_store[id]}
-                };
-                res.set_content(response.dump(), "application/json");
+            DataItem* data_item = update_request.mutable_data();
+            std::string json_string = req.body;
+            google::protobuf::util::JsonStringToMessage(json_string, data_item);
+
+            ServerContext context;
+            DataItem response;
+            Status status = data_service.UpdateData(&context, &update_request, &response);
+
+            if (status.ok()) {
+                std::string response_json;
+                google::protobuf::util::MessageToJsonString(response, &response_json);
+                res.set_content(response_json, "application/json");
             } else {
+                res.status = status.error_code() == grpc::StatusCode::NOT_FOUND ? 404 : 500;
                 json error = {
-                    {"error", "Not found"},
-                    {"message", "No data found with ID: " + id}
+                    {"error", status.error_message()},
+                    {"code", status.error_code()}
                 };
-                res.status = 404;
                 res.set_content(error.dump(), "application/json");
             }
         } catch (const std::exception& e) {
+            res.status = 400;
             json error = {
-                {"error", "Invalid data"},
+                {"error", "Invalid request"},
                 {"details", e.what()}
             };
-            res.status = 400;
             res.set_content(error.dump(), "application/json");
         }
     });
@@ -280,11 +369,13 @@ void RunGrpcServer() {
     std::string server_address("0.0.0.0:50051");
     GreeterServiceImpl greeter_service;
     NetworkConfigServiceImpl network_service;
+    DataStorageServiceImpl data_service;
 
     ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&greeter_service);
     builder.RegisterService(&network_service);
+    builder.RegisterService(&data_service);
 
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "[SERVER] gRPC Server Listening on " << server_address << " without SSL\n";

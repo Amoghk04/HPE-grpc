@@ -13,6 +13,14 @@ service NetworkConfig {
     rpc ConfigureIP (IPConfigRequest) returns (IPConfigResponse);
 }
 
+// Add new service for data storage
+service DataStorage {
+    rpc StoreData (DataItem) returns (StoreResponse);
+    rpc GetData (GetDataRequest) returns (DataItem);
+    rpc ListData (ListDataRequest) returns (ListDataResponse);
+    rpc UpdateData (UpdateDataRequest) returns (DataItem);
+}
+
 // request message
 message HelloRequest {
     string name = 1;
@@ -21,6 +29,36 @@ message HelloRequest {
 // response message
 message HelloReply {
     string message = 1;
+}
+
+// Add new messages for data storage
+message DataItem {
+    string id = 1;
+    string name = 2;
+    int32 age = 3;
+    // Add other fields as needed
+}
+
+message GetDataRequest {
+    string id = 1;
+}
+
+message ListDataRequest {
+    // Empty request for now, could add pagination later
+}
+
+message ListDataResponse {
+    repeated DataItem items = 1;
+}
+
+message StoreResponse {
+    string message = 1;
+    DataItem stored_data = 2;
+}
+
+message UpdateDataRequest {
+    string id = 1;
+    DataItem data = 2;
 }
 
 message IPConfigRequest {
