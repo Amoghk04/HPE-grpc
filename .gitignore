@@ -10,6 +10,8 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
-service.grpc.pb.*
-service.pb.*
-build/*
+grpc/build/*
+grpc/service.grpc.pb.cc
+grpc/service.grpc.pb.h
+grpc/service.pb.cc
+grpc/service.pb.h
