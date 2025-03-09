@@ -1,0 +1,28 @@
+Instructions to handle Files I/O 
+
+1. Pull the repo
+
+2. Run the all the commands below
+    - protoc --proto_path=. --cpp_out=. --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` service.proto
+    - mkdir build
+    - cd build
+    - cmake .. (this according to the vcpkg configuration in your system will change,
+      probably will have to add something like this "cmake .. -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake")
+    - make -j$(nproc)
+
+3. Run "mkdir -p ./uploads" inside the build directory
+
+4. Run the server and client as usual
+
+5. For Uploading files -
+    - curl -F "file=@ex.txt" http://(<public-ip> or localhost):8080/upload
+
+6. For Downloading files from server -
+    - curl http://(<public-ip> or localhost):8080/download/<file_name_to_download>
+
+7. If you want to test upload and download using apache benchmark, run the following commands -
+for upload -> ab -n 100 -c 10 -p <your_file_name> -T "multipart/form-data" http://localhost:8080/upload
+for download -> ab -n 100 -c 10 http://<public-ip or localhost>:8080/download/<your_file_name>
+
+-n = number of requests 
+-c = number of concurrent requests

@@ -1,0 +1,12 @@
+$ cd .\grpc\build\
+
+To build the proto files and the gRPC HTTP server:
+$ cmake ..
+$ cmake --build . --config Debug
+
+To run the server:
+$ .\Debug\server.exe
+
+To run the client:
+$ .\Debug\client.exe
+
