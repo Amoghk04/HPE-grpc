@@ -9,6 +9,8 @@
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <mutex>
+#include <filesystem>
+#include "service.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -24,9 +26,11 @@ using myservice::IPConfigRequest;
 using myservice::IPConfigResponse;
 using json = nlohmann::json;
 
+
 // Global storage for our data
 std::unordered_map<std::string, json> data_store;
 std::mutex data_store_mutex; // For thread safety
+std::mutex file_mutex;
 
 // gRPC Greeter Service Implementation
 class GreeterServiceImpl final : public Greeter::Service {
@@ -77,6 +81,33 @@ public:
     }
 };
 
+class FileServiceImpl final : public myservice::FileService::Service {
+    public:
+        grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
+            std::lock_guard<std::mutex> lock(file_mutex);
+            std::ofstream outfile("./uploads/" + request->filename(), std::ios::binary);
+            if (!outfile) {
+                return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to open file for writing");
+            }
+            outfile.write(request->content().data(), request->content().size());
+            outfile.close();
+    
+            response->set_message("File uploaded successfully");
+            return grpc::Status::OK;
+        }
+    
+        grpc::Status DownloadFile(grpc::ServerContext* context, const myservice::FileDownloadRequest* request, myservice::FileDownloadResponse* response) override {
+            std::lock_guard<std::mutex> lock(file_mutex);
+            std::ifstream infile("./uploads/" + request->filename(), std::ios::binary);
+            if (!infile) {
+                return grpc::Status(grpc::StatusCode::NOT_FOUND, "File not found");
+            }
+            std::ostringstream buffer;
+            buffer << infile.rdbuf();
+            response->set_content(buffer.str());
+            return grpc::Status::OK;
+        }
+};
 // Forward declaration of SetupHttpRoutes function
 template <typename Server>
 void SetupHttpRoutes(Server &server);
@@ -269,6 +300,64 @@ void RunHttpServer() {
         }
     });
 
+    http_server.Post("/upload", [](const httplib::Request& req, httplib::Response& res) {
+        if (req.has_file("file")) {
+            const auto& file = req.get_file_value("file");
+            std::string filename = file.filename;
+            const std::string& content = file.content;
+    
+            // Ensure uploads directory exists
+            std::filesystem::create_directories("./uploads");
+    
+            // Open file for writing
+            std::ofstream outfile("./uploads/" + filename, std::ios::binary);
+            if (!outfile) {
+                res.status = 500;
+                res.set_content("Failed to save file", "text/plain");
+                return;
+            }
+    
+            // Simulate progress logging
+            size_t total_size = content.size();
+            size_t chunk_size = total_size / 10; // Divide into 10 chunks for progress
+            size_t written = 0;
+    
+            for (size_t i = 0; i < total_size; i += chunk_size) {
+                size_t write_size = std::min(chunk_size, total_size - written);
+                outfile.write(content.data() + written, write_size);
+                written += write_size;
+    
+                // Log progress
+                int progress = static_cast<int>((static_cast<double>(written) / total_size) * 100);
+                std::cout << "[SERVER] Upload Progress: " << progress << "%\n";
+    
+                // Simulate delay to show progress (optional)
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+    
+            outfile.close();
+            res.set_content("File uploaded successfully", "text/plain");
+        } else {
+            res.status = 400;
+            res.set_content("No file provided in request", "text/plain");
+        }
+    });    
+    
+    http_server.Get(R"(/download/(.+))", [](const httplib::Request& req, httplib::Response& res) {
+        auto filename = req.matches[1].str();
+    
+        std::lock_guard<std::mutex> lock(file_mutex);
+        std::ifstream infile("./uploads/" + filename, std::ios::binary);
+        if (!infile) {
+            res.status = 404;
+            res.set_content("File not found", "text/plain");
+            return;
+        }
+        std::ostringstream buffer;
+        buffer << infile.rdbuf();
+        res.set_content(buffer.str(), "application/octet-stream");
+    });
+
     std::cout << "[SERVER] HTTP Server starting on port 8080...\n";
     if (!http_server.listen("0.0.0.0", 8080)) {
         std::cerr << "[SERVER] ERROR: Failed to start HTTP server on port 8080\n";
@@ -280,11 +369,13 @@ void RunGrpcServer() {
     std::string server_address("0.0.0.0:50051");
     GreeterServiceImpl greeter_service;
     NetworkConfigServiceImpl network_service;
+    FileServiceImpl file_service;
 
     ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&greeter_service);
     builder.RegisterService(&network_service);
+    builder.RegisterService(&file_service);
 
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "[SERVER] gRPC Server Listening on " << server_address << " without SSL\n";

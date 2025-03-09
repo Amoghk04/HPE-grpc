@@ -22,7 +22,7 @@ using myservice::IPConfigResponse;
 class Client {
 public:
     Client(std::shared_ptr<Channel> channel)
-        : greeter_stub_(Greeter::NewStub(channel)), network_stub_(NetworkConfig::NewStub(channel)) {}
+        : greeter_stub_(Greeter::NewStub(channel)), network_stub_(NetworkConfig::NewStub(channel)), file_stub_(myservice::FileService::NewStub(channel)) {}
 
     void SayHello(const std::string& name) {
         HelloRequest request;
@@ -114,9 +114,58 @@ public:
         }
     }
 
+    void UploadFile(const std::string& filename) {
+        myservice::FileUploadRequest request;
+        myservice::FileUploadResponse response;
+
+        // Read file content
+        std::ifstream infile(filename, std::ios::binary);
+        if (!infile) {
+            std::cerr << "[CLIENT] Failed to open file: " << filename << "\n";
+            return;
+        }
+        std::ostringstream buffer;
+        buffer << infile.rdbuf();
+
+        request.set_filename(filename);
+        request.set_content(buffer.str());
+
+        grpc::ClientContext context;
+        grpc::Status status = file_stub_->UploadFile(&context, request, &response);
+
+        if (status.ok()) {
+            std::cout << "[CLIENT] " << response.message() << "\n";
+        } else {
+            std::cerr << "[CLIENT] Upload failed: " << status.error_message() << "\n";
+        }
+    }
+
+    void DownloadFile(const std::string& filename) {
+        myservice::FileDownloadRequest request;
+        myservice::FileDownloadResponse response;
+
+        request.set_filename(filename);
+
+        grpc::ClientContext context;
+        grpc::Status status = file_stub_->DownloadFile(&context, request, &response);
+
+        if (status.ok()) {
+            // Save file locally
+            std::ofstream outfile(filename, std::ios::binary);
+            outfile.write(response.content().data(), response.content().size());
+            outfile.close();
+            
+            std::cout << "[CLIENT] File downloaded successfully: " << filename << "\n";
+        } else {
+            std::cerr << "[CLIENT] Download failed: " << status.error_message() << "\n";
+        }
+    }
+
+
 private:
     std::unique_ptr<Greeter::Stub> greeter_stub_;
     std::unique_ptr<NetworkConfig::Stub> network_stub_;
+    std::unique_ptr<myservice::FileService::Stub> file_stub_;
 };
 
 void TestHttpEndpoints() {

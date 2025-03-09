@@ -41,3 +41,30 @@ message IPConfigResponse {
     repeated string dns_servers = 4;
     string status_message = 5;
 }
+
+// File Upload Request
+message FileUploadRequest {
+  string filename = 1;
+  bytes content = 2;
+}
+
+// File Upload Response
+message FileUploadResponse {
+  string message = 1;
+}
+
+// File Download Request
+message FileDownloadRequest {
+  string filename = 1;
+}
+
+// File Download Response
+message FileDownloadResponse {
+  bytes content = 1;
+}
+
+// Service Definition
+service FileService {
+  rpc UploadFile(FileUploadRequest) returns (FileUploadResponse);
+  rpc DownloadFile(FileDownloadRequest) returns (FileDownloadResponse);
+}
