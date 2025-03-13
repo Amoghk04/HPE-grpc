@@ -6,8 +6,8 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
 #include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include <fstream>
+#include <filesystem>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -18,231 +18,231 @@ using myservice::HelloReply;
 using myservice::NetworkConfig;
 using myservice::IPConfigRequest;
 using myservice::IPConfigResponse;
+using myservice::FileService;
+using myservice::FileUploadRequest;
+using myservice::FileUploadResponse;
+using myservice::FileDownloadRequest;
+using myservice::FileDownloadResponse;
+using json = nlohmann::json;
 
-class Client {
+// Helper function to read file contents
+std::string read_file(const std::string& path) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file: " + path);
+    }
+    return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+}
+
+class GreeterClient {
 public:
-    Client(std::shared_ptr<Channel> channel)
-        : greeter_stub_(Greeter::NewStub(channel)), network_stub_(NetworkConfig::NewStub(channel)), file_stub_(myservice::FileService::NewStub(channel)) {}
+    GreeterClient(std::shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
 
-    void SayHello(const std::string& name) {
+    std::string SayHello(const std::string& name) {
         HelloRequest request;
         request.set_name(name);
         HelloReply reply;
         ClientContext context;
+        Status status = stub_->SayHello(&context, request, &reply);
 
-        Status status = greeter_stub_->SayHello(&context, request, &reply);
         if (status.ok()) {
-            std::cout << "[CLIENT] Server Response: " << reply.message() << std::endl;
+            return reply.message();
         } else {
-            std::cerr << "[CLIENT] gRPC Request failed" << std::endl;
+            std::cout << "gRPC failed: " << status.error_code() << ": " << status.error_message() << std::endl;
+            return "RPC failed";
         }
     }
 
-    void ConfigureIP() {
-        std::string interface_name;
-        char use_dhcp;
-        IPConfigRequest request;
-        IPConfigResponse response;
+    std::string SayHelloAgain(const std::string& name) {
+        HelloRequest request;
+        request.set_name(name);
+        HelloReply reply;
         ClientContext context;
-
-        std::cout << "Enter network interface name: ";
-        std::cin >> interface_name;
-        request.set_interface_name(interface_name);
-
-        std::cout << "Use DHCP? (y/n): ";
-        std::cin >> use_dhcp;
-        request.set_use_dhcp(use_dhcp == 'y');
-
-        if (use_dhcp == 'n') {
-            std::string ip, subnet, gateway, dns;
-            std::cout << "Enter IP Address: ";
-            std::cin >> ip;
-            std::cout << "Enter Subnet Mask: ";
-            std::cin >> subnet;
-            std::cout << "Enter Default Gateway: ";
-            std::cin >> gateway;
-            std::cout << "Enter DNS Servers (space-separated, end with '.'): ";
-            while (std::cin >> dns && dns != ".") {
-                request.add_requested_dns(dns);
-            }
-            request.set_requested_ip(ip);
-            request.set_requested_subnet_mask(subnet);
-            request.set_requested_gateway(gateway);
-        }
-
-        Status status = network_stub_->ConfigureIP(&context, request, &response);
-        if (status.ok()) {
-            std::cout << "[CLIENT] Received IP Configuration:\n";
-            std::cout << "  IP Address: " << response.ip_address() << "\n";
-            std::cout << "  Subnet Mask: " << response.subnet_mask() << "\n";
-            std::cout << "  Default Gateway: " << response.default_gateway() << "\n";
-            std::cout << "  DNS Servers: ";
-            for (const auto& dns : response.dns_servers()) {
-                std::cout << dns << " ";
-            }
-            std::cout << "\n  Status: " << response.status_message() << "\n";
-        } else {
-            std::cerr << "[CLIENT] IP Configuration Request failed" << std::endl;
-        }
-    }
-
-    void MakeHttpRequests() {
-        httplib::Client cli("http://localhost", 8080);
-
-        auto res = cli.Get("/hi");
-        if (res && res->status == 200) {
-            std::cout << "[CLIENT] GET /hi Response: " << res->body << std::endl;
-        } else {
-            std::cerr << "[CLIENT] GET /hi Request failed" << std::endl;
-            if (!res) {
-                std::cerr << "[CLIENT] HTTP request failed with error: " << httplib::to_string(res.error()) << std::endl;
-            } else {
-                std::cerr << "[CLIENT] HTTP request failed with status: " << res->status << std::endl;
-            }
-        }
-
-        auto res2 = cli.Post("/echo", "Hello, Server!", "text/plain");
-        if (res2 && res2->status == 200) {
-            std::cout << "[CLIENT] POST /echo Response: " << res2->body << std::endl;
-        } else {
-            std::cerr << "[CLIENT] POST /echo Request failed" << std::endl;
-            if (!res2) {
-                std::cerr << "[CLIENT] HTTP request failed with error: " << httplib::to_string(res2.error()) << std::endl;
-            } else {
-                std::cerr << "[CLIENT] HTTP request failed with status: " << res2->status << std::endl;
-            }
-        }
-    }
-
-    void UploadFile(const std::string& filename) {
-        myservice::FileUploadRequest request;
-        myservice::FileUploadResponse response;
-
-        // Read file content
-        std::ifstream infile(filename, std::ios::binary);
-        if (!infile) {
-            std::cerr << "[CLIENT] Failed to open file: " << filename << "\n";
-            return;
-        }
-        std::ostringstream buffer;
-        buffer << infile.rdbuf();
-
-        request.set_filename(filename);
-        request.set_content(buffer.str());
-
-        grpc::ClientContext context;
-        grpc::Status status = file_stub_->UploadFile(&context, request, &response);
+        Status status = stub_->SayHelloAgain(&context, request, &reply);
 
         if (status.ok()) {
-            std::cout << "[CLIENT] " << response.message() << "\n";
+            return reply.message();
         } else {
-            std::cerr << "[CLIENT] Upload failed: " << status.error_message() << "\n";
+            std::cout << "gRPC failed: " << status.error_code() << ": " << status.error_message() << std::endl;
+            return "RPC failed";
         }
     }
-
-    void DownloadFile(const std::string& filename) {
-        myservice::FileDownloadRequest request;
-        myservice::FileDownloadResponse response;
-
-        request.set_filename(filename);
-
-        grpc::ClientContext context;
-        grpc::Status status = file_stub_->DownloadFile(&context, request, &response);
-
-        if (status.ok()) {
-            // Save file locally
-            std::ofstream outfile(filename, std::ios::binary);
-            outfile.write(response.content().data(), response.content().size());
-            outfile.close();
-            
-            std::cout << "[CLIENT] File downloaded successfully: " << filename << "\n";
-        } else {
-            std::cerr << "[CLIENT] Download failed: " << status.error_message() << "\n";
-        }
-    }
-
 
 private:
-    std::unique_ptr<Greeter::Stub> greeter_stub_;
-    std::unique_ptr<NetworkConfig::Stub> network_stub_;
-    std::unique_ptr<myservice::FileService::Stub> file_stub_;
+    std::unique_ptr<Greeter::Stub> stub_;
 };
 
-void TestHttpEndpoints() {
-    std::cout << "\n[CLIENT] Testing HTTP endpoints..." << std::endl;
-    
-    // Create HTTP client with IP address instead of hostname
-    std::cout << "[CLIENT] Creating HTTP client to connect to 127.0.0.1:8080" << std::endl;
-    httplib::Client http_cli("127.0.0.1", 8080);
-    
-    // Set longer timeout for better chance of connection
-    http_cli.set_connection_timeout(10); // 10 seconds timeout
-    http_cli.set_read_timeout(10, 0);    // 10 seconds read timeout
-    
-    // Test GET /hi endpoint
-    std::cout << "[CLIENT] Sending GET /hi request..." << std::endl;
-    if (auto res = http_cli.Get("/hi")) {
-        if (res->status == 200) {
-            std::cout << "[CLIENT] GET /hi Response: " << res->body << std::endl;
-        } else {
-            std::cout << "[CLIENT] GET /hi Request failed with status: " << res->status << std::endl;
+class NetworkConfigClient {
+public:
+    NetworkConfigClient(std::shared_ptr<Channel> channel) : stub_(NetworkConfig::NewStub(channel)) {}
+
+    IPConfigResponse ConfigureIP(const std::string& interface_name, bool use_dhcp,
+                               const std::string& ip = "", const std::string& subnet_mask = "",
+                               const std::string& gateway = "", const std::vector<std::string>& dns = {}) {
+        IPConfigRequest request;
+        request.set_interface_name(interface_name);
+        request.set_use_dhcp(use_dhcp);
+        
+        if (!use_dhcp) {
+            request.set_requested_ip(ip);
+            request.set_requested_subnet_mask(subnet_mask);
+            request.set_requested_gateway(gateway);
+            for (const auto& dns_server : dns) {
+                request.add_requested_dns(dns_server);
+            }
         }
-    } else {
-        auto err = res.error();
-        std::cout << "[CLIENT] GET /hi Request failed with error: " << httplib::to_string(err) << std::endl;
-        std::cout << "[CLIENT] Error code: " << static_cast<int>(err) << std::endl;
+
+        IPConfigResponse response;
+        ClientContext context;
+        Status status = stub_->ConfigureIP(&context, request, &response);
+
+        if (!status.ok()) {
+            std::cout << "gRPC failed: " << status.error_code() << ": " << status.error_message() << std::endl;
+        }
+
+        return response;
     }
 
-    // Test POST /echo endpoint
-    std::cout << "[CLIENT] Sending POST /echo request..." << std::endl;
-    if (auto res = http_cli.Post("/echo", "Hello from client!", "text/plain")) {
-        if (res->status == 200) {
-            std::cout << "[CLIENT] POST /echo Response: " << res->body << std::endl;
-        } else {
-            std::cout << "[CLIENT] POST /echo Request failed with status: " << res->status << std::endl;
+private:
+    std::unique_ptr<NetworkConfig::Stub> stub_;
+};
+
+class FileClient {
+public:
+    FileClient(std::shared_ptr<Channel> channel) : stub_(FileService::NewStub(channel)) {}
+
+    bool UploadFile(const std::string& filename) {
+        std::ifstream file(filename, std::ios::binary);
+        if (!file) {
+            std::cerr << "Failed to open file: " << filename << std::endl;
+            return false;
         }
-    } else {
-        auto err = res.error();
-        std::cout << "[CLIENT] POST /echo Request failed with error: " << httplib::to_string(err) << std::endl;
-        std::cout << "[CLIENT] Error code: " << static_cast<int>(err) << std::endl;
+
+        std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+
+        FileUploadRequest request;
+        request.set_filename(std::filesystem::path(filename).filename().string());
+        request.set_content(content);
+
+        FileUploadResponse response;
+        ClientContext context;
+        Status status = stub_->UploadFile(&context, request, &response);
+
+        if (status.ok()) {
+            std::cout << "Upload successful: " << response.message() << std::endl;
+            return true;
+        } else {
+            std::cerr << "Upload failed: " << status.error_message() << std::endl;
+            return false;
+        }
     }
+
+        bool DownloadFile(const std::string& filename) {
+        FileDownloadRequest request;
+        request.set_filename(filename);
+
+        FileDownloadResponse response;
+        ClientContext context;
+        Status status = stub_->DownloadFile(&context, request, &response);
+
+        if (status.ok()) {
+            std::ofstream file("./downloads/" + filename, std::ios::binary);
+            if (!file) {
+                std::cerr << "Failed to create file: " << filename << std::endl;
+                return false;
+            }
+            file.write(response.content().data(), response.content().size());
+            file.close();
+            std::cout << "Download successful" << std::endl;
+            return true;
+        } else {
+            std::cerr << "Download failed: " << status.error_message() << std::endl;
+            return false;
+        }
+    }
+
+private:
+    std::unique_ptr<FileService::Stub> stub_;
+};
+
+int main() {
+    // Create SSL credentials for gRPC
+    grpc::SslCredentialsOptions ssl_opts;
+    ssl_opts.pem_root_certs = read_file("./certs/server.crt");
     
-    // Test API endpoints
-    json hello_request = {
-        {"name", "Test User"}
+    auto channel_creds = grpc::SslCredentials(ssl_opts);
+    auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
+
+    // Create clients
+    GreeterClient greeter(channel);
+    NetworkConfigClient network(channel);
+    FileClient file(channel);
+
+    // Create HTTPS client
+    httplib::SSLClient http_client("localhost", 8443);
+    http_client.set_ca_cert_path("./certs/server.crt");
+    // No need for client certificate in this case
+    
+    // Test gRPC calls
+    std::cout << "Testing gRPC calls..." << std::endl;
+    
+    // Test Greeter service
+    std::string reply = greeter.SayHello("World");
+    std::cout << "Greeter received: " << reply << std::endl;
+
+    reply = greeter.SayHelloAgain("World");
+    std::cout << "Greeter received: " << reply << std::endl;
+
+    // Test Network Config service
+    auto network_response = network.ConfigureIP("eth0", true);
+    std::cout << "Network Config received: " << network_response.status_message() << std::endl;
+    std::cout << "IP Address: " << network_response.ip_address() << std::endl;
+    std::cout << "Subnet Mask: " << network_response.subnet_mask() << std::endl;
+    std::cout << "Default Gateway: " << network_response.default_gateway() << std::endl;
+    std::cout << "DNS Servers:" << std::endl;
+    for (const auto& dns : network_response.dns_servers()) {
+        std::cout << "  - " << dns << std::endl;
+    }
+
+    // Test File service
+    std::filesystem::create_directories("./downloads");
+    file.UploadFile("test.txt");
+    file.DownloadFile("test.txt");
+
+    // Test HTTPS calls
+    std::cout << "\nTesting HTTPS calls..." << std::endl;
+
+    // Test GET request
+    auto res = http_client.Get("/hi");
+    if (res && res->status == 200) {
+        std::cout << "GET /hi response: " << res->body << std::endl;
+    }
+
+    // Test POST request
+    json post_data = {{"name", "World"}};
+    res = http_client.Post("/api/hello", post_data.dump(), "application/json");
+    if (res && res->status == 200) {
+        std::cout << "POST /api/hello response: " << res->body << std::endl;
+    }
+
+    // Test file upload
+    httplib::MultipartFormDataItems items = {
+        {"file", "Hello, World!", "test.txt", "text/plain"}
     };
-    
-    std::cout << "[CLIENT] Sending POST /api/hello request..." << std::endl;
-    if (auto res = http_cli.Post("/api/hello", hello_request.dump(), "application/json")) {
-        if (res->status == 200) {
-            std::cout << "[CLIENT] POST /api/hello Response: " << res->body << std::endl;
-        } else {
-            std::cout << "[CLIENT] POST /api/hello Request failed with status: " << res->status << std::endl;
-        }
-    } else {
-        auto err = res.error();
-        std::cout << "[CLIENT] POST /api/hello Request failed with error: " << httplib::to_string(err) << std::endl;
-        std::cout << "[CLIENT] Error code: " << static_cast<int>(err) << std::endl;
-    }
-}
-
-int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " host:port" << std::endl;
-        return 1;
+    res = http_client.Post("/upload", items);
+    if (res && res->status == 200) {
+        std::cout << "File upload response: " << res->body << std::endl;
     }
 
-    Client client(grpc::CreateChannel(argv[1], grpc::InsecureChannelCredentials()));
-
-    std::string name;
-    std::cout << "Enter your name: ";
-    std::cin >> name;
-    client.SayHello(name);
-
-    client.ConfigureIP();
-    
-    // Test HTTP endpoints after gRPC tests
-    TestHttpEndpoints();
+    // Test file download
+    res = http_client.Get("/download/test.txt");
+    if (res && res->status == 200) {
+        std::ofstream outfile("./downloads/downloaded_test.txt");
+        outfile << res->body;
+        outfile.close();
+        std::cout << "File downloaded successfully" << std::endl;
+    }
 
     return 0;
 }

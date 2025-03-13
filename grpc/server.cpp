@@ -12,6 +12,15 @@
 #include <filesystem>
 #include "service.pb.h"
 
+// Helper function to read file contents
+std::string read_file(const std::string& path) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file: " + path);
+    }
+    return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+}
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -25,7 +34,6 @@ using myservice::NetworkConfig;
 using myservice::IPConfigRequest;
 using myservice::IPConfigResponse;
 using json = nlohmann::json;
-
 
 // Global storage for our data
 std::unordered_map<std::string, json> data_store;
@@ -85,6 +93,16 @@ class FileServiceImpl final : public myservice::FileService::Service {
     public:
         grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
             std::lock_guard<std::mutex> lock(file_mutex);
+            
+            // Print file information and contents
+            std::cout << "\n[SERVER] Received file upload request:" << std::endl;
+            std::cout << "Filename: " << request->filename() << std::endl;
+            std::cout << "Content size: " << request->content().size() << " bytes" << std::endl;
+            std::cout << "File contents:" << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
+            std::cout << request->content() << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
+            
             std::ofstream outfile("./uploads/" + request->filename(), std::ios::binary);
             if (!outfile) {
                 return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to open file for writing");
@@ -114,13 +132,13 @@ void SetupHttpRoutes(Server &server);
 
 // HTTP Server with cpp-httplib
 void RunHttpServer() {
-    // Create a regular HTTP server
-    httplib::Server http_server;
+    // Create an HTTPS server
+    httplib::SSLServer http_server("./certs/server.crt", "./certs/server.key");
 
     // Setup routes
     http_server.Get("/hi", [](const httplib::Request&, httplib::Response& res) {
         std::cout << "[SERVER] Received GET /hi request" << std::endl;
-        res.set_content("Hello HI from the HTTP server!", "text/plain");
+        res.set_content("Hello HI from the HTTPS server!", "text/plain");
     });
 
     http_server.Get("/", [](const httplib::Request&, httplib::Response& res) {
@@ -140,8 +158,14 @@ void RunHttpServer() {
             json request_data = json::parse(req.body);
             std::string name = request_data["name"];
             
-            // Create gRPC client and make the call
-            auto channel = grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials());
+            // Create secure gRPC client and make the call
+            grpc::SslCredentialsOptions ssl_opts;
+            ssl_opts.pem_root_certs = read_file("./certs/server.crt");
+            ssl_opts.pem_private_key = read_file("./certs/server.key");
+            ssl_opts.pem_cert_chain = read_file("./certs/server.crt");
+            
+            auto channel_creds = grpc::SslCredentials(ssl_opts);
+            auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
             std::unique_ptr<Greeter::Stub> stub = Greeter::NewStub(channel);
             
             HelloRequest grpc_req;
@@ -186,7 +210,7 @@ void RunHttpServer() {
         res.set_content(status.dump(), "application/json");
     });
 
-    // GET endpoint to list all stored data (this must come BEFORE the /data/:id route)
+    // GET endpoint to list all stored data
     http_server.Get("/data", [](const httplib::Request&, httplib::Response& res) {
         std::cout << "[SERVER] Received GET /data request" << std::endl;
         
@@ -358,9 +382,9 @@ void RunHttpServer() {
         res.set_content(buffer.str(), "application/octet-stream");
     });
 
-    std::cout << "[SERVER] HTTP Server starting on port 8080...\n";
-    if (!http_server.listen("0.0.0.0", 8080)) {
-        std::cerr << "[SERVER] ERROR: Failed to start HTTP server on port 8080\n";
+    std::cout << "[SERVER] HTTPS Server starting on port 8443...\n";
+    if (!http_server.listen("0.0.0.0", 8443)) {
+        std::cerr << "[SERVER] ERROR: Failed to start HTTPS server on port 8443\n";
     }
 }
 
@@ -371,27 +395,34 @@ void RunGrpcServer() {
     NetworkConfigServiceImpl network_service;
     FileServiceImpl file_service;
 
+    grpc::SslServerCredentialsOptions ssl_opts;
+    ssl_opts.pem_root_certs = read_file("./certs/server.crt");
+    ssl_opts.pem_key_cert_pairs.push_back({
+        read_file("./certs/server.key"),
+        read_file("./certs/server.crt")
+    });
+
     ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(server_address, grpc::SslServerCredentials(ssl_opts));
     builder.RegisterService(&greeter_service);
     builder.RegisterService(&network_service);
     builder.RegisterService(&file_service);
 
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "[SERVER] gRPC Server Listening on " << server_address << " without SSL\n";
+    std::cout << "[SERVER] gRPC Server Listening on " << server_address << " with SSL\n";
     server->Wait();
 }
 
 int main() {
-    std::cout << "[SERVER] Starting gRPC and HTTP servers...\n";
+    std::cout << "[SERVER] Starting gRPC and HTTPS servers...\n";
     
     // Run gRPC Server in a separate thread
     std::thread grpc_thread(RunGrpcServer);
     
-    // Run HTTP Server in the main thread to ensure it doesn't terminate
+    // Run HTTPS Server in the main thread to ensure it doesn't terminate
     RunHttpServer();
     
-    // This code will only be reached if the HTTP server fails to start
+    // This code will only be reached if the HTTPS server fails to start
     // Wait for gRPC thread to complete
     grpc_thread.join();
     
