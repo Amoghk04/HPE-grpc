@@ -1,0 +1,223 @@
+HPE gRPC with HTTPS Integration - Week 3 Documentation
+=================================================
+
+This document contains all the necessary information to set up and run the HPE gRPC project with HTTPS integration.
+
+1. PREREQUISITES
+---------------
+Required software and libraries:
+- CMake (version 3.10 or higher)
+- C++ compiler with C++17 support
+- OpenSSL development libraries
+- Protocol Buffers
+- gRPC
+- Abseil library
+
+Installing Dependencies (Ubuntu/Debian):
+--------------------------------------
+# Install basic build tools
+sudo apt-get update
+sudo apt-get install -y build-essential cmake git
+
+# Install OpenSSL development libraries
+sudo apt-get install -y libssl-dev
+
+# Install Protocol Buffers
+sudo apt-get install -y protobuf-compiler libprotobuf-dev
+
+# Install gRPC
+sudo apt-get install -y libgrpc++-dev protobuf-compiler-grpc
+
+# Install Abseil
+sudo apt-get install -y libabsl-dev
+
+2. PROJECT STRUCTURE
+-------------------
+HPE-grpc/
+├── grpc/
+│   ├── certs/           # SSL certificates (generated during setup)
+│   ├── uploads/         # Directory for uploaded files
+│   ├── downloads/       # Directory for downloaded files
+│   ├── server.cpp       # Server implementation
+│   ├── client.cpp       # Client implementation
+│   ├── service.proto    # Protocol buffer definitions
+│   ├── CMakeLists.txt   # Build configuration
+│   └── httplib.h        # HTTP library
+
+3. SETUP INSTRUCTIONS
+--------------------
+Step 1: Clone the repository
+---------------------------
+git clone https://github.com/slsshekar/HPE-grpc.git
+cd HPE-grpc/grpc
+
+Step 2: Generate SSL certificates
+-------------------------------
+# Create certs directory
+mkdir -p certs
+
+# Generate self-signed certificate and private key
+openssl req -x509 -newkey rsa:4096 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost"
+
+Step 3: Create required directories
+--------------------------------
+mkdir -p uploads downloads
+
+Step 4: Build the project
+------------------------
+mkdir -p build
+cd build
+cmake ..
+make -j$(nproc)
+
+4. RUNNING THE APPLICATION
+-------------------------
+Step 1: Start the server (in one terminal)
+----------------------------------------
+cd build
+./server
+
+Step 2: Run the client (in another terminal)
+------------------------------------------
+cd build
+./client
+
+5. AVAILABLE ENDPOINTS
+---------------------
+gRPC Endpoints (Port 50051):
+--------------------------
+- Greeter Service
+  * SayHello
+  * SayHelloAgain
+- Network Configuration Service
+  * ConfigureIP
+- File Service
+  * UploadFile
+  * DownloadFile
+
+HTTPS Endpoints (Port 8443):
+--------------------------
+- GET /hi - Basic hello endpoint
+- GET / - Root endpoint
+- POST /echo - Echo endpoint
+- POST /api/hello - API endpoint
+- GET /status - Server status
+- GET /data - List all data
+- GET /data/{id} - Get specific data
+- POST /data - Store data
+- PUT /update/{id} - Update data
+- POST /upload - Upload file
+- GET /download/{filename} - Download file
+- GET /query - Query parameters endpoint
+
+6. TROUBLESHOOTING
+-----------------
+Common Issues:
+
+1. Certificate Errors
+   - Ensure the 'certs' directory exists and contains both 'server.crt' and 'server.key'
+   - Verify certificate permissions (should be readable by the application)
+
+2. Build Errors
+   - Make sure all dependencies are installed
+   - Check CMake version (3.10 or higher required)
+   - Ensure C++17 is supported by your compiler
+
+3. Runtime Errors
+   - Check if required directories exist (certs, uploads, downloads)
+   - Verify ports 50051 and 8443 are available
+   - Check file permissions
+
+Directory Permissions:
+--------------------
+# Set proper permissions for certificates
+chmod 600 certs/server.key
+chmod 644 certs/server.crt
+
+# Set proper permissions for upload/download directories
+chmod 755 uploads downloads
+
+7. SECURITY NOTES
+----------------
+- The provided SSL certificates are self-signed and for development only
+- In production, use certificates from a trusted Certificate Authority
+- Keep the private key (server.key) secure and never commit it to version control
+- The uploads and downloads directories should have proper permissions
+
+8. CHANGES MADE IN THIS VERSION
+-----------------------------
+1. HTTPS Integration:
+   - Added HTTPS server on port 8443
+   - Implemented SSL/TLS security
+   - Added multiple HTTP endpoints
+
+2. File Handling:
+   - Added file upload with server-side printing
+   - Implemented file download
+   - Added progress tracking
+   - Created upload/download directories
+
+3. Security:
+   - Added SSL/TLS support
+   - Implemented certificate-based authentication
+   - Added secure file transfer
+
+4. Build System:
+   - Updated CMakeLists.txt
+   - Added cpp-httplib integration
+   - Configured SSL/TLS support
+
+5. Code Structure:
+   - Added new service implementations
+   - Implemented thread-safe operations
+   - Added proper error handling
+
+6. Client Features:
+   - Added HTTPS client capabilities
+   - Implemented file operations
+   - Added progress tracking
+
+7. Data Management:
+   - Added JSON-based storage
+   - Implemented CRUD operations
+   - Added thread-safe access
+
+8. Testing:
+   - Added server-side logging
+   - Implemented progress tracking
+   - Added error reporting
+
+9. Directory Structure:
+   - Added certs directory for SSL
+   - Created uploads directory
+   - Created downloads directory
+
+10. Protocol Buffer Changes:
+    - Added file service definitions
+    - Enhanced message types
+    - Added new service methods
+
+11. Error Handling:
+    - Added comprehensive error messages
+    - Implemented server-side logging
+    - Added progress tracking
+
+12. Performance:
+    - Implemented thread-safe operations
+    - Added proper resource management
+    - Optimized file operations
+
+13. Documentation:
+    - Added code comments
+    - Included error messages
+    - Added logging information
+
+14. Security Best Practices:
+    - Implemented proper file permissions
+    - Added input validation
+    - Implemented secure file handling
+
+15. Git Integration:
+    - Created httpsIntegration branch
+    - Added proper .gitignore
+    - Organized commits 
