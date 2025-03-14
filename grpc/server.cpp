@@ -131,7 +131,7 @@ void SetupHttpRoutes(Server &server);
 // HTTP Server with cpp-httplib
 void RunHttpServer() {
     // Create an HTTPS server
-    httplib::SSLServer http_server("./certs/server.crt", "./certs/server.key");
+    httplib::SSLServer http_server("../certs/server.crt", "../certs/server.key");
 
     // Setup routes
     http_server.Get("/hi", [](const httplib::Request&, httplib::Response& res) {
@@ -158,9 +158,9 @@ void RunHttpServer() {
             
             // Create secure gRPC client and make the call
             grpc::SslCredentialsOptions ssl_opts;
-            ssl_opts.pem_root_certs = read_file("./certs/server.crt");
-            ssl_opts.pem_private_key = read_file("./certs/server.key");
-            ssl_opts.pem_cert_chain = read_file("./certs/server.crt");
+            ssl_opts.pem_root_certs = read_file("../certs/server.crt");
+            ssl_opts.pem_private_key = read_file("../certs/server.key");
+            ssl_opts.pem_cert_chain = read_file("../certs/server.crt");
             
             auto channel_creds = grpc::SslCredentials(ssl_opts);
             auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
@@ -394,10 +394,10 @@ void RunGrpcServer() {
     FileServiceImpl file_service;
 
     grpc::SslServerCredentialsOptions ssl_opts;
-    ssl_opts.pem_root_certs = read_file("./certs/server.crt");
+    ssl_opts.pem_root_certs = read_file("../certs/server.crt");
     ssl_opts.pem_key_cert_pairs.push_back({
-        read_file("./certs/server.key"),
-        read_file("./certs/server.crt")
+        read_file("../certs/server.key"),
+        read_file("../certs/server.crt")
     });
 
     ServerBuilder builder;

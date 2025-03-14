@@ -169,7 +169,7 @@ private:
 int main() {
     // Create SSL credentials for gRPC
     grpc::SslCredentialsOptions ssl_opts;
-    ssl_opts.pem_root_certs = read_file("./certs/server.crt");
+    ssl_opts.pem_root_certs = read_file("../certs/server.crt");
     
     auto channel_creds = grpc::SslCredentials(ssl_opts);
     auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
@@ -181,7 +181,7 @@ int main() {
 
     // Create HTTPS client
     httplib::SSLClient http_client("localhost", 8443);
-    http_client.set_ca_cert_path("./certs/server.crt");
+    http_client.set_ca_cert_path("../certs/server.crt");
     // No need for client certificate in this case
     
     // Test gRPC calls

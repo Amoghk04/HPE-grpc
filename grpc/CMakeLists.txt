@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find required packages
+find_package(Protobuf CONFIG REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(absl REQUIRED)
-pkg_check_modules(GRPC REQUIRED grpc++)
-pkg_check_modules(PROTOBUF REQUIRED protobuf)
+find_package(gRPC CONFIG REQUIRED)
 
 # Add include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -36,10 +36,27 @@ add_library(proto
 target_link_libraries(proto
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    gRPC::grpc++
+    gRPC::grpc
+    gRPC::gpr
+    protobuf::libprotobuf
     absl::synchronization
     absl::time
     absl::strings
+    absl::str_format
     absl::base
+    absl::log
+    absl::log_internal_message
+    absl::log_internal_check_op
+    absl::log_internal_log_sink_set
+    absl::log_internal_conditions
+    absl::log_internal_format
+    absl::log_internal_globals
+    absl::log_internal_proto
+    absl::log_severity
+    absl::cord
+    absl::hash
+    absl::btree
     pthread
 )
 
@@ -52,10 +69,27 @@ target_link_libraries(server
     proto
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    gRPC::grpc++
+    gRPC::grpc
+    gRPC::gpr
+    protobuf::libprotobuf
     absl::synchronization
     absl::time
     absl::strings
+    absl::str_format
     absl::base
+    absl::log
+    absl::log_internal_message
+    absl::log_internal_check_op
+    absl::log_internal_log_sink_set
+    absl::log_internal_conditions
+    absl::log_internal_format
+    absl::log_internal_globals
+    absl::log_internal_proto
+    absl::log_severity
+    absl::cord
+    absl::hash
+    absl::btree
     pthread
 )
 
@@ -68,9 +102,26 @@ target_link_libraries(client
     proto
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    gRPC::grpc++
+    gRPC::grpc
+    gRPC::gpr
+    protobuf::libprotobuf
     absl::synchronization
     absl::time
     absl::strings
+    absl::str_format
     absl::base
+    absl::log
+    absl::log_internal_message
+    absl::log_internal_check_op
+    absl::log_internal_log_sink_set
+    absl::log_internal_conditions
+    absl::log_internal_format
+    absl::log_internal_globals
+    absl::log_internal_proto
+    absl::log_severity
+    absl::cord
+    absl::hash
+    absl::btree
     pthread
 )
