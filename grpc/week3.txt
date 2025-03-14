@@ -1,223 +1,158 @@
-HPE gRPC with HTTPS Integration - Week 3 Documentation
-=================================================
+# Guide to Setting Up and Using the gRPC and HTTPS Server
 
-This document contains all the necessary information to set up and run the HPE gRPC project with HTTPS integration.
-
-1. PREREQUISITES
----------------
-Required software and libraries:
-- CMake (version 3.10 or higher)
-- C++ compiler with C++17 support
-- OpenSSL development libraries
-- Protocol Buffers
-- gRPC
+## Prerequisites
+- Ubuntu Linux (tested on Ubuntu 22.04)
+- C++ compiler (GCC 13.3.0 or later)
+- CMake (3.10 or later)
+- OpenSSL
+- gRPC and Protocol Buffers installed from source
 - Abseil library
 
-Installing Dependencies (Ubuntu/Debian):
---------------------------------------
-# Install basic build tools
-sudo apt-get update
-sudo apt-get install -y build-essential cmake git
+## Directory Structure
+```
+HPE-grpc/grpc/
+├── build/           # Build directory
+├── certs/           # SSL certificates
+│   ├── server.crt   # Server certificate
+│   └── server.key   # Server private key
+├── uploads/         # Directory for uploaded files
+├── downloads/       # Directory for downloaded files
+├── service.proto    # Protocol buffer definitions
+├── server.cpp       # Server implementation
+├── client.cpp       # Client implementation
+└── CMakeLists.txt   # CMake configuration
+```
 
-# Install OpenSSL development libraries
-sudo apt-get install -y libssl-dev
+## Step-by-Step Setup
 
-# Install Protocol Buffers
-sudo apt-get install -y protobuf-compiler libprotobuf-dev
+1. First, deactivate conda if it's active:
+   ```bash
+   conda deactivate
+   ```
 
-# Install gRPC
-sudo apt-get install -y libgrpc++-dev protobuf-compiler-grpc
+2. Create necessary directories:
+   ```bash
+   cd ~/new/HPE-grpc/grpc
+   mkdir -p certs uploads downloads
+   ```
 
-# Install Abseil
-sudo apt-get install -y libabsl-dev
+3. Generate SSL certificates:
+   ```bash
+   openssl req -x509 -newkey rsa:4096 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost"
+   ```
 
-2. PROJECT STRUCTURE
--------------------
-HPE-grpc/
-├── grpc/
-│   ├── certs/           # SSL certificates (generated during setup)
-│   ├── uploads/         # Directory for uploaded files
-│   ├── downloads/       # Directory for downloaded files
-│   ├── server.cpp       # Server implementation
-│   ├── client.cpp       # Client implementation
-│   ├── service.proto    # Protocol buffer definitions
-│   ├── CMakeLists.txt   # Build configuration
-│   └── httplib.h        # HTTP library
+4. Build the project:
+   ```bash
+   rm -rf build
+   mkdir -p build
+   cd build
+   cmake ..
+   make -j$(nproc)
+   ```
 
-3. SETUP INSTRUCTIONS
---------------------
-Step 1: Clone the repository
----------------------------
-git clone https://github.com/slsshekar/HPE-grpc.git
-cd HPE-grpc/grpc
+5. Copy SSL certificates to build directory:
+   ```bash
+   mkdir -p certs
+   cp ../certs/server.* certs/
+   ```
 
-Step 2: Generate SSL certificates
--------------------------------
-# Create certs directory
-mkdir -p certs
+## Running the Server
 
-# Generate self-signed certificate and private key
-openssl req -x509 -newkey rsa:4096 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost"
+1. Start the server:
+   ```bash
+   ./server
+   ```
+   The server will start two services:
+   - HTTPS server on port 8443
+   - gRPC server on port 50051 (with SSL)
 
-Step 3: Create required directories
---------------------------------
-mkdir -p uploads downloads
+2. Verify server is running:
+   ```bash
+   curl -k https://localhost:8443/hi
+   ```
+   Expected output: "Hello HI from the HTTPS server!"
 
-Step 4: Build the project
-------------------------
-mkdir -p build
-cd build
-cmake ..
-make -j$(nproc)
+## Available Services
 
-4. RUNNING THE APPLICATION
--------------------------
-Step 1: Start the server (in one terminal)
-----------------------------------------
-cd build
-./server
+### HTTPS Endpoints (Port 8443)
+1. Basic Endpoints:
+   - GET /hi - Simple hello message
+   - GET / - Root endpoint
+   - POST /echo - Echoes back the request body
 
-Step 2: Run the client (in another terminal)
-------------------------------------------
-cd build
-./client
+2. API Endpoints:
+   - POST /api/hello - Bridges to gRPC Greeter service
+   - GET /status - Server status information
 
-5. AVAILABLE ENDPOINTS
----------------------
-gRPC Endpoints (Port 50051):
---------------------------
-- Greeter Service
-  * SayHello
-  * SayHelloAgain
-- Network Configuration Service
-  * ConfigureIP
-- File Service
-  * UploadFile
-  * DownloadFile
+3. Data Management:
+   - GET /data - List all stored data
+   - GET /data/{id} - Get data by ID
+   - POST /data - Store new data
+   - PUT /update/{id} - Update existing data
 
-HTTPS Endpoints (Port 8443):
---------------------------
-- GET /hi - Basic hello endpoint
-- GET / - Root endpoint
-- POST /echo - Echo endpoint
-- POST /api/hello - API endpoint
-- GET /status - Server status
-- GET /data - List all data
-- GET /data/{id} - Get specific data
-- POST /data - Store data
-- PUT /update/{id} - Update data
-- POST /upload - Upload file
-- GET /download/{filename} - Download file
-- GET /query - Query parameters endpoint
+4. File Operations:
+   - POST /upload - Upload a file
+   - GET /download/{filename} - Download a file
 
-6. TROUBLESHOOTING
------------------
-Common Issues:
+### gRPC Services (Port 50051)
+1. Greeter Service:
+   - SayHello - Simple greeting
+   - SayHelloAgain - Repeated greeting
 
-1. Certificate Errors
-   - Ensure the 'certs' directory exists and contains both 'server.crt' and 'server.key'
-   - Verify certificate permissions (should be readable by the application)
+2. Network Configuration Service:
+   - ConfigureIP - Configure network interface (supports DHCP and static IP)
 
-2. Build Errors
-   - Make sure all dependencies are installed
-   - Check CMake version (3.10 or higher required)
-   - Ensure C++17 is supported by your compiler
+3. File Service:
+   - UploadFile - Upload files to server
+   - DownloadFile - Download files from server
 
-3. Runtime Errors
-   - Check if required directories exist (certs, uploads, downloads)
-   - Verify ports 50051 and 8443 are available
-   - Check file permissions
+## Running the Client
 
-Directory Permissions:
---------------------
-# Set proper permissions for certificates
-chmod 600 certs/server.key
-chmod 644 certs/server.crt
+1. Create a test file:
+   ```bash
+   echo "This is a test file content" > test.txt
+   ```
 
-# Set proper permissions for upload/download directories
-chmod 755 uploads downloads
+2. Run the client:
+   ```bash
+   ./client
+   ```
+   The client will:
+   - Test gRPC calls (Greeter, Network Config, File operations)
+   - Test HTTPS calls (GET, POST, file upload/download)
 
-7. SECURITY NOTES
-----------------
-- The provided SSL certificates are self-signed and for development only
-- In production, use certificates from a trusted Certificate Authority
-- Keep the private key (server.key) secure and never commit it to version control
-- The uploads and downloads directories should have proper permissions
+## Security Features
 
-8. CHANGES MADE IN THIS VERSION
------------------------------
-1. HTTPS Integration:
-   - Added HTTPS server on port 8443
-   - Implemented SSL/TLS security
-   - Added multiple HTTP endpoints
+1. HTTPS Server (Port 8443):
+   - Uses TLSv1.3
+   - RSA 4096-bit encryption
+   - Self-signed certificate (for development)
 
-2. File Handling:
-   - Added file upload with server-side printing
-   - Implemented file download
-   - Added progress tracking
-   - Created upload/download directories
+2. gRPC Server (Port 50051):
+   - SSL/TLS encryption
+   - Mutual authentication support
+   - Secure channel communication
 
-3. Security:
-   - Added SSL/TLS support
-   - Implemented certificate-based authentication
-   - Added secure file transfer
+## Troubleshooting
 
-4. Build System:
-   - Updated CMakeLists.txt
-   - Added cpp-httplib integration
-   - Configured SSL/TLS support
+1. If server fails to start:
+   - Check if SSL certificates exist in certs directory
+   - Ensure ports 8443 and 50051 are available
+   - Check server logs for error messages
 
-5. Code Structure:
-   - Added new service implementations
-   - Implemented thread-safe operations
-   - Added proper error handling
+2. If client fails to connect:
+   - Verify server is running
+   - Check SSL certificates are properly copied
+   - Ensure correct ports are being used
 
-6. Client Features:
-   - Added HTTPS client capabilities
-   - Implemented file operations
-   - Added progress tracking
+3. File operations issues:
+   - Check uploads and downloads directories exist
+   - Verify file permissions
+   - Check available disk space
 
-7. Data Management:
-   - Added JSON-based storage
-   - Implemented CRUD operations
-   - Added thread-safe access
-
-8. Testing:
-   - Added server-side logging
-   - Implemented progress tracking
-   - Added error reporting
-
-9. Directory Structure:
-   - Added certs directory for SSL
-   - Created uploads directory
-   - Created downloads directory
-
-10. Protocol Buffer Changes:
-    - Added file service definitions
-    - Enhanced message types
-    - Added new service methods
-
-11. Error Handling:
-    - Added comprehensive error messages
-    - Implemented server-side logging
-    - Added progress tracking
-
-12. Performance:
-    - Implemented thread-safe operations
-    - Added proper resource management
-    - Optimized file operations
-
-13. Documentation:
-    - Added code comments
-    - Included error messages
-    - Added logging information
-
-14. Security Best Practices:
-    - Implemented proper file permissions
-    - Added input validation
-    - Implemented secure file handling
-
-15. Git Integration:
-    - Created httpsIntegration branch
-    - Added proper .gitignore
-    - Organized commits 
+## Notes
+- The server uses self-signed certificates for development
+- For production, use certificates from a trusted CA
+- Both gRPC and HTTPS servers run with SSL/TLS encryption
+- File operations are thread-safe with mutex protection
+- The server supports both synchronous and asynchronous operations 

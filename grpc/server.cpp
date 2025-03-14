@@ -94,11 +94,9 @@ class FileServiceImpl final : public myservice::FileService::Service {
         grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
             std::lock_guard<std::mutex> lock(file_mutex);
             
-            // Print file information and contents
-            std::cout << "\n[SERVER] Received file upload request:" << std::endl;
-            std::cout << "Filename: " << request->filename() << std::endl;
-            std::cout << "Content size: " << request->content().size() << " bytes" << std::endl;
-            std::cout << "File contents:" << std::endl;
+            // Print file contents to server terminal
+            std::cout << "\n[SERVER] Received file: " << request->filename() << std::endl;
+            std::cout << "[SERVER] File contents:" << std::endl;
             std::cout << "----------------------------------------" << std::endl;
             std::cout << request->content() << std::endl;
             std::cout << "----------------------------------------" << std::endl;
