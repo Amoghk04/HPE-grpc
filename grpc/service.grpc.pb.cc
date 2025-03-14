@@ -6,19 +6,19 @@
 #include "service.grpc.pb.h"
 
 #include <functional>
-#include <grpcpp/support/async_stream.h>
-#include <grpcpp/support/async_unary_call.h>
-#include <grpcpp/impl/channel_interface.h>
-#include <grpcpp/impl/client_unary_call.h>
-#include <grpcpp/support/client_callback.h>
-#include <grpcpp/support/message_allocator.h>
-#include <grpcpp/support/method_handler.h>
-#include <grpcpp/impl/rpc_service_method.h>
-#include <grpcpp/support/server_callback.h>
-#include <grpcpp/impl/server_callback_handlers.h>
-#include <grpcpp/server_context.h>
-#include <grpcpp/impl/service_type.h>
-#include <grpcpp/support/sync_stream.h>
+#include <grpcpp/impl/codegen/async_stream.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_unary_call.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
+#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 namespace myservice {
 
 static const char* Greeter_method_names[] = {
@@ -178,6 +178,109 @@ NetworkConfig::Service::~Service() {
 }
 
 ::grpc::Status NetworkConfig::Service::ConfigureIP(::grpc::ServerContext* context, const ::myservice::IPConfigRequest* request, ::myservice::IPConfigResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
+static const char* FileService_method_names[] = {
+  "/myservice.FileService/UploadFile",
+  "/myservice.FileService/DownloadFile",
+};
+
+std::unique_ptr< FileService::Stub> FileService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< FileService::Stub> stub(new FileService::Stub(channel, options));
+  return stub;
+}
+
+FileService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_UploadFile_(FileService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_DownloadFile_(FileService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status FileService::Stub::UploadFile(::grpc::ClientContext* context, const ::myservice::FileUploadRequest& request, ::myservice::FileUploadResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::myservice::FileUploadRequest, ::myservice::FileUploadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_UploadFile_, context, request, response);
+}
+
+void FileService::Stub::async::UploadFile(::grpc::ClientContext* context, const ::myservice::FileUploadRequest* request, ::myservice::FileUploadResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::myservice::FileUploadRequest, ::myservice::FileUploadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UploadFile_, context, request, response, std::move(f));
+}
+
+void FileService::Stub::async::UploadFile(::grpc::ClientContext* context, const ::myservice::FileUploadRequest* request, ::myservice::FileUploadResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UploadFile_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::FileUploadResponse>* FileService::Stub::PrepareAsyncUploadFileRaw(::grpc::ClientContext* context, const ::myservice::FileUploadRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::myservice::FileUploadResponse, ::myservice::FileUploadRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_UploadFile_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::FileUploadResponse>* FileService::Stub::AsyncUploadFileRaw(::grpc::ClientContext* context, const ::myservice::FileUploadRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncUploadFileRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status FileService::Stub::DownloadFile(::grpc::ClientContext* context, const ::myservice::FileDownloadRequest& request, ::myservice::FileDownloadResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::myservice::FileDownloadRequest, ::myservice::FileDownloadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DownloadFile_, context, request, response);
+}
+
+void FileService::Stub::async::DownloadFile(::grpc::ClientContext* context, const ::myservice::FileDownloadRequest* request, ::myservice::FileDownloadResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::myservice::FileDownloadRequest, ::myservice::FileDownloadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DownloadFile_, context, request, response, std::move(f));
+}
+
+void FileService::Stub::async::DownloadFile(::grpc::ClientContext* context, const ::myservice::FileDownloadRequest* request, ::myservice::FileDownloadResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DownloadFile_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::FileDownloadResponse>* FileService::Stub::PrepareAsyncDownloadFileRaw(::grpc::ClientContext* context, const ::myservice::FileDownloadRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::myservice::FileDownloadResponse, ::myservice::FileDownloadRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DownloadFile_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::myservice::FileDownloadResponse>* FileService::Stub::AsyncDownloadFileRaw(::grpc::ClientContext* context, const ::myservice::FileDownloadRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncDownloadFileRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+FileService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::myservice::FileUploadRequest, ::myservice::FileUploadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](FileService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::myservice::FileUploadRequest* req,
+             ::myservice::FileUploadResponse* resp) {
+               return service->UploadFile(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::myservice::FileDownloadRequest, ::myservice::FileDownloadResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](FileService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::myservice::FileDownloadRequest* req,
+             ::myservice::FileDownloadResponse* resp) {
+               return service->DownloadFile(ctx, req, resp);
+             }, this)));
+}
+
+FileService::Service::~Service() {
+}
+
+::grpc::Status FileService::Service::UploadFile(::grpc::ServerContext* context, const ::myservice::FileUploadRequest* request, ::myservice::FileUploadResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status FileService::Service::DownloadFile(::grpc::ServerContext* context, const ::myservice::FileDownloadRequest* request, ::myservice::FileDownloadResponse* response) {
   (void) context;
   (void) request;
   (void) response;

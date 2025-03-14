@@ -1,47 +1,76 @@
-cmake_minimum_required(VERSION 3.16)
-project(gRPC_Https_Server CXX)
+cmake_minimum_required(VERSION 3.10)
+project(grpc_example)
 
+# Set C++17 as required
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set vcpkg toolchain file (adjust path if needed)
-set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-
-# Find dependencies
-find_package(Protobuf CONFIG REQUIRED)
-find_package(gRPC CONFIG REQUIRED)
-find_package(nlohmann_json REQUIRED)
+# Find required packages
+find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(absl REQUIRED)
+pkg_check_modules(GRPC REQUIRED grpc++)
+pkg_check_modules(PROTOBUF REQUIRED protobuf)
 
-# Manually include the cpp-httplib header file
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Add include directories
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${GRPC_INCLUDE_DIRS})
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+include_directories(/usr/include)
 
-# Manually specify the generated source files
-set(PROTO_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/service.pb.cc)
-set(GRPC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/service.grpc.pb.cc)
+# Download cpp-httplib if not exists
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/httplib.h)
+    file(DOWNLOAD
+        https://raw.githubusercontent.com/yhirose/cpp-httplib/master/httplib.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/httplib.h
+        SHOW_PROGRESS
+    )
+endif()
 
-# Compile gRPC server
-add_executable(server server.cpp ${PROTO_SRCS} ${GRPC_SRCS})
-target_include_directories(server PRIVATE ${Protobuf_INCLUDE_DIRS})
-target_link_libraries(server PRIVATE
-    protobuf::libprotobuf
-    gRPC::grpc++
-    gRPC::grpc++_reflection
-    OpenSSL::SSL
-    OpenSSL::Crypto
-    nlohmann_json::nlohmann_json
+# Add the proto library
+add_library(proto
+    service.grpc.pb.cc
+    service.pb.cc
 )
 
-# Compile gRPC client
-add_executable(client client.cpp ${PROTO_SRCS} ${GRPC_SRCS})
-target_include_directories(client PRIVATE ${Protobuf_INCLUDE_DIRS})
-target_link_libraries(client PRIVATE
-    protobuf::libprotobuf
-    gRPC::grpc++
-    OpenSSL::SSL
-    OpenSSL::Crypto
-    nlohmann_json::nlohmann_json
+target_link_libraries(proto
+    ${GRPC_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    absl::synchronization
+    absl::time
+    absl::strings
+    absl::base
+    pthread
 )
 
-# Output messages
-message(STATUS "Building gRPC and HTTP server with vcpkg dependencies")
+# Server executable
+add_executable(server
+    server.cpp
+)
+
+target_link_libraries(server
+    proto
+    ${GRPC_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    absl::synchronization
+    absl::time
+    absl::strings
+    absl::base
+    pthread
+)
+
+# Client executable
+add_executable(client
+    client.cpp
+)
+
+target_link_libraries(client
+    proto
+    ${GRPC_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    absl::synchronization
+    absl::time
+    absl::strings
+    absl::base
+    pthread
+)
