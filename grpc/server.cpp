@@ -12,7 +12,11 @@
 #include <filesystem>
 #include "service.pb.h"
 
-// Helper function to read file contents
+// Helper function declarations
+std::string read_file(const std::string& path);
+nlohmann::json load_config(const std::string& config_path);
+
+// Helper function implementations
 std::string read_file(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -20,6 +24,9 @@ std::string read_file(const std::string& path) {
     }
     return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
+
+// Add this after your includes and using statements
+nlohmann::json load_config(const std::string& config_path);  // Function declaration
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -128,10 +135,30 @@ class FileServiceImpl final : public myservice::FileService::Service {
 template <typename Server>
 void SetupHttpRoutes(Server &server);
 
+// Keep the function definition where it is
+nlohmann::json load_config(const std::string& config_path) {
+    std::ifstream config_file(config_path);
+    if (!config_file.is_open()) {
+        throw std::runtime_error("Failed to open configuration file: " + config_path);
+    }
+    nlohmann::json config;
+    config_file >> config;
+    return config;
+}
+
 // HTTP Server with cpp-httplib
 void RunHttpServer() {
     // Create an HTTPS server
     httplib::SSLServer http_server("../certs/server.crt", "../certs/server.key");
+
+    // Load configuration at the start of RunHttpServer
+    nlohmann::json config;
+    try {
+        config = load_config("../config.json");
+    } catch (const std::exception& e) {
+        std::cerr << "[SERVER] Error loading configuration: " << e.what() << std::endl;
+        return;
+    }
 
     // Setup routes
     http_server.Get("/hi", [](const httplib::Request&, httplib::Response& res) {
@@ -198,12 +225,17 @@ void RunHttpServer() {
     });
 
     // GET endpoint to fetch server status
-    http_server.Get("/status", [](const httplib::Request&, httplib::Response& res) {
+    http_server.Get("/status", [&config](const httplib::Request&, httplib::Response& res) {
         std::cout << "[SERVER] Received GET /status request" << std::endl;
         json status = {
             {"status", "running"},
             {"timestamp", std::time(nullptr)},
-            {"version", "1.0"}
+            {"version", "1.0"},
+            {"configuration", {
+                {"ip", config["server"]["ip"]},
+                {"port", config["server"]["port"]},
+                {"max_memory", config["limits"]["max_memory"]}
+            }}
         };
         res.set_content(status.dump(), "application/json");
     });
@@ -388,7 +420,26 @@ void RunHttpServer() {
 
 // gRPC Server
 void RunGrpcServer() {
-    std::string server_address("0.0.0.0:50051");
+    std::cout << "[SERVER] Starting gRPC and HTTPS servers...\n";
+
+    // Load configuration
+    nlohmann::json config;
+    try {
+        config = load_config("../config.json");
+    } catch (const std::exception& e) {
+        std::cerr << "[SERVER] Error loading configuration: " << e.what() << std::endl;
+        return;
+    }
+
+    // Extract server settings
+    std::string server_ip = config["server"]["ip"];
+    int server_port = config["server"]["port"];
+    int max_memory = config["limits"]["max_memory"];
+
+    std::cout << "[SERVER] Configuration loaded: IP=" << server_ip << ", Port=" << server_port << ", Max Memory=" << max_memory << "MB\n";
+
+    // Use the configuration to set up the server
+    std::string server_address = server_ip + ":" + std::to_string(server_port);
     GreeterServiceImpl greeter_service;
     NetworkConfigServiceImpl network_service;
     FileServiceImpl file_service;
