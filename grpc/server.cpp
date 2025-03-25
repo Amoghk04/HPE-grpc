@@ -97,40 +97,66 @@ public:
 };
 
 class FileServiceImpl final : public myservice::FileService::Service {
-    public:
-        grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
-            std::lock_guard<std::mutex> lock(file_mutex);
-            
-            // Print file contents to server terminal
-            std::cout << "\n[SERVER] Received file: " << request->filename() << std::endl;
-            std::cout << "[SERVER] File contents:" << std::endl;
-            std::cout << "----------------------------------------" << std::endl;
-            std::cout << request->content() << std::endl;
-            std::cout << "----------------------------------------" << std::endl;
-            
-            std::ofstream outfile("./uploads/" + request->filename(), std::ios::binary);
-            if (!outfile) {
-                return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to open file for writing");
-            }
-            outfile.write(request->content().data(), request->content().size());
-            outfile.close();
-    
-            response->set_message("File uploaded successfully");
-            return grpc::Status::OK;
+private:
+    std::mutex file_mutex;  // Per-instance mutex for file operations
+    std::unordered_map<std::string, std::mutex> file_mutexes;  // Per-file mutexes
+    std::mutex mutexes_mutex;  // Mutex for the file_mutexes map
+
+    // Get or create a mutex for a specific file
+    std::mutex& getFileMutex(const std::string& filename) {
+        std::lock_guard<std::mutex> lock(mutexes_mutex);
+        return file_mutexes[filename];
+    }
+
+public:
+    grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
+        // Get the mutex for this specific file
+        std::mutex& specific_file_mutex = getFileMutex(request->filename());
+        std::lock_guard<std::mutex> file_lock(specific_file_mutex);
+        
+        // Create uploads directory if it doesn't exist
+        std::filesystem::create_directories("./uploads");
+        
+        // Get current timestamp for logging
+        auto now = std::chrono::system_clock::now();
+        auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(
+            now.time_since_epoch()).count();
+        
+        std::cout << "\n[SERVER][" << timestamp << "] Received file: " << request->filename() << std::endl;
+        
+        // Open file in append mode to maintain write order
+        std::ofstream outfile("./uploads/" + request->filename(), std::ios::app);
+        if (!outfile) {
+            std::cerr << "[SERVER][" << timestamp << "] Failed to open file: " << request->filename() << std::endl;
+            return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to open file for writing");
         }
-    
-        grpc::Status DownloadFile(grpc::ServerContext* context, const myservice::FileDownloadRequest* request, myservice::FileDownloadResponse* response) override {
-            std::lock_guard<std::mutex> lock(file_mutex);
-            std::ifstream infile("./uploads/" + request->filename(), std::ios::binary);
-            if (!infile) {
-                return grpc::Status(grpc::StatusCode::NOT_FOUND, "File not found");
-            }
-            std::ostringstream buffer;
-            buffer << infile.rdbuf();
-            response->set_content(buffer.str());
-            return grpc::Status::OK;
+        
+        // Write the content with timestamp
+        outfile << "[" << timestamp << "] " << request->content();
+        outfile.flush();  // Ensure content is written immediately
+        outfile.close();
+        
+        std::cout << "[SERVER][" << timestamp << "] Successfully wrote to file: " << request->filename() << std::endl;
+        
+        response->set_message("File uploaded successfully");
+        return grpc::Status::OK;
+    }
+
+    grpc::Status DownloadFile(grpc::ServerContext* context, const myservice::FileDownloadRequest* request, myservice::FileDownloadResponse* response) override {
+        std::mutex& specific_file_mutex = getFileMutex(request->filename());
+        std::lock_guard<std::mutex> file_lock(specific_file_mutex);
+        
+        std::ifstream infile("./uploads/" + request->filename(), std::ios::binary);
+        if (!infile) {
+            return grpc::Status(grpc::StatusCode::NOT_FOUND, "File not found");
         }
+        std::ostringstream buffer;
+        buffer << infile.rdbuf();
+        response->set_content(buffer.str());
+        return grpc::Status::OK;
+    }
 };
+
 // Forward declaration of SetupHttpRoutes function
 template <typename Server>
 void SetupHttpRoutes(Server &server);
