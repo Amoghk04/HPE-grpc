@@ -16,3 +16,4 @@ grpc/service.grpc.pb.h
 grpc/service.pb.cc
 grpc/service.pb.h
 certs/
+.DS_Store
