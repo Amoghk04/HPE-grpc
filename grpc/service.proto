@@ -5,13 +5,17 @@ package myservice;
 // gRPC service
 service Greeter {
     rpc SayHello (HelloRequest) returns (HelloReply);
-
     rpc SayHelloAgain (HelloRequest) returns (HelloReply);
+    rpc Hi (EmptyRequest) returns (HelloReply);
+    rpc Status (EmptyRequest) returns (StatusResponse);
 }
 
 service NetworkConfig {
     rpc ConfigureIP (IPConfigRequest) returns (IPConfigResponse);
 }
+
+// Empty request message
+message EmptyRequest {}
 
 // request message
 message HelloRequest {
@@ -21,6 +25,19 @@ message HelloRequest {
 // response message
 message HelloReply {
     string message = 1;
+}
+
+message StatusResponse {
+    string status = 1;
+    int64 timestamp = 2;
+    string version = 3;
+    ConfigInfo configuration = 4;
+}
+
+message ConfigInfo {
+    string ip = 1;
+    int32 port = 2;
+    int32 max_memory = 3;
 }
 
 message IPConfigRequest {
@@ -44,27 +61,30 @@ message IPConfigResponse {
 
 // File Upload Request
 message FileUploadRequest {
-  string filename = 1;
-  bytes content = 2;
+    string filename = 1;
+    bytes content = 2;
 }
 
 // File Upload Response
 message FileUploadResponse {
-  string message = 1;
+    bool success = 1;
+    string filepath = 2;
+    string message = 3;
 }
 
 // File Download Request
 message FileDownloadRequest {
-  string filename = 1;
+    string filename = 1;
 }
 
 // File Download Response
 message FileDownloadResponse {
-  bytes content = 1;
+    bytes content = 1;
+    string filename = 2;
 }
 
 // Service Definition
 service FileService {
-  rpc UploadFile(FileUploadRequest) returns (FileUploadResponse);
-  rpc DownloadFile(FileDownloadRequest) returns (FileDownloadResponse);
+    rpc UploadFile(FileUploadRequest) returns (FileUploadResponse) {}
+    rpc DownloadFile(FileDownloadRequest) returns (FileDownloadResponse) {}
 }

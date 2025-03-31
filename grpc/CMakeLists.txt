@@ -12,6 +12,10 @@ find_package(OpenSSL REQUIRED)
 find_package(absl REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1)
+    link_libraries(stdc++fs)
+endif()
+
 # Find or download nlohmann_json
 include(FetchContent)
 FetchContent_Declare(json
@@ -76,6 +80,9 @@ target_link_libraries(server
     proto
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    crypto
     gRPC::grpc++
     gRPC::grpc
     gRPC::gpr

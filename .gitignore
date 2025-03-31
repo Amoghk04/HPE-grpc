@@ -17,3 +17,6 @@ grpc/service.pb.cc
 grpc/service.pb.h
 certs/
 .DS_Store
+.vscode
+web/node_modules
+web/dist
