@@ -98,38 +98,51 @@ std::string vvolConfigToString(const VVolConfig& config) {
     return ss.str();
 }
 
-std::string read_file(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file: " + path);
+std::string read_file(const std::string& filepath) {
+    std::ifstream file(filepath, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Failed to open file: " + filepath);
     }
-    return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::string content((std::istreambuf_iterator<char>(file)), 
+                        std::istreambuf_iterator<char>());
+    return content;
 }
 
 class ConsistencyTestClient {
-public:
-    ConsistencyTestClient(std::shared_ptr<Channel> channel) 
-        : stub_(FileService::NewStub(channel)) {}
-
-    bool WriteToFile(const std::string& filename, const std::string& content, int client_id) {
-        FileUploadRequest request;
-        request.set_filename(filename);
-        request.set_content(content);
-
-        FileUploadResponse response;
-        ClientContext context;
-        Status status = stub_->UploadFile(&context, request, &response);
-
-        if (status.ok()) {
-            std::cout << "Client " << client_id << " wrote VVOL config successfully for " 
-                      << content.substr(0, content.find('\n')) << std::endl;
-            return true;
-        } else {
-            std::cerr << "Client " << client_id << " write failed: " << status.error_message() << std::endl;
-            return false;
+    public:
+        ConsistencyTestClient(std::shared_ptr<Channel> channel) 
+            : stub_(FileService::NewStub(channel)) {}
+    
+        bool WriteToFile(const std::string& filename, const std::string& content, int client_id) {
+            FileUploadRequest request;
+            request.set_filename(filename);
+            request.set_content(content);
+    
+            FileUploadResponse response;
+            ClientContext context;
+    
+            // Add metadata for client identification
+            context.AddMetadata("client-id", std::to_string(client_id));
+            
+            Status status = stub_->UploadFile(&context, request, &response);
+    
+            if (status.ok()) {
+                if (response.success()) {
+                    std::cout << "Client " << client_id << " wrote VVOL config successfully to "
+                             << response.filepath() << std::endl;
+                    return true;
+                } else {
+                    std::cerr << "Client " << client_id << " write failed: " 
+                             << response.message() << std::endl;
+                    return false;
+                }
+            } else {
+                std::cerr << "Client " << client_id << " RPC failed: " 
+                         << status.error_message() << std::endl;
+                return false;
+            }
         }
-    }
-
+    
 private:
     std::unique_ptr<FileService::Stub> stub_;
 };
@@ -160,33 +173,54 @@ void RunClientThread(ConsistencyTestClient* client, const std::string& filename,
 }
 
 int main() {
-    grpc::SslCredentialsOptions ssl_opts;
-    ssl_opts.pem_root_certs = read_file("../certs/server.crt");
-    
-    auto channel_creds = grpc::SslCredentials(ssl_opts);
-    auto channel = grpc::CreateChannel("localhost:50052", channel_creds);
+    try {
+        // Load SSL credentials
+        std::string server_key = read_file("../../certs/server.key");
+        std::string server_cert = read_file("../../certs/server.crt");
+        std::string ca_cert = read_file("../../certs/ca.crt");
 
-    const int NUM_CLIENTS = 5;
-    const int WRITES_PER_CLIENT = 10;
-    const std::string TEST_FILENAME = "vvol_config_test.txt";
-    
-    std::vector<std::unique_ptr<ConsistencyTestClient>> clients;
-    std::vector<std::thread> threads;
-    
-    std::cout << "Starting VVOL configuration consistency test with " << NUM_CLIENTS << 
-              " clients, each performing " << WRITES_PER_CLIENT << " configuration updates..." << std::endl;
+        grpc::SslCredentialsOptions ssl_opts;
+        ssl_opts.pem_root_certs = ca_cert;
+        ssl_opts.pem_private_key = server_key;
+        ssl_opts.pem_cert_chain = server_cert;
+        
+        auto channel_creds = grpc::SslCredentials(ssl_opts);
+        auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
 
-    for (int i = 0; i < NUM_CLIENTS; i++) {
-        clients.push_back(std::make_unique<ConsistencyTestClient>(channel));
-        threads.emplace_back(RunClientThread, clients[i].get(), TEST_FILENAME, i, WRITES_PER_CLIENT);
+        const int NUM_CLIENTS = 50;
+        const int WRITES_PER_CLIENT = 100;
+        const std::string TEST_FILENAME = "vvol_config_test.txt";
+        
+        std::vector<std::unique_ptr<ConsistencyTestClient>> clients;
+        std::vector<std::thread> threads;
+        
+        std::cout << "Starting VVOL configuration consistency test with " << NUM_CLIENTS 
+                 << " clients, each performing " << WRITES_PER_CLIENT 
+                 << " configuration updates..." << std::endl;
+
+        // Ensure uploads directory exists
+        if (!std::filesystem::exists("uploads")) {
+            std::filesystem::create_directory("uploads");
+        }
+
+        for (int i = 0; i < NUM_CLIENTS; i++) {
+            clients.push_back(std::make_unique<ConsistencyTestClient>(channel));
+            threads.emplace_back(RunClientThread, clients[i].get(), 
+                               TEST_FILENAME, i, WRITES_PER_CLIENT);
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
+
+        std::cout << "All clients finished writing VVOL configurations. Check " 
+                 << TEST_FILENAME << " in the uploads directory to verify consistency." 
+                 << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
-
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    std::cout << "All clients finished writing VVOL configurations. Check " << TEST_FILENAME << 
-              " in the uploads directory to verify consistency." << std::endl;
 
     return 0;
-} 
+}
