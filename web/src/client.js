@@ -109,7 +109,6 @@
 //         document.body.appendChild(a);
 //         a.click();
 //         window.URL.revokeObjectURL(url);
-//         document.body.removeChild(a);
 
 //         progressDiv.innerText = `Download Complete`;
 //     });
@@ -125,12 +124,11 @@ const client = new GreeterClient('http://localhost:8080', null, {
 });
 
 const clientOptions = {
-    withCredentials: true,
-    format: 'text'
-  };
-  
-  const fileClient = new FileServiceClient('http://localhost:8080', null, clientOptions);
-  
+    format: 'text',
+    withCredentials: false
+};
+
+const fileClient = new FileServiceClient('http://localhost:8080', null, clientOptions);
 
 window.sayHello = function() {
   const request = new HelloRequest();
@@ -239,12 +237,8 @@ window.uploadFile = function() {
       progressDiv.innerText = `Uploading ${file.name} (${file.size} bytes)...`;
   
       const metadata = {
-        'content-type': 'application/grpc-web-text',
         'x-grpc-web': '1',
-        'grpc-timeout': '10S',
-        'x-file-name': file.name,
-        'x-file-size': file.size,
-        'x-file-type': file.type
+        'grpc-timeout': '10S'
       };
   
       console.log('Sending upload request with metadata:', metadata);

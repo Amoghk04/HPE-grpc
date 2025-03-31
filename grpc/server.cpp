@@ -32,7 +32,7 @@ using myservice::FileUploadResponse;
 using myservice::FileDownloadRequest;
 using myservice::FileDownloadResponse;
 
-// Certificate paths
+
 constexpr auto SERVER_CERT = "../../certs/server.crt";
 constexpr auto SERVER_KEY = "../../certs/server.key";
 constexpr auto ROOT_CERT = "../../certs/ca.crt";
@@ -240,7 +240,7 @@ int main() {
     std::string server_address("0.0.0.0:50051");
     
     try {
-        // Load SSL credentials
+      
         std::string server_key = read_file("../../certs/server.key");
         std::string server_cert = read_file("../../certs/server.crt");
         std::string ca_cert = read_file("../../certs/ca.crt");
