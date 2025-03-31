@@ -78,12 +78,13 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 127.0.0.1
+                      address: 192.168.29.69
                       port_value: 50051
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+          sni: "localhost"
           common_tls_context:
             tls_certificates:
               - certificate_chain:

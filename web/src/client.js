@@ -1,124 +1,9 @@
-// const {
-//     HelloRequest,
-//     EmptyRequest,
-//     FileUploadRequest,
-//     FileDownloadRequest,
-//     IPConfigRequest
-// } = require('./service_pb.js');
-
-// const {
-//     GreeterClient,
-//     FileServiceClient,
-//     NetworkConfigClient
-// } = require('./service_grpc_web_pb.js');
-
-// const clientOptions = {
-//     withCredentials: true,
-//     unaryInterceptors: [{
-//         intercept: function(request, invoker) {
-//             const metadata = request.getMetadata();
-//             metadata['grpc-web'] = '1';
-//             metadata['content-type'] = 'application/grpc-web-text';
-//             return invoker(request);
-//         }
-//     }]
-// };
-
-// // Create client instances
-// const greeterClient = new GreeterClient('http://localhost:8080', null, clientOptions);
-// const fileClient = new FileServiceClient('http://localhost:8080', null, clientOptions);
-// const networkClient = new NetworkConfigClient('http://localhost:8080', null, clientOptions);
-
-// // Common metadata without unsafe headers
-// const defaultMetadata = {
-//     'content-type': 'application/grpc-web-text',
-//     'x-grpc-web': '1'
-// };
-
-// window.uploadFile = function() {
-//     const fileInput = document.getElementById('uploadFile');
-//     const file = fileInput.files[0];
-//     if (!file) {
-//         alert('Please select a file first');
-//         return;
-//     }
-
-//     const reader = new FileReader();
-//     reader.onload = function(e) {
-//         const content = new Uint8Array(e.target.result);
-//         const request = new FileUploadRequest();
-//         request.setFilename(file.name);
-//         request.setContent(content);
-
-//         const progressDiv = document.getElementById('uploadProgress');
-//         progressDiv.innerText = `Uploading ${file.name} (${file.size} bytes)...`;
-
-//         console.log('Sending upload request with metadata:', defaultMetadata);
-
-//         fileClient.uploadFile(request, defaultMetadata, (err, response) => {
-//             if (err) {
-//                 console.error('Upload Error:', {
-//                     code: err.code,
-//                     message: err.message,
-//                     metadata: err.metadata
-//                 });
-//                 progressDiv.innerText = `Upload Error: ${err.message}`;
-//                 return;
-//             }
-
-//             progressDiv.innerText = `Upload successful: ${response.getMessage()}`;
-//         });
-//     };
-
-//     reader.onerror = function(err) {
-//         console.error('File Read Error:', err);
-//         document.getElementById('uploadProgress').innerText = 
-//             'Error reading file';
-//     };
-
-//     reader.readAsArrayBuffer(file);
-// };
-
-// window.downloadFile = function() {
-//     const filepath = document.getElementById('downloadPath').value;
-//     if (!filepath) {
-//         alert('Please enter a file path');
-//         return;
-//     }
-
-//     const request = new FileDownloadRequest();
-//     request.setFilename(filepath);
-
-//     const progressDiv = document.getElementById('downloadProgress');
-//     progressDiv.innerText = 'Downloading...';
-
-//     fileClient.downloadFile(request, metadata, (err, response) => {
-//         if (err) {
-//             console.error('Download Error:', err);
-//             progressDiv.innerText = `Download Error: ${err.message}`;
-//             return;
-//         }
-
-//         const content = response.getContent();
-//         const blob = new Blob([content], { type: 'application/octet-stream' });
-//         const url = window.URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = url;
-//         a.download = filepath.split('/').pop() || 'downloaded_file';
-//         a.style.display = 'none';
-//         document.body.appendChild(a);
-//         a.click();
-//         window.URL.revokeObjectURL(url);
-
-//         progressDiv.innerText = `Download Complete`;
-//     });
-// };
-// client.js
 const { HelloRequest, EmptyRequest, FileUploadRequest, FileDownloadRequest } = require('./service_pb.js');
 const { GreeterClient, FileServiceClient } = require('./service_grpc_web_pb.js');
 
+const API_URL = process.env.API_URL || "http://localhost:8080";
 // withCredentials setting must match your CORS policy
-const client = new GreeterClient('http://localhost:8080', null, {
+const client = new GreeterClient(API_URL, null, {
   format: 'text',
   withCredentials: false  
 });
@@ -128,7 +13,7 @@ const clientOptions = {
     withCredentials: false
 };
 
-const fileClient = new FileServiceClient('http://localhost:8080', null, clientOptions);
+const fileClient = new FileServiceClient(API_URL, null, clientOptions);
 
 window.sayHello = function() {
   const request = new HelloRequest();
