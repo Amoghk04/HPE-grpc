@@ -1,9 +1,8 @@
 const { HelloRequest, EmptyRequest, FileUploadRequest, FileDownloadRequest } = require('./service_pb.js');
 const { GreeterClient, FileServiceClient } = require('./service_grpc_web_pb.js');
 
-const API_URL = process.env.API_URL || "http://localhost:8080";
 // withCredentials setting must match your CORS policy
-const client = new GreeterClient(API_URL, null, {
+const client = new GreeterClient("http://localhost:8080", null, {
   format: 'text',
   withCredentials: false  
 });
@@ -13,7 +12,7 @@ const clientOptions = {
     withCredentials: false
 };
 
-const fileClient = new FileServiceClient(API_URL, null, clientOptions);
+const fileClient = new FileServiceClient("http://localhost:8080", null, clientOptions);
 
 window.sayHello = function() {
   const request = new HelloRequest();
@@ -123,7 +122,7 @@ window.uploadFile = function() {
   
       const metadata = {
         'x-grpc-web': '1',
-        'grpc-timeout': '10S'
+        'grpc-timeout': '100S'
       };
   
       console.log('Sending upload request with metadata:', metadata);
@@ -159,7 +158,7 @@ window.uploadFile = function() {
   
     const metadata = {
       'x-grpc-web': '1',
-      'grpc-timeout': '10S'
+      'grpc-timeout': '100S'
     };
   
     const progressDiv = document.getElementById('downloadProgress');
