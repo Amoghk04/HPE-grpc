@@ -1,9 +1,9 @@
 {
     "server": {
       "ip": "0.0.0.0",
-      "port": 50052
+      "port": 50051
     },
     "limits": {
-      "max_memory": 1
+      "max_memory": 2000
     }
   }

@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "@grpc/grpc-js": "^1.13.2",
+    "@grpc/proto-loader": "^0.7.13",
+    "dotenv-webpack": "^8.1.0",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
+    "webpack-dev-server": "^5.2.1"
+  },
+  "dependencies": {
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "scripts": {
+    "generate-proto": "protoc -I=.. ../grpc/service.proto --js_out=import_style=commonjs:./src --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./src",
+    "build": "webpack --mode production",
+    "start": "webpack serve --mode development"
+  }
+}

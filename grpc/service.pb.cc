@@ -157,9 +157,13 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr FileUploadResponse::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : message_(
+      : filepath_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        message_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        success_{false},
         _cached_size_{0} {}
 
 template <typename>
@@ -217,6 +221,9 @@ inline constexpr FileDownloadResponse::Impl_::Impl_(
       : content_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        filename_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         _cached_size_{0} {}
 
 template <typename>
@@ -265,6 +272,85 @@ struct FileDownloadRequestDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileDownloadRequestDefaultTypeInternal _FileDownloadRequest_default_instance_;
+              template <typename>
+PROTOBUF_CONSTEXPR EmptyRequest::EmptyRequest(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct EmptyRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR EmptyRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~EmptyRequestDefaultTypeInternal() {}
+  union {
+    EmptyRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EmptyRequestDefaultTypeInternal _EmptyRequest_default_instance_;
+
+inline constexpr ConfigInfo::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : ip_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        port_{0},
+        max_memory_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR ConfigInfo::ConfigInfo(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct ConfigInfoDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ConfigInfoDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ConfigInfoDefaultTypeInternal() {}
+  union {
+    ConfigInfo _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ConfigInfoDefaultTypeInternal _ConfigInfo_default_instance_;
+
+inline constexpr StatusResponse::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        status_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        version_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        configuration_{nullptr},
+        timestamp_{::int64_t{0}} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR StatusResponse::StatusResponse(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct StatusResponseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StatusResponseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StatusResponseDefaultTypeInternal() {}
+  union {
+    StatusResponse _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StatusResponseDefaultTypeInternal _StatusResponse_default_instance_;
 }  // namespace myservice
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_service_2eproto = nullptr;
@@ -273,6 +359,14 @@ static constexpr const ::_pb::ServiceDescriptor**
 const ::uint32_t
     TableStruct_service_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::myservice::EmptyRequest, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::myservice::HelloRequest, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -291,6 +385,33 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::myservice::HelloReply, _impl_.message_),
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _impl_._has_bits_),
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _impl_.status_),
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _impl_.timestamp_),
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _impl_.version_),
+        PROTOBUF_FIELD_OFFSET(::myservice::StatusResponse, _impl_.configuration_),
+        ~0u,
+        ~0u,
+        ~0u,
+        0,
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::myservice::ConfigInfo, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::myservice::ConfigInfo, _impl_.ip_),
+        PROTOBUF_FIELD_OFFSET(::myservice::ConfigInfo, _impl_.port_),
+        PROTOBUF_FIELD_OFFSET(::myservice::ConfigInfo, _impl_.max_memory_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::myservice::IPConfigRequest, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -336,6 +457,8 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::myservice::FileUploadResponse, _impl_.success_),
+        PROTOBUF_FIELD_OFFSET(::myservice::FileUploadResponse, _impl_.filepath_),
         PROTOBUF_FIELD_OFFSET(::myservice::FileUploadResponse, _impl_.message_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::myservice::FileDownloadRequest, _internal_metadata_),
@@ -355,22 +478,29 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::myservice::FileDownloadResponse, _impl_.content_),
+        PROTOBUF_FIELD_OFFSET(::myservice::FileDownloadResponse, _impl_.filename_),
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, -1, -1, sizeof(::myservice::HelloRequest)},
-        {9, -1, -1, sizeof(::myservice::HelloReply)},
-        {18, -1, -1, sizeof(::myservice::IPConfigRequest)},
-        {32, -1, -1, sizeof(::myservice::IPConfigResponse)},
-        {45, -1, -1, sizeof(::myservice::FileUploadRequest)},
-        {55, -1, -1, sizeof(::myservice::FileUploadResponse)},
-        {64, -1, -1, sizeof(::myservice::FileDownloadRequest)},
-        {73, -1, -1, sizeof(::myservice::FileDownloadResponse)},
+        {0, -1, -1, sizeof(::myservice::EmptyRequest)},
+        {8, -1, -1, sizeof(::myservice::HelloRequest)},
+        {17, -1, -1, sizeof(::myservice::HelloReply)},
+        {26, 38, -1, sizeof(::myservice::StatusResponse)},
+        {42, -1, -1, sizeof(::myservice::ConfigInfo)},
+        {53, -1, -1, sizeof(::myservice::IPConfigRequest)},
+        {67, -1, -1, sizeof(::myservice::IPConfigResponse)},
+        {80, -1, -1, sizeof(::myservice::FileUploadRequest)},
+        {90, -1, -1, sizeof(::myservice::FileUploadResponse)},
+        {101, -1, -1, sizeof(::myservice::FileDownloadRequest)},
+        {110, -1, -1, sizeof(::myservice::FileDownloadResponse)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
+    &::myservice::_EmptyRequest_default_instance_._instance,
     &::myservice::_HelloRequest_default_instance_._instance,
     &::myservice::_HelloReply_default_instance_._instance,
+    &::myservice::_StatusResponse_default_instance_._instance,
+    &::myservice::_ConfigInfo_default_instance_._instance,
     &::myservice::_IPConfigRequest_default_instance_._instance,
     &::myservice::_IPConfigResponse_default_instance_._instance,
     &::myservice::_FileUploadRequest_default_instance_._instance,
@@ -380,43 +510,52 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_service_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\rservice.proto\022\tmyservice\"\034\n\014HelloReque"
-    "st\022\014\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007messag"
-    "e\030\001 \001(\t\"\242\001\n\017IPConfigRequest\022\026\n\016interface"
-    "_name\030\001 \001(\t\022\020\n\010use_dhcp\030\002 \001(\010\022\024\n\014request"
-    "ed_ip\030\003 \001(\t\022\035\n\025requested_subnet_mask\030\004 \001"
-    "(\t\022\031\n\021requested_gateway\030\005 \001(\t\022\025\n\rrequest"
-    "ed_dns\030\006 \003(\t\"\201\001\n\020IPConfigResponse\022\022\n\nip_"
-    "address\030\001 \001(\t\022\023\n\013subnet_mask\030\002 \001(\t\022\027\n\017de"
-    "fault_gateway\030\003 \001(\t\022\023\n\013dns_servers\030\004 \003(\t"
-    "\022\026\n\016status_message\030\005 \001(\t\"6\n\021FileUploadRe"
-    "quest\022\020\n\010filename\030\001 \001(\t\022\017\n\007content\030\002 \001(\014"
-    "\"%\n\022FileUploadResponse\022\017\n\007message\030\001 \001(\t\""
-    "\'\n\023FileDownloadRequest\022\020\n\010filename\030\001 \001(\t"
-    "\"\'\n\024FileDownloadResponse\022\017\n\007content\030\001 \001("
-    "\0142\206\001\n\007Greeter\022:\n\010SayHello\022\027.myservice.He"
-    "lloRequest\032\025.myservice.HelloReply\022\?\n\rSay"
-    "HelloAgain\022\027.myservice.HelloRequest\032\025.my"
-    "service.HelloReply2W\n\rNetworkConfig\022F\n\013C"
-    "onfigureIP\022\032.myservice.IPConfigRequest\032\033"
-    ".myservice.IPConfigResponse2\251\001\n\013FileServ"
-    "ice\022I\n\nUploadFile\022\034.myservice.FileUpload"
-    "Request\032\035.myservice.FileUploadResponse\022O"
-    "\n\014DownloadFile\022\036.myservice.FileDownloadR"
-    "equest\032\037.myservice.FileDownloadResponseb"
-    "\006proto3"
+    "\n\rservice.proto\022\tmyservice\"\016\n\014EmptyReque"
+    "st\"\034\n\014HelloRequest\022\014\n\004name\030\001 \001(\t\"\035\n\nHell"
+    "oReply\022\017\n\007message\030\001 \001(\t\"r\n\016StatusRespons"
+    "e\022\016\n\006status\030\001 \001(\t\022\021\n\ttimestamp\030\002 \001(\003\022\017\n\007"
+    "version\030\003 \001(\t\022,\n\rconfiguration\030\004 \001(\0132\025.m"
+    "yservice.ConfigInfo\":\n\nConfigInfo\022\n\n\002ip\030"
+    "\001 \001(\t\022\014\n\004port\030\002 \001(\005\022\022\n\nmax_memory\030\003 \001(\005\""
+    "\242\001\n\017IPConfigRequest\022\026\n\016interface_name\030\001 "
+    "\001(\t\022\020\n\010use_dhcp\030\002 \001(\010\022\024\n\014requested_ip\030\003 "
+    "\001(\t\022\035\n\025requested_subnet_mask\030\004 \001(\t\022\031\n\021re"
+    "quested_gateway\030\005 \001(\t\022\025\n\rrequested_dns\030\006"
+    " \003(\t\"\201\001\n\020IPConfigResponse\022\022\n\nip_address\030"
+    "\001 \001(\t\022\023\n\013subnet_mask\030\002 \001(\t\022\027\n\017default_ga"
+    "teway\030\003 \001(\t\022\023\n\013dns_servers\030\004 \003(\t\022\026\n\016stat"
+    "us_message\030\005 \001(\t\"6\n\021FileUploadRequest\022\020\n"
+    "\010filename\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"H\n\022File"
+    "UploadResponse\022\017\n\007success\030\001 \001(\010\022\020\n\010filep"
+    "ath\030\002 \001(\t\022\017\n\007message\030\003 \001(\t\"\'\n\023FileDownlo"
+    "adRequest\022\020\n\010filename\030\001 \001(\t\"9\n\024FileDownl"
+    "oadResponse\022\017\n\007content\030\001 \001(\014\022\020\n\010filename"
+    "\030\002 \001(\t2\372\001\n\007Greeter\022:\n\010SayHello\022\027.myservi"
+    "ce.HelloRequest\032\025.myservice.HelloReply\022\?"
+    "\n\rSayHelloAgain\022\027.myservice.HelloRequest"
+    "\032\025.myservice.HelloReply\0224\n\002Hi\022\027.myservic"
+    "e.EmptyRequest\032\025.myservice.HelloReply\022<\n"
+    "\006Status\022\027.myservice.EmptyRequest\032\031.myser"
+    "vice.StatusResponse2W\n\rNetworkConfig\022F\n\013"
+    "ConfigureIP\022\032.myservice.IPConfigRequest\032"
+    "\033.myservice.IPConfigResponse2\255\001\n\013FileSer"
+    "vice\022K\n\nUploadFile\022\034.myservice.FileUploa"
+    "dRequest\032\035.myservice.FileUploadResponse\""
+    "\000\022Q\n\014DownloadFile\022\036.myservice.FileDownlo"
+    "adRequest\032\037.myservice.FileDownloadRespon"
+    "se\"\000b\006proto3"
 };
 static ::absl::once_flag descriptor_table_service_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_service_2eproto = {
     false,
     false,
-    967,
+    1332,
     descriptor_table_protodef_service_2eproto,
     "service.proto",
     &descriptor_table_service_2eproto_once,
     nullptr,
     0,
-    8,
+    11,
     schemas,
     file_default_instances,
     TableStruct_service_2eproto::offsets,
@@ -424,6 +563,109 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_service_2eprot
     file_level_service_descriptors_service_2eproto,
 };
 namespace myservice {
+// ===================================================================
+
+class EmptyRequest::_Internal {
+ public:
+};
+
+EmptyRequest::EmptyRequest(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(arena_constructor:myservice.EmptyRequest)
+}
+EmptyRequest::EmptyRequest(
+    ::google::protobuf::Arena* arena,
+    const EmptyRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  EmptyRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+
+  // @@protoc_insertion_point(copy_constructor:myservice.EmptyRequest)
+}
+
+inline void* EmptyRequest::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) EmptyRequest(arena);
+}
+constexpr auto EmptyRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(EmptyRequest),
+                                            alignof(EmptyRequest));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull EmptyRequest::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_EmptyRequest_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &EmptyRequest::MergeImpl,
+        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<EmptyRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &EmptyRequest::SharedDtor,
+        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<EmptyRequest>(), &EmptyRequest::ByteSizeLong,
+            &EmptyRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(EmptyRequest, _impl_._cached_size_),
+        false,
+    },
+    &EmptyRequest::kDescriptorMethods,
+    &descriptor_table_service_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* EmptyRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 0, 0, 0, 2> EmptyRequest::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    0, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967295,  // skipmap
+    offsetof(decltype(_table_), field_names),  // no field_entries
+    0,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::myservice::EmptyRequest>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }},
+  // no field_entries, or aux_entries
+  {{
+  }},
+};
+
+
+
+
+
+
+
+
+::google::protobuf::Metadata EmptyRequest::GetMetadata() const {
+  return ::google::protobuf::internal::ZeroFieldsBase::GetMetadataImpl(GetClassData()->full());
+}
 // ===================================================================
 
 class HelloRequest::_Internal {
@@ -884,6 +1126,651 @@ void HelloReply::InternalSwap(HelloReply* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata HelloReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class StatusResponse::_Internal {
+ public:
+  using HasBits =
+      decltype(std::declval<StatusResponse>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_._has_bits_);
+};
+
+StatusResponse::StatusResponse(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:myservice.StatusResponse)
+}
+inline PROTOBUF_NDEBUG_INLINE StatusResponse::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::myservice::StatusResponse& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        status_(arena, from.status_),
+        version_(arena, from.version_) {}
+
+StatusResponse::StatusResponse(
+    ::google::protobuf::Arena* arena,
+    const StatusResponse& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  StatusResponse* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.configuration_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::myservice::ConfigInfo>(
+                              arena, *from._impl_.configuration_)
+                        : nullptr;
+  _impl_.timestamp_ = from._impl_.timestamp_;
+
+  // @@protoc_insertion_point(copy_constructor:myservice.StatusResponse)
+}
+inline PROTOBUF_NDEBUG_INLINE StatusResponse::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0},
+        status_(arena),
+        version_(arena) {}
+
+inline void StatusResponse::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, configuration_),
+           0,
+           offsetof(Impl_, timestamp_) -
+               offsetof(Impl_, configuration_) +
+               sizeof(Impl_::timestamp_));
+}
+StatusResponse::~StatusResponse() {
+  // @@protoc_insertion_point(destructor:myservice.StatusResponse)
+  SharedDtor(*this);
+}
+inline void StatusResponse::SharedDtor(MessageLite& self) {
+  StatusResponse& this_ = static_cast<StatusResponse&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.status_.Destroy();
+  this_._impl_.version_.Destroy();
+  delete this_._impl_.configuration_;
+  this_._impl_.~Impl_();
+}
+
+inline void* StatusResponse::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) StatusResponse(arena);
+}
+constexpr auto StatusResponse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(StatusResponse),
+                                            alignof(StatusResponse));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull StatusResponse::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_StatusResponse_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &StatusResponse::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<StatusResponse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &StatusResponse::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<StatusResponse>(), &StatusResponse::ByteSizeLong,
+            &StatusResponse::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_._cached_size_),
+        false,
+    },
+    &StatusResponse::kDescriptorMethods,
+    &descriptor_table_service_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* StatusResponse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 1, 46, 2> StatusResponse::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::myservice::StatusResponse>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // .myservice.ConfigInfo configuration = 4;
+    {::_pbi::TcParser::FastMtS1,
+     {34, 0, 0, PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.configuration_)}},
+    // string status = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.status_)}},
+    // int64 timestamp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(StatusResponse, _impl_.timestamp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.timestamp_)}},
+    // string version = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.version_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string status = 1;
+    {PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.status_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 timestamp = 2;
+    {PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.timestamp_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt64)},
+    // string version = 3;
+    {PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.version_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .myservice.ConfigInfo configuration = 4;
+    {PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.configuration_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::myservice::ConfigInfo>()},
+  }}, {{
+    "\30\6\0\7\0\0\0\0"
+    "myservice.StatusResponse"
+    "status"
+    "version"
+  }},
+};
+
+PROTOBUF_NOINLINE void StatusResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:myservice.StatusResponse)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.status_.ClearToEmpty();
+  _impl_.version_.ClearToEmpty();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(_impl_.configuration_ != nullptr);
+    _impl_.configuration_->Clear();
+  }
+  _impl_.timestamp_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* StatusResponse::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const StatusResponse& this_ = static_cast<const StatusResponse&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* StatusResponse::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const StatusResponse& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:myservice.StatusResponse)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // string status = 1;
+          if (!this_._internal_status().empty()) {
+            const std::string& _s = this_._internal_status();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.StatusResponse.status");
+            target = stream->WriteStringMaybeAliased(1, _s, target);
+          }
+
+          // int64 timestamp = 2;
+          if (this_._internal_timestamp() != 0) {
+            target = ::google::protobuf::internal::WireFormatLite::
+                WriteInt64ToArrayWithField<2>(
+                    stream, this_._internal_timestamp(), target);
+          }
+
+          // string version = 3;
+          if (!this_._internal_version().empty()) {
+            const std::string& _s = this_._internal_version();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.StatusResponse.version");
+            target = stream->WriteStringMaybeAliased(3, _s, target);
+          }
+
+          cached_has_bits = this_._impl_._has_bits_[0];
+          // .myservice.ConfigInfo configuration = 4;
+          if (cached_has_bits & 0x00000001u) {
+            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                4, *this_._impl_.configuration_, this_._impl_.configuration_->GetCachedSize(), target,
+                stream);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:myservice.StatusResponse)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t StatusResponse::ByteSizeLong(const MessageLite& base) {
+          const StatusResponse& this_ = static_cast<const StatusResponse&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t StatusResponse::ByteSizeLong() const {
+          const StatusResponse& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:myservice.StatusResponse)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // string status = 1;
+            if (!this_._internal_status().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_status());
+            }
+            // string version = 3;
+            if (!this_._internal_version().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_version());
+            }
+          }
+           {
+            // .myservice.ConfigInfo configuration = 4;
+            cached_has_bits = this_._impl_._has_bits_[0];
+            if (cached_has_bits & 0x00000001u) {
+              total_size += 1 +
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.configuration_);
+            }
+          }
+           {
+            // int64 timestamp = 2;
+            if (this_._internal_timestamp() != 0) {
+              total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+                  this_._internal_timestamp());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void StatusResponse::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<StatusResponse*>(&to_msg);
+  auto& from = static_cast<const StatusResponse&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:myservice.StatusResponse)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_status().empty()) {
+    _this->_internal_set_status(from._internal_status());
+  }
+  if (!from._internal_version().empty()) {
+    _this->_internal_set_version(from._internal_version());
+  }
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(from._impl_.configuration_ != nullptr);
+    if (_this->_impl_.configuration_ == nullptr) {
+      _this->_impl_.configuration_ =
+          ::google::protobuf::Message::CopyConstruct<::myservice::ConfigInfo>(arena, *from._impl_.configuration_);
+    } else {
+      _this->_impl_.configuration_->MergeFrom(*from._impl_.configuration_);
+    }
+  }
+  if (from._internal_timestamp() != 0) {
+    _this->_impl_.timestamp_ = from._impl_.timestamp_;
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void StatusResponse::CopyFrom(const StatusResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:myservice.StatusResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void StatusResponse::InternalSwap(StatusResponse* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.status_, &other->_impl_.status_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.version_, &other->_impl_.version_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.timestamp_)
+      + sizeof(StatusResponse::_impl_.timestamp_)
+      - PROTOBUF_FIELD_OFFSET(StatusResponse, _impl_.configuration_)>(
+          reinterpret_cast<char*>(&_impl_.configuration_),
+          reinterpret_cast<char*>(&other->_impl_.configuration_));
+}
+
+::google::protobuf::Metadata StatusResponse::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class ConfigInfo::_Internal {
+ public:
+};
+
+ConfigInfo::ConfigInfo(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:myservice.ConfigInfo)
+}
+inline PROTOBUF_NDEBUG_INLINE ConfigInfo::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::myservice::ConfigInfo& from_msg)
+      : ip_(arena, from.ip_),
+        _cached_size_{0} {}
+
+ConfigInfo::ConfigInfo(
+    ::google::protobuf::Arena* arena,
+    const ConfigInfo& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ConfigInfo* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, port_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, port_),
+           offsetof(Impl_, max_memory_) -
+               offsetof(Impl_, port_) +
+               sizeof(Impl_::max_memory_));
+
+  // @@protoc_insertion_point(copy_constructor:myservice.ConfigInfo)
+}
+inline PROTOBUF_NDEBUG_INLINE ConfigInfo::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : ip_(arena),
+        _cached_size_{0} {}
+
+inline void ConfigInfo::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, port_),
+           0,
+           offsetof(Impl_, max_memory_) -
+               offsetof(Impl_, port_) +
+               sizeof(Impl_::max_memory_));
+}
+ConfigInfo::~ConfigInfo() {
+  // @@protoc_insertion_point(destructor:myservice.ConfigInfo)
+  SharedDtor(*this);
+}
+inline void ConfigInfo::SharedDtor(MessageLite& self) {
+  ConfigInfo& this_ = static_cast<ConfigInfo&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.ip_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* ConfigInfo::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) ConfigInfo(arena);
+}
+constexpr auto ConfigInfo::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ConfigInfo),
+                                            alignof(ConfigInfo));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull ConfigInfo::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_ConfigInfo_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &ConfigInfo::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<ConfigInfo>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &ConfigInfo::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<ConfigInfo>(), &ConfigInfo::ByteSizeLong,
+            &ConfigInfo::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_._cached_size_),
+        false,
+    },
+    &ConfigInfo::kDescriptorMethods,
+    &descriptor_table_service_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* ConfigInfo::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 0, 31, 2> ConfigInfo::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::myservice::ConfigInfo>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // string ip = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.ip_)}},
+    // int32 port = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ConfigInfo, _impl_.port_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.port_)}},
+    // int32 max_memory = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ConfigInfo, _impl_.max_memory_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.max_memory_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string ip = 1;
+    {PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.ip_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 port = 2;
+    {PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.port_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 max_memory = 3;
+    {PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.max_memory_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+  }},
+  // no aux_entries
+  {{
+    "\24\2\0\0\0\0\0\0"
+    "myservice.ConfigInfo"
+    "ip"
+  }},
+};
+
+PROTOBUF_NOINLINE void ConfigInfo::Clear() {
+// @@protoc_insertion_point(message_clear_start:myservice.ConfigInfo)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.ip_.ClearToEmpty();
+  ::memset(&_impl_.port_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.max_memory_) -
+      reinterpret_cast<char*>(&_impl_.port_)) + sizeof(_impl_.max_memory_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* ConfigInfo::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const ConfigInfo& this_ = static_cast<const ConfigInfo&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* ConfigInfo::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const ConfigInfo& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:myservice.ConfigInfo)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // string ip = 1;
+          if (!this_._internal_ip().empty()) {
+            const std::string& _s = this_._internal_ip();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.ConfigInfo.ip");
+            target = stream->WriteStringMaybeAliased(1, _s, target);
+          }
+
+          // int32 port = 2;
+          if (this_._internal_port() != 0) {
+            target = ::google::protobuf::internal::WireFormatLite::
+                WriteInt32ToArrayWithField<2>(
+                    stream, this_._internal_port(), target);
+          }
+
+          // int32 max_memory = 3;
+          if (this_._internal_max_memory() != 0) {
+            target = ::google::protobuf::internal::WireFormatLite::
+                WriteInt32ToArrayWithField<3>(
+                    stream, this_._internal_max_memory(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:myservice.ConfigInfo)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t ConfigInfo::ByteSizeLong(const MessageLite& base) {
+          const ConfigInfo& this_ = static_cast<const ConfigInfo&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t ConfigInfo::ByteSizeLong() const {
+          const ConfigInfo& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:myservice.ConfigInfo)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // string ip = 1;
+            if (!this_._internal_ip().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_ip());
+            }
+            // int32 port = 2;
+            if (this_._internal_port() != 0) {
+              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+                  this_._internal_port());
+            }
+            // int32 max_memory = 3;
+            if (this_._internal_max_memory() != 0) {
+              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+                  this_._internal_max_memory());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void ConfigInfo::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<ConfigInfo*>(&to_msg);
+  auto& from = static_cast<const ConfigInfo&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:myservice.ConfigInfo)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_ip().empty()) {
+    _this->_internal_set_ip(from._internal_ip());
+  }
+  if (from._internal_port() != 0) {
+    _this->_impl_.port_ = from._impl_.port_;
+  }
+  if (from._internal_max_memory() != 0) {
+    _this->_impl_.max_memory_ = from._impl_.max_memory_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ConfigInfo::CopyFrom(const ConfigInfo& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:myservice.ConfigInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ConfigInfo::InternalSwap(ConfigInfo* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ip_, &other->_impl_.ip_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.max_memory_)
+      + sizeof(ConfigInfo::_impl_.max_memory_)
+      - PROTOBUF_FIELD_OFFSET(ConfigInfo, _impl_.port_)>(
+          reinterpret_cast<char*>(&_impl_.port_),
+          reinterpret_cast<char*>(&other->_impl_.port_));
+}
+
+::google::protobuf::Metadata ConfigInfo::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -1908,7 +2795,8 @@ FileUploadResponse::FileUploadResponse(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE FileUploadResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::myservice::FileUploadResponse& from_msg)
-      : message_(arena, from.message_),
+      : filepath_(arena, from.filepath_),
+        message_(arena, from.message_),
         _cached_size_{0} {}
 
 FileUploadResponse::FileUploadResponse(
@@ -1924,17 +2812,20 @@ FileUploadResponse::FileUploadResponse(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.success_ = from._impl_.success_;
 
   // @@protoc_insertion_point(copy_constructor:myservice.FileUploadResponse)
 }
 inline PROTOBUF_NDEBUG_INLINE FileUploadResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : message_(arena),
+      : filepath_(arena),
+        message_(arena),
         _cached_size_{0} {}
 
 inline void FileUploadResponse::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.success_ = {};
 }
 FileUploadResponse::~FileUploadResponse() {
   // @@protoc_insertion_point(destructor:myservice.FileUploadResponse)
@@ -1944,6 +2835,7 @@ inline void FileUploadResponse::SharedDtor(MessageLite& self) {
   FileUploadResponse& this_ = static_cast<FileUploadResponse&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.filepath_.Destroy();
   this_._impl_.message_.Destroy();
   this_._impl_.~Impl_();
 }
@@ -1984,15 +2876,15 @@ const ::google::protobuf::internal::ClassData* FileUploadResponse::GetClassData(
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 44, 2> FileUploadResponse::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 52, 2> FileUploadResponse::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    3, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967288,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    3,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -2002,20 +2894,34 @@ const ::_pbi::TcParseTable<0, 1, 0, 44, 2> FileUploadResponse::_table_ = {
     ::_pbi::TcParser::GetTable<::myservice::FileUploadResponse>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // string message = 1;
+    {::_pbi::TcParser::MiniParse, {}},
+    // bool success = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(FileUploadResponse, _impl_.success_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.success_)}},
+    // string filepath = 2;
     {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.message_)}},
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.filepath_)}},
+    // string message = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.message_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // string message = 1;
+    // bool success = 1;
+    {PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.success_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // string filepath = 2;
+    {PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.filepath_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string message = 3;
     {PROTOBUF_FIELD_OFFSET(FileUploadResponse, _impl_.message_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\34\7\0\0\0\0\0\0"
+    "\34\0\10\7\0\0\0\0"
     "myservice.FileUploadResponse"
+    "filepath"
     "message"
   }},
 };
@@ -2027,7 +2933,9 @@ PROTOBUF_NOINLINE void FileUploadResponse::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.filepath_.ClearToEmpty();
   _impl_.message_.ClearToEmpty();
+  _impl_.success_ = false;
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2046,12 +2954,27 @@ PROTOBUF_NOINLINE void FileUploadResponse::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // string message = 1;
+          // bool success = 1;
+          if (this_._internal_success() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                1, this_._internal_success(), target);
+          }
+
+          // string filepath = 2;
+          if (!this_._internal_filepath().empty()) {
+            const std::string& _s = this_._internal_filepath();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.FileUploadResponse.filepath");
+            target = stream->WriteStringMaybeAliased(2, _s, target);
+          }
+
+          // string message = 3;
           if (!this_._internal_message().empty()) {
             const std::string& _s = this_._internal_message();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                 _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.FileUploadResponse.message");
-            target = stream->WriteStringMaybeAliased(1, _s, target);
+            target = stream->WriteStringMaybeAliased(3, _s, target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -2077,11 +3000,21 @@ PROTOBUF_NOINLINE void FileUploadResponse::Clear() {
           // Prevent compiler warnings about cached_has_bits being unused
           (void)cached_has_bits;
 
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // string message = 1;
+            // string filepath = 2;
+            if (!this_._internal_filepath().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_filepath());
+            }
+            // string message = 3;
             if (!this_._internal_message().empty()) {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_message());
+            }
+            // bool success = 1;
+            if (this_._internal_success() != 0) {
+              total_size += 2;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2096,8 +3029,14 @@ void FileUploadResponse::MergeImpl(::google::protobuf::MessageLite& to_msg, cons
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (!from._internal_filepath().empty()) {
+    _this->_internal_set_filepath(from._internal_filepath());
+  }
   if (!from._internal_message().empty()) {
     _this->_internal_set_message(from._internal_message());
+  }
+  if (from._internal_success() != 0) {
+    _this->_impl_.success_ = from._impl_.success_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -2115,7 +3054,9 @@ void FileUploadResponse::InternalSwap(FileUploadResponse* PROTOBUF_RESTRICT othe
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.filepath_, &other->_impl_.filepath_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.message_, &other->_impl_.message_, arena);
+        swap(_impl_.success_, other->_impl_.success_);
 }
 
 ::google::protobuf::Metadata FileUploadResponse::GetMetadata() const {
@@ -2371,6 +3312,7 @@ inline PROTOBUF_NDEBUG_INLINE FileDownloadResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::myservice::FileDownloadResponse& from_msg)
       : content_(arena, from.content_),
+        filename_(arena, from.filename_),
         _cached_size_{0} {}
 
 FileDownloadResponse::FileDownloadResponse(
@@ -2393,6 +3335,7 @@ inline PROTOBUF_NDEBUG_INLINE FileDownloadResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
       : content_(arena),
+        filename_(arena),
         _cached_size_{0} {}
 
 inline void FileDownloadResponse::SharedCtor(::_pb::Arena* arena) {
@@ -2407,6 +3350,7 @@ inline void FileDownloadResponse::SharedDtor(MessageLite& self) {
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.content_.Destroy();
+  this_._impl_.filename_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -2446,15 +3390,15 @@ const ::google::protobuf::internal::ClassData* FileDownloadResponse::GetClassDat
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 0, 2> FileDownloadResponse::_table_ = {
+const ::_pbi::TcParseTable<1, 2, 0, 47, 2> FileDownloadResponse::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -2464,6 +3408,9 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> FileDownloadResponse::_table_ = {
     ::_pbi::TcParser::GetTable<::myservice::FileDownloadResponse>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
+    // string filename = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(FileDownloadResponse, _impl_.filename_)}},
     // bytes content = 1;
     {::_pbi::TcParser::FastBS1,
      {10, 63, 0, PROTOBUF_FIELD_OFFSET(FileDownloadResponse, _impl_.content_)}},
@@ -2473,9 +3420,15 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> FileDownloadResponse::_table_ = {
     // bytes content = 1;
     {PROTOBUF_FIELD_OFFSET(FileDownloadResponse, _impl_.content_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kBytes | ::_fl::kRepAString)},
+    // string filename = 2;
+    {PROTOBUF_FIELD_OFFSET(FileDownloadResponse, _impl_.filename_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
+    "\36\0\10\0\0\0\0\0"
+    "myservice.FileDownloadResponse"
+    "filename"
   }},
 };
 
@@ -2487,6 +3440,7 @@ PROTOBUF_NOINLINE void FileDownloadResponse::Clear() {
   (void) cached_has_bits;
 
   _impl_.content_.ClearToEmpty();
+  _impl_.filename_.ClearToEmpty();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2509,6 +3463,14 @@ PROTOBUF_NOINLINE void FileDownloadResponse::Clear() {
           if (!this_._internal_content().empty()) {
             const std::string& _s = this_._internal_content();
             target = stream->WriteBytesMaybeAliased(1, _s, target);
+          }
+
+          // string filename = 2;
+          if (!this_._internal_filename().empty()) {
+            const std::string& _s = this_._internal_filename();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "myservice.FileDownloadResponse.filename");
+            target = stream->WriteStringMaybeAliased(2, _s, target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -2534,11 +3496,17 @@ PROTOBUF_NOINLINE void FileDownloadResponse::Clear() {
           // Prevent compiler warnings about cached_has_bits being unused
           (void)cached_has_bits;
 
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
             // bytes content = 1;
             if (!this_._internal_content().empty()) {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
                                               this_._internal_content());
+            }
+            // string filename = 2;
+            if (!this_._internal_filename().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_filename());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2555,6 +3523,9 @@ void FileDownloadResponse::MergeImpl(::google::protobuf::MessageLite& to_msg, co
 
   if (!from._internal_content().empty()) {
     _this->_internal_set_content(from._internal_content());
+  }
+  if (!from._internal_filename().empty()) {
+    _this->_internal_set_filename(from._internal_filename());
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -2573,6 +3544,7 @@ void FileDownloadResponse::InternalSwap(FileDownloadResponse* PROTOBUF_RESTRICT 
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.content_, &other->_impl_.content_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.filename_, &other->_impl_.filename_, arena);
 }
 
 ::google::protobuf::Metadata FileDownloadResponse::GetMetadata() const {
