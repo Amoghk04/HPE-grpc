@@ -1,7 +1,8 @@
+# Dockerfile.server
 # Build stage
 FROM ubuntu:22.04 AS builder
 
-# Install build dependencies for gRPC and Protobuf
+# Install build dependencies for gRPC, Protobuf, and JSON
 RUN apt-get update && apt-get install -y \
     build-essential \
     g++ \
@@ -14,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libprotobuf-dev \
     protobuf-compiler \
     libgrpc++-dev \
+    nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and build gRPC
@@ -27,36 +29,41 @@ RUN git clone --recurse-submodules -b v1.70.1 https://github.com/grpc/grpc && \
           ../.. && \
     make -j$(nproc) && make install
 
+# Setup working directory and copy the project source
 WORKDIR /app
 ENV LD_LIBRARY_PATH=/usr/local/lib
 COPY . .
 
-# Build the protobuf files and server
-RUN protoc --proto_path=grpc/ --cpp_out=grpc/ --grpc_out=grpc/ --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) grpc/service.proto \
-    && rm -rf grpc/build \
-    && mkdir -p grpc/build \
-    && cd grpc/build \
-    && cmake .. \
-    && make -j$(nproc)
+# Copy the configuration file into the image (adjust path if necessary)
+COPY grpc/config.json /app/config.json
+
+# Generate server protobuf and gRPC source files
+RUN protoc --proto_path=grpc/ --cpp_out=grpc/ --grpc_out=grpc/ \
+       --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) grpc/service.proto
+
+# Build the server executable with C++17 enabled
+RUN rm -rf grpc/build && mkdir -p grpc/build && cd grpc/build && \
+    mkdir -p uploads && cmake -DCMAKE_CXX_STANDARD=17 .. && make -j$(nproc)
 
 # Runtime stage
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y libssl-dev && rm -rf /var/lib/apt/lists/*
 
+# Copy gRPC libraries from builder
 COPY --from=builder /usr/local/lib /usr/local/lib
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
 WORKDIR /app
 
-# Copy only the server executable
-COPY --from=builder /app/grpc/build/server /app/server
-
-# Copy SSL certificates
-COPY --from=builder /app/ca.crt /app/ca.crt
-COPY --from=builder /app/server.crt /app/server.crt
-COPY --from=builder /app/server.key /app/server.key
+# Copy the server executable, configuration and SSL certificate files
+COPY --from=builder /app/grpc/build/server /app/grpc/build/server
+COPY --from=builder /app/certs/ca.crt /app/certs/ca.crt
+COPY --from=builder /app/certs/server.crt /app/certs/server.crt
+COPY --from=builder /app/certs/server.key /app/certs/server.key
+COPY --from=builder /app/config.json /app/grpc/config.json
 
 EXPOSE 50051
 
-CMD ["/app/server"]
+WORKDIR /app/grpc/build 
+CMD ["/app/grpc/build/server"]

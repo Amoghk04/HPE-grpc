@@ -199,9 +199,9 @@ int main() {
                  << " configuration updates..." << std::endl;
 
         // Ensure uploads directory exists
-        if (!std::filesystem::exists("uploads")) {
-            std::filesystem::create_directory("uploads");
-        }
+        // if (!std::filesystem::exists("uploads")) {
+        //     std::filesystem::create_directory("uploads");
+        // }
 
         for (int i = 0; i < NUM_CLIENTS; i++) {
             clients.push_back(std::make_unique<ConsistencyTestClient>(channel));
