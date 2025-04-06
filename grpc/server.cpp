@@ -2,503 +2,596 @@
 #include <memory>
 #include <string>
 #include <fstream>
-#include <grpcpp/grpcpp.h>
-#include "service.grpc.pb.h"
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "httplib.h"
-#include <nlohmann/json.hpp>
-#include <unordered_map>
-#include <mutex>
+#include <chrono>
+#include <ctime>
 #include <filesystem>
-#include "service.pb.h"
+#include <mutex>
+#include <sstream>
+#include <sys/resource.h>      // For setrlimit
+#include <stdexcept>
+#include <queue>
+#include <condition_variable>
+#include <thread>
+#include <functional>
+#include <future>
+#include <atomic>
 
-
-std::string read_file(const std::string& path);
-nlohmann::json load_config(const std::string& config_path);
-
-
-std::string read_file(const std::string& path) {
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file: " + path);
-    }
-    return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-}
-
-
-nlohmann::json load_config(const std::string& config_path); 
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/security/server_credentials.h>
+#include "service.grpc.pb.h"
+#include <nlohmann/json.hpp>
 
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using grpc::ClientContext;
-using grpc::Channel;
+using grpc::SslServerCredentials;
 using myservice::Greeter;
 using myservice::HelloRequest;
 using myservice::HelloReply;
+using myservice::EmptyRequest;
+using myservice::StatusResponse;
+using myservice::ConfigInfo;
 using myservice::NetworkConfig;
 using myservice::IPConfigRequest;
 using myservice::IPConfigResponse;
-using json = nlohmann::json;
+using myservice::FileService;
+using myservice::FileUploadRequest;
+using myservice::FileUploadResponse;
+using myservice::FileDownloadRequest;
+using myservice::FileDownloadResponse;
 
+constexpr auto SERVER_CERT = "../../certs/server.crt";
+constexpr auto SERVER_KEY = "../../certs/server.key";
+constexpr auto ROOT_CERT = "../../certs/ca.crt";
+const int MAX_MESSAGE_LENGTH = 50 * 1024 * 1024;
 
-std::unordered_map<std::string, json> data_store;
-std::mutex data_store_mutex; 
-std::mutex file_mutex;
+namespace fs = std::filesystem;
 
+// Thread-safe logging function
+std::mutex log_mutex;
+template<typename... Args>
+void log(Args&&... args) {
+    std::lock_guard<std::mutex> lock(log_mutex);
+    (std::cout << ... << std::forward<Args>(args));
+    std::cout << std::endl;
+}
 
-class GreeterServiceImpl final : public Greeter::Service {
+// Request Queue Implementation with detailed logging
+class RequestQueue {
 public:
-    Status SayHello(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
-        std::string response_message = "Hello, " + request->name();
-        reply->set_message(response_message);
-        std::cout << "[SERVER] Sent Response: " << response_message << std::endl;
-        return Status::OK;
+    RequestQueue(int num_workers = 1) : stop_(false), task_counter_(0), completed_counter_(0) {
+        log("RequestQueue: Initializing with ", num_workers, " worker thread(s)");
+        
+        // Start worker threads
+        for (int i = 0; i < num_workers; ++i) {
+            workers_.emplace_back(&RequestQueue::WorkerThread, this, i);
+        }
     }
 
-    Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
-        std::string response_message = "Hello again, " + request->name();
-        reply->set_message(response_message);
-        std::cout << "[SERVER] Sent Response: " << response_message << std::endl;
-        return Status::OK;
+    ~RequestQueue() {
+        log("RequestQueue: Shutting down, processed ", completed_counter_, " tasks total");
+        
+        // Signal to stop
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            stop_ = true;
+        }
+        cv_.notify_all();
+        
+        // Join all worker threads
+        for (auto& worker : workers_) {
+            if (worker.joinable()) {
+                worker.join();
+            }
+        }
     }
+
+    // Add a task to the queue and return a future for the result
+    template<typename Func, typename... Args>
+    auto Enqueue(const std::string& task_name, Func&& func, Args&&... args) 
+        -> std::future<typename std::invoke_result<Func, Args...>::type> {
+        
+        using ReturnType = typename std::invoke_result<Func, Args...>::type;
+        
+        // Generate unique task ID
+        int task_id = ++task_counter_;
+        
+        log("RequestQueue: Enqueuing task #", task_id, " (", task_name, ")");
+        
+        // Create a packaged task to execute the function
+        auto task = std::make_shared<std::packaged_task<ReturnType()>>(
+            [this, task_id, task_name, func = std::forward<Func>(func), 
+             args = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+                
+                log("RequestQueue: Starting task #", task_id, " (", task_name, ")");
+                
+                // Execute the actual function using the tuple of arguments
+                auto start_time = std::chrono::high_resolution_clock::now();
+                
+                auto result = std::apply(func, args);
+                
+                auto end_time = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+                
+                log("RequestQueue: Completed task #", task_id, " (", task_name, ") in ", duration, "ms");
+                ++completed_counter_;
+                
+                return result;
+            }
+        );
+        
+        // Get the future result before adding to queue
+        std::future<ReturnType> result = task->get_future();
+        
+        // Add to queue
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            tasks_.emplace([task]() { (*task)(); });
+            log("RequestQueue: Task #", task_id, " queued. Queue size: ", tasks_.size());
+        }
+        
+        // Notify one worker
+        cv_.notify_one();
+        
+        return result;
+    }
+    
+    // Get queue statistics
+    size_t GetQueueSize() const {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return tasks_.size();
+    }
+    
+    int GetTasksProcessed() const {
+        return completed_counter_;
+    }
+
+private:
+    void WorkerThread(int worker_id) {
+        log("RequestQueue: Worker #", worker_id, " started");
+        
+        while (true) {
+            std::function<void()> task;
+            
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                cv_.wait(lock, [this] { 
+                    return stop_ || !tasks_.empty(); 
+                });
+                
+                if (stop_ && tasks_.empty()) {
+                    log("RequestQueue: Worker #", worker_id, " stopping");
+                    return;
+                }
+                
+                task = std::move(tasks_.front());
+                tasks_.pop();
+                log("RequestQueue: Worker #", worker_id, " dequeued task. Queue size: ", tasks_.size());
+            }
+            
+            // Execute the task
+            task();
+        }
+    }
+
+    std::queue<std::function<void()>> tasks_;
+    mutable std::mutex mutex_;
+    std::condition_variable cv_;
+    std::vector<std::thread> workers_;
+    bool stop_;
+    std::atomic<int> task_counter_;
+    std::atomic<int> completed_counter_;
 };
 
+// Helper function to read files
+std::string ReadFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+    return std::string(
+        (std::istreambuf_iterator<char>(file)),
+        std::istreambuf_iterator<char>()
+    );
+}
 
-class NetworkConfigServiceImpl final : public NetworkConfig::Service {
+// Function to set the memory limit for the process using setrlimit.
+// limit_bytes should be the maximum allowed memory in bytes.
+void set_memory_limit(size_t limit_bytes) {
+    struct rlimit rl;
+    rl.rlim_cur = limit_bytes;
+    rl.rlim_max = limit_bytes;
+    if (setrlimit(RLIMIT_AS, &rl) != 0) {
+        std::cerr << "Error setting memory limit to " << limit_bytes << " bytes." << std::endl;
+    } else {
+        std::cout << "Memory limit set to " << limit_bytes << " bytes." << std::endl;
+    }
+}
+
+// Updated GreeterServiceImpl with request queue and detailed logging
+class GreeterServiceImpl final : public Greeter::Service {
 public:
-    Status ConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* response) override {
-        std::cout << "[SERVER] Received ConfigureIP request from client\n";
-        std::cout << "[SERVER] Interface: " << request->interface_name() << " | DHCP: " << (request->use_dhcp() ? "Yes" : "No") << std::endl;
+    GreeterServiceImpl(const std::string& ip, int port, int max_memory_mb, std::shared_ptr<RequestQueue> queue)
+      : server_ip_(ip), server_port_(port), max_memory_mb_(max_memory_mb), queue_(queue) {
+        log("GreeterService: Initialized with IP:", ip, " Port:", port);
+    }
 
+    grpc::Status SayHello(ServerContext* context, 
+        const HelloRequest* request,
+        HelloReply* reply) override {
+        
+        log("GreeterService: Received SayHello request for: ", request->name());
+        
+        // Extract client IP from context
+        std::string peer = context->peer();
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("SayHello", &GreeterServiceImpl::ProcessSayHello, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
+        log("GreeterService: Received SayHelloAgain request for: ", request->name());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("SayHelloAgain", &GreeterServiceImpl::ProcessSayHelloAgain, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status Hi(ServerContext* context, const EmptyRequest* request, HelloReply* reply) override {
+        log("GreeterService: Received Hi request");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("Hi", &GreeterServiceImpl::ProcessHi, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status Status(ServerContext* context, const EmptyRequest* request, StatusResponse* response) override {
+        log("GreeterService: Received Status request");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("Status", &GreeterServiceImpl::ProcessStatus, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    // Actual implementation methods that will be queued
+    grpc::Status ProcessSayHello(ServerContext* context, 
+        const HelloRequest* request,
+        HelloReply* reply) {
+        // Get metadata from the client
+        auto metadata = context->client_metadata();
+        for (auto it = metadata.begin(); it != metadata.end(); ++it) {
+            std::string key(it->first.data(), it->first.length());
+            std::string value(it->second.data(), it->second.length());
+            log("GreeterService: Metadata: ", key, " = ", value);
+        }
+        context->AddInitialMetadata("content-type", "application/grpc-web+proto");
+        context->AddInitialMetadata("x-grpc-web", "1");
+
+        // Add log to show request is being processed from queue
+        log("GreeterService: Processing SayHello request for: ", request->name());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        reply->set_message("Hello " + request->name());
+        log("GreeterService: SayHello response created: ", reply->message());
+        return grpc::Status::OK;
+    }
+
+    grpc::Status ProcessSayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) {
+        log("GreeterService: Processing SayHelloAgain request for: ", request->name());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        reply->set_message("Hello again " + request->name());
+        log("GreeterService: SayHelloAgain response created: ", reply->message());
+        return Status::OK;
+    }
+
+    grpc::Status ProcessHi(ServerContext* context, const EmptyRequest* request, HelloReply* reply) {
+        log("GreeterService: Processing Hi request");
+        reply->set_message("Hi! Secure gRPC server is running");
+        log("GreeterService: Hi response created: ", reply->message());
+        return Status::OK;
+    }
+
+    grpc::Status ProcessStatus(ServerContext* context, const EmptyRequest* request, StatusResponse* response) {
+        log("GreeterService: Processing Status request");
+        response->set_status("running");
+        response->set_timestamp(std::chrono::system_clock::to_time_t(
+            std::chrono::system_clock::now()));
+        response->set_version("1.2.0");
+        
+        auto* config = response->mutable_configuration();
+        config->set_ip(server_ip_);
+        config->set_port(server_port_);
+        config->set_max_memory(max_memory_mb_);  // In MB
+        
+        log("GreeterService: Status response created, timestamp: ", response->timestamp());
+        return Status::OK;
+    }
+
+    std::string server_ip_;
+    int server_port_;
+    int max_memory_mb_;
+    std::shared_ptr<RequestQueue> queue_;
+};
+
+class NetworkConfigImpl final : public NetworkConfig::Service {
+public:
+    NetworkConfigImpl(std::shared_ptr<RequestQueue> queue) : queue_(queue) {
+        log("NetworkConfigService: Initialized");
+    }
+    
+    Status ConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* response) override {
+        log("NetworkConfigService: Received ConfigureIP request for interface: ", request->interface_name());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("ConfigureIP", &NetworkConfigImpl::ProcessConfigureIP, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    Status ProcessConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* response) {
+        log("NetworkConfigService: Processing ConfigureIP request for interface: ", 
+            request->interface_name(), ", DHCP: ", request->use_dhcp() ? "Yes" : "No");
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        
         if (request->use_dhcp()) {
-           
+            response->set_status_message("DHCP configuration successful");
             response->set_ip_address("192.168.1.100");
             response->set_subnet_mask("255.255.255.0");
             response->set_default_gateway("192.168.1.1");
             response->add_dns_servers("8.8.8.8");
             response->add_dns_servers("8.8.4.4");
-            response->set_status_message("DHCP configuration assigned.");
         } else {
-          
+            response->set_status_message("Static IP configuration successful");
             response->set_ip_address(request->requested_ip());
             response->set_subnet_mask(request->requested_subnet_mask());
             response->set_default_gateway(request->requested_gateway());
             for (const auto& dns : request->requested_dns()) {
                 response->add_dns_servers(dns);
             }
-            response->set_status_message("Static IP configuration assigned.");
         }
+        log("NetworkConfigService: ConfigureIP response created for interface: ", 
+            request->interface_name(), ", IP: ", response->ip_address());
+        return Status::OK;
+    }
+    
+    std::shared_ptr<RequestQueue> queue_;
+};
 
-        std::cout << "[SERVER] Sent IP configuration response.\n";
+class FileServiceImpl final : public FileService::Service {
+private:
+    const std::string upload_dir = "uploads/";
+    std::shared_ptr<RequestQueue> queue_;
+
+    bool ensure_upload_directory() {
+        try {
+            if (!fs::exists(upload_dir)) {
+                fs::create_directories(upload_dir);
+            }
+            return true;
+        } catch (const std::exception& e) {
+            log("FileService: Error creating upload directory: ", e.what());
+            return false;
+        }
+    }
+
+public:
+    FileServiceImpl(std::shared_ptr<RequestQueue> queue) : queue_(queue) {
+        log("FileService: Initialized");
+    }
+    
+    Status UploadFile(ServerContext* context, const FileUploadRequest* request,
+                      FileUploadResponse* response) override {
+        log("FileService: Received UploadFile request for file: ", request->filename(), 
+            " (size: ", request->content().size(), " bytes)");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("UploadFile", &FileServiceImpl::ProcessUploadFile, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+    Status DownloadFile(ServerContext* context, const FileDownloadRequest* request,
+                        FileDownloadResponse* response) override {
+        log("FileService: Received DownloadFile request for file: ", request->filename());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("DownloadFile", &FileServiceImpl::ProcessDownloadFile, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    Status ProcessUploadFile(ServerContext* context, const FileUploadRequest* request,
+                      FileUploadResponse* response) {
+        log("FileService: Processing UploadFile request for: ", request->filename(),
+            " (size: ", request->content().size(), " bytes)");
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        
+        if (!ensure_upload_directory()) {
+            return Status(grpc::StatusCode::INTERNAL, "Failed to create upload directory");
+        }
+        if (request->filename().empty()) {
+            return Status(grpc::StatusCode::INVALID_ARGUMENT, "Filename cannot be empty");
+        }
+        const std::string filepath = upload_dir + request->filename();
+        std::ofstream file(filepath, std::ios::binary);
+        if (!file) {
+            return Status(grpc::StatusCode::INTERNAL, "Failed to create file: " + filepath);
+        }
+        file.write(request->content().data(), request->content().size());
+        file.close();
+
+        response->set_success(true);
+        response->set_filepath(filepath);
+        response->set_message("File uploaded successfully");
+
+        log("FileService: File uploaded successfully: ", filepath);
+        return Status::OK;
+    }
+
+    Status ProcessDownloadFile(ServerContext* context, const FileDownloadRequest* request,
+                        FileDownloadResponse* response) {
+        log("FileService: Processing DownloadFile request for: ", request->filename());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        const std::string filepath = upload_dir + request->filename();
+        if (!fs::exists(filepath)) {
+            log("FileService: File not found: ", filepath);
+            return Status(grpc::StatusCode::NOT_FOUND, "File not found: " + request->filename());
+        }
+        
+        std::ifstream file(filepath, std::ios::binary);
+        if (!file) {
+            log("FileService: Failed to open file: ", filepath);
+            return Status(grpc::StatusCode::INTERNAL, "Failed to open file: " + filepath);
+        }
+        
+        std::string content((std::istreambuf_iterator<char>(file)), 
+                            std::istreambuf_iterator<char>());
+        file.close();
+        response->set_content(content);
+        
+        log("FileService: File downloaded: ", filepath, " (size: ", content.size(), " bytes)");
         return Status::OK;
     }
 };
 
-class FileServiceImpl final : public myservice::FileService::Service {
-private:
-    std::mutex file_mutex;  
-    std::unordered_map<std::string, std::mutex> file_mutexes;  
-    std::mutex mutexes_mutex;  
-
-    
-    std::mutex& getFileMutex(const std::string& filename) {
-        std::lock_guard<std::mutex> lock(mutexes_mutex);
-        return file_mutexes[filename];
+std::string read_file(const std::string& filepath) {
+    std::ifstream file(filepath, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Failed to open file: " + filepath);
     }
-
-public:
-    grpc::Status UploadFile(grpc::ServerContext* context, const myservice::FileUploadRequest* request, myservice::FileUploadResponse* response) override {
-       
-        std::mutex& specific_file_mutex = getFileMutex(request->filename());
-        std::lock_guard<std::mutex> file_lock(specific_file_mutex);
-        
-     
-        std::filesystem::create_directories("./uploads");
-        
-        
-        auto now = std::chrono::system_clock::now();
-        auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(
-            now.time_since_epoch()).count();
-        
-        std::cout << "\n[SERVER][" << timestamp << "] Received file: " << request->filename() << std::endl;
-        
-       
-        std::ofstream outfile("./uploads/" + request->filename(), std::ios::app);
-        if (!outfile) {
-            std::cerr << "[SERVER][" << timestamp << "] Failed to open file: " << request->filename() << std::endl;
-            return grpc::Status(grpc::StatusCode::INTERNAL, "Failed to open file for writing");
-        }
-        
-      
-        outfile << "[" << timestamp << "] " << request->content();
-        outfile.flush(); 
-        outfile.close();
-        
-        std::cout << "[SERVER][" << timestamp << "] Successfully wrote to file: " << request->filename() << std::endl;
-        
-        response->set_message("File uploaded successfully");
-        return grpc::Status::OK;
-    }
-
-    grpc::Status DownloadFile(grpc::ServerContext* context, const myservice::FileDownloadRequest* request, myservice::FileDownloadResponse* response) override {
-        std::mutex& specific_file_mutex = getFileMutex(request->filename());
-        std::lock_guard<std::mutex> file_lock(specific_file_mutex);
-        
-        std::ifstream infile("./uploads/" + request->filename(), std::ios::binary);
-        if (!infile) {
-            return grpc::Status(grpc::StatusCode::NOT_FOUND, "File not found");
-        }
-        std::ostringstream buffer;
-        buffer << infile.rdbuf();
-        response->set_content(buffer.str());
-        return grpc::Status::OK;
-    }
-};
-
-
-template <typename Server>
-void SetupHttpRoutes(Server &server);
-
-
-nlohmann::json load_config(const std::string& config_path) {
-    std::ifstream config_file(config_path);
-    if (!config_file.is_open()) {
-        throw std::runtime_error("Failed to open configuration file: " + config_path);
-    }
-    nlohmann::json config;
-    config_file >> config;
-    return config;
-}
-
-
-void RunHttpServer() {
-    // Create an HTTPS server
-    httplib::SSLServer http_server("../certs/server.crt", "../certs/server.key");
-
- 
-    nlohmann::json config;
-    try {
-        config = load_config("../config.json");
-    } catch (const std::exception& e) {
-        std::cerr << "[SERVER] Error loading configuration: " << e.what() << std::endl;
-        return;
-    }
-
-   
-    http_server.Get("/hi", [](const httplib::Request&, httplib::Response& res) {
-        std::cout << "[SERVER] Received GET /hi request" << std::endl;
-        res.set_content("Hello HI from the HTTPS server!", "text/plain");
-    });
-
-    http_server.Get("/", [](const httplib::Request&, httplib::Response& res) {
-        std::cout << "[SERVER] Received GET / request" << std::endl;
-        res.set_content("Hello FROM SERVER !", "text/plain");
-    });
-
-    http_server.Post("/echo", [](const httplib::Request& req, httplib::Response& res) {
-        std::cout << "[SERVER] Received POST /echo request" << std::endl;
-        res.set_content("Echo: " + req.body, "text/plain");
-    });
-
-   
-    http_server.Post("/api/hello", [](const httplib::Request& req, httplib::Response& res) {
-        std::cout << "[SERVER] Received POST /api/hello request" << std::endl;
-        try {
-            json request_data = json::parse(req.body);
-            std::string name = request_data["name"];
-            
-           
-            grpc::SslCredentialsOptions ssl_opts;
-            ssl_opts.pem_root_certs = read_file("../certs/server.crt");
-            ssl_opts.pem_private_key = read_file("../certs/server.key");
-            ssl_opts.pem_cert_chain = read_file("../certs/server.crt");
-            
-            auto channel_creds = grpc::SslCredentials(ssl_opts);
-            auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
-            std::unique_ptr<Greeter::Stub> stub = Greeter::NewStub(channel);
-            
-            HelloRequest grpc_req;
-            HelloReply grpc_reply;
-            ClientContext context;
-            
-            grpc_req.set_name(name);
-            Status status = stub->SayHello(&context, grpc_req, &grpc_reply);
-            
-            if (status.ok()) {
-                json response = {
-                    {"message", grpc_reply.message()},
-                    {"status", "success"}
-                };
-                res.set_content(response.dump(), "application/json");
-            } else {
-                json error = {
-                    {"error", "gRPC call failed"},
-                    {"status", "error"}
-                };
-                res.status = 500;
-                res.set_content(error.dump(), "application/json");
-            }
-        } catch (const std::exception& e) {
-            json error = {
-                {"error", e.what()},
-                {"status", "error"}
-            };
-            res.status = 400;
-            res.set_content(error.dump(), "application/json");
-        }
-    });
-
-    
-    http_server.Get("/status", [&config](const httplib::Request&, httplib::Response& res) {
-        std::cout << "[SERVER] Received GET /status request" << std::endl;
-        json status = {
-            {"status", "running"},
-            {"timestamp", std::time(nullptr)},
-            {"version", "1.0"},
-            {"configuration", {
-                {"ip", config["server"]["ip"]},
-                {"port", config["server"]["port"]},
-                {"max_memory", config["limits"]["max_memory"]}
-            }}
-        };
-        res.set_content(status.dump(), "application/json");
-    });
-
-   
-    http_server.Get("/data", [](const httplib::Request&, httplib::Response& res) {
-        std::cout << "[SERVER] Received GET /data request" << std::endl;
-        
-        json response = json::array();
-        std::lock_guard<std::mutex> lock(data_store_mutex);
-        for (const auto& [id, value] : data_store) {
-            response.push_back(value);
-        }
-        
-        res.set_content(response.dump(), "application/json");
-    });
-
-   
-    http_server.Get(R"(/data/([^/]+))", [](const httplib::Request& req, httplib::Response& res) {
-        std::string id = req.matches[1];
-        std::cout << "[SERVER] Received GET /data/" << id << " request" << std::endl;
-        
-        std::lock_guard<std::mutex> lock(data_store_mutex);
-        if (data_store.find(id) != data_store.end()) {
-            res.set_content(data_store[id].dump(), "application/json");
-        } else {
-            json error = {
-                {"error", "Not found"},
-                {"message", "No data found with ID: " + id}
-            };
-            res.status = 404;
-            res.set_content(error.dump(), "application/json");
-        }
-    });
-
-    
-    http_server.Post("/data", [](const httplib::Request& req, httplib::Response& res) {
-        std::cout << "[SERVER] Received POST /data request" << std::endl;
-        try {
-            json request_data = json::parse(req.body);
-            
-            if (!request_data.contains("id")) {
-                throw std::runtime_error("Data must contain an 'id' field");
-            }
-            
-            std::string id = request_data["id"].get<std::string>();
-            
-            {
-                std::lock_guard<std::mutex> lock(data_store_mutex);
-                data_store[id] = request_data;
-            }
-            
-            json response = {
-                {"message", "Data stored successfully"},
-                {"stored_data", request_data}
-            };
-            res.set_content(response.dump(), "application/json");
-        } catch (const std::exception& e) {
-            json error = {
-                {"error", "Invalid data"},
-                {"details", e.what()}
-            };
-            res.status = 400;
-            res.set_content(error.dump(), "application/json");
-        }
-    });
-
-   
-    http_server.Get("/query", [](const httplib::Request& req, httplib::Response& res) {
-        std::cout << "[SERVER] Received GET /query request" << std::endl;
-        json response = {
-            {"params", json::object()}
-        };
-        
-     
-        for (const auto& param : req.params) {
-            response["params"][param.first] = param.second;
-        }
-        
-        res.set_content(response.dump(), "application/json");
-    });
-
-   
-    http_server.Put(R"(/update/([^/]+))", [](const httplib::Request& req, httplib::Response& res) {
-        std::string id = req.matches[1];
-        std::cout << "[SERVER] Received PUT /update/" << id << " request" << std::endl;
-        
-        try {
-            json update_data = json::parse(req.body);
-            
-            std::lock_guard<std::mutex> lock(data_store_mutex);
-            if (data_store.find(id) != data_store.end()) {
-               
-                data_store[id].merge_patch(update_data);
-                
-                json response = {
-                    {"message", "Update successful"},
-                    {"updated_data", data_store[id]}
-                };
-                res.set_content(response.dump(), "application/json");
-            } else {
-                json error = {
-                    {"error", "Not found"},
-                    {"message", "No data found with ID: " + id}
-                };
-                res.status = 404;
-                res.set_content(error.dump(), "application/json");
-            }
-        } catch (const std::exception& e) {
-            json error = {
-                {"error", "Invalid data"},
-                {"details", e.what()}
-            };
-            res.status = 400;
-            res.set_content(error.dump(), "application/json");
-        }
-    });
-
-    http_server.Post("/upload", [](const httplib::Request& req, httplib::Response& res) {
-        if (req.has_file("file")) {
-            const auto& file = req.get_file_value("file");
-            std::string filename = file.filename;
-            const std::string& content = file.content;
-    
-          
-            std::filesystem::create_directories("./uploads");
-    
-           
-            std::ofstream outfile("./uploads/" + filename, std::ios::binary);
-            if (!outfile) {
-                res.status = 500;
-                res.set_content("Failed to save file", "text/plain");
-                return;
-            }
-    
-          
-            size_t total_size = content.size();
-            size_t chunk_size = total_size / 10; // Divide into 10 chunks for progress
-            size_t written = 0;
-    
-            for (size_t i = 0; i < total_size; i += chunk_size) {
-                size_t write_size = std::min(chunk_size, total_size - written);
-                outfile.write(content.data() + written, write_size);
-                written += write_size;
-    
-                
-                int progress = static_cast<int>((static_cast<double>(written) / total_size) * 100);
-                std::cout << "[SERVER] Upload Progress: " << progress << "%\n";
-    
-               
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-    
-            outfile.close();
-            res.set_content("File uploaded successfully", "text/plain");
-        } else {
-            res.status = 400;
-            res.set_content("No file provided in request", "text/plain");
-        }
-    });    
-    
-    http_server.Get(R"(/download/(.+))", [](const httplib::Request& req, httplib::Response& res) {
-        auto filename = req.matches[1].str();
-    
-        std::lock_guard<std::mutex> lock(file_mutex);
-        std::ifstream infile("./uploads/" + filename, std::ios::binary);
-        if (!infile) {
-            res.status = 404;
-            res.set_content("File not found", "text/plain");
-            return;
-        }
-        std::ostringstream buffer;
-        buffer << infile.rdbuf();
-        res.set_content(buffer.str(), "application/octet-stream");
-    });
-
-    std::cout << "[SERVER] HTTPS Server starting on port 8443...\n";
-    if (!http_server.listen("0.0.0.0", 8443)) {
-        std::cerr << "[SERVER] ERROR: Failed to start HTTPS server on port 8443\n";
-    }
-}
-
-
-void RunGrpcServer() {
-    std::cout << "[SERVER] Starting gRPC and HTTPS servers...\n";
-
- 
-    nlohmann::json config;
-    try {
-        config = load_config("../config.json");
-    } catch (const std::exception& e) {
-        std::cerr << "[SERVER] Error loading configuration: " << e.what() << std::endl;
-        return;
-    }
-
-   
-    std::string server_ip = config["server"]["ip"];
-    int server_port = config["server"]["port"];
-    int max_memory = config["limits"]["max_memory"];
-
-    std::cout << "[SERVER] Configuration loaded: IP=" << server_ip << ", Port=" << server_port << ", Max Memory=" << max_memory << "MB\n";
-
-   
-    std::string server_address = server_ip + ":" + std::to_string(server_port);
-    GreeterServiceImpl greeter_service;
-    NetworkConfigServiceImpl network_service;
-    FileServiceImpl file_service;
-
-    grpc::SslServerCredentialsOptions ssl_opts;
-    ssl_opts.pem_root_certs = read_file("../certs/server.crt");
-    ssl_opts.pem_key_cert_pairs.push_back({
-        read_file("../certs/server.key"),
-        read_file("../certs/server.crt")
-    });
-
-    ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::SslServerCredentials(ssl_opts));
-    builder.RegisterService(&greeter_service);
-    builder.RegisterService(&network_service);
-    builder.RegisterService(&file_service);
-
-    std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "[SERVER] gRPC Server Listening on " << server_address << " with SSL\n";
-    server->Wait();
+    std::string content((std::istreambuf_iterator<char>(file)), 
+                        std::istreambuf_iterator<char>());
+    return content;
 }
 
 int main() {
-    std::cout << "[SERVER] Starting gRPC and HTTPS servers...\n";
-    
-    
-    std::thread grpc_thread(RunGrpcServer);
-    
-  
-    RunHttpServer();
-    
-   
-    grpc_thread.join();
-    
+    try {
+        // Setup logging with timestamps
+        std::cout << std::fixed;
+        
+        log("Server: Starting up");
+        
+        // Read configuration from config.json
+        std::ifstream config_file("../config.json");
+        if (!config_file.is_open()) {
+            throw std::runtime_error("Failed to open config.json");
+        }
+        nlohmann::json config_json;
+        config_file >> config_json;
+
+        // Extract server configuration
+        std::string ip = config_json["server"]["ip"];
+        int port = config_json["server"]["port"];
+        // Assume max_memory is in MB in the config file
+        int max_memory_mb = config_json["limits"]["max_memory"];
+        size_t max_memory_bytes = static_cast<size_t>(max_memory_mb) * 1024 * 1024;
+
+        // Get the number of worker threads for the queue (default to 1 for sequential processing)
+        int queue_workers = 1;
+        if (config_json.contains("server") && config_json["server"].contains("queue_workers")) {
+            queue_workers = config_json["server"]["queue_workers"];
+        }
+
+        log("Server: Request queue will use ", queue_workers, " worker thread(s)");
+
+        // Enforce the memory limit on the process
+        set_memory_limit(max_memory_bytes);
+
+        // Build server address string from config values
+        std::string server_address = ip + ":" + std::to_string(port);
+
+        // Read SSL certificate files
+        log("Server: Reading SSL certificates");
+        std::string server_key = read_file("../../certs/server.key");
+        std::string server_cert = read_file("../../certs/server.crt");
+        std::string ca_cert = read_file("../../certs/ca.crt");
+
+        grpc::SslServerCredentialsOptions::PemKeyCertPair pkcp = {
+            server_key,
+            server_cert
+        };
+
+        grpc::SslServerCredentialsOptions ssl_opts(
+            GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
+        );
+        ssl_opts.pem_root_certs = ca_cert;
+        ssl_opts.pem_key_cert_pairs.push_back(pkcp);
+
+        // Create a shared request queue
+        auto request_queue = std::make_shared<RequestQueue>(queue_workers);
+
+        // Create service implementations and pass configuration and queue to the services
+        log("Server: Initializing services");
+        GreeterServiceImpl greeter_service(ip, port, max_memory_mb, request_queue);
+        NetworkConfigImpl network_service(request_queue);
+        FileServiceImpl file_service(request_queue);
+
+        ServerBuilder builder;
+        // Use SSL credentials and bind to the configured address
+        builder.AddListeningPort(server_address, grpc::SslServerCredentials(ssl_opts));
+        // Set max message length limits
+        builder.SetMaxReceiveMessageSize(MAX_MESSAGE_LENGTH);
+        builder.SetMaxSendMessageSize(MAX_MESSAGE_LENGTH);
+        // Register all services
+        builder.RegisterService(&greeter_service);
+        builder.RegisterService(&network_service);
+        builder.RegisterService(&file_service);
+
+        // Create upload directory if it doesn't exist
+        if (!fs::exists("uploads")) {
+            fs::create_directory("uploads");
+            log("Server: Created uploads directory");
+        }
+
+        // Start a monitoring thread for queue statistics
+        bool monitor_running = true;
+        std::thread monitor_thread([&monitor_running, &request_queue]() {
+            while (monitor_running) {
+                std::this_thread::sleep_for(std::chrono::seconds(5));
+                log("Monitor: Queue size: ", request_queue->GetQueueSize(), 
+                    ", Tasks processed: ", request_queue->GetTasksProcessed());
+            }
+        });
+
+        // Build and start the server
+        log("Server: Building and starting server");
+        std::unique_ptr<Server> server(builder.BuildAndStart());
+        log("Server: Listening on ", server_address);
+        
+        // Wait for the server to shut down
+        server->Wait();
+        
+        // Clean up the monitoring thread
+        monitor_running = false;
+        if (monitor_thread.joinable()) {
+            monitor_thread.join();
+        }
+        
+    } catch (const std::exception& e) {
+        log("Server: Fatal error: ", e.what());
+        return 1;
+    }
+
     return 0;
 }

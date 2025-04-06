@@ -12,6 +12,17 @@ find_package(OpenSSL REQUIRED)
 find_package(absl REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
+# Open ssl vars for macos only (since not running in my sys)
+if(APPLE)
+    set(OPENSSL_ROOT_DIR /opt/homebrew/opt/openssl)
+    set(OPENSSL_LIBRARIES ${OPENSSL_ROOT_DIR}/lib)
+    set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1)
+    link_libraries(stdc++fs)
+endif()
+
 # Find or download nlohmann_json
 include(FetchContent)
 FetchContent_Declare(json
@@ -76,6 +87,8 @@ target_link_libraries(server
     proto
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    OpenSSL::SSL
+    OpenSSL::Crypto
     gRPC::grpc++
     gRPC::grpc
     gRPC::gpr
@@ -99,8 +112,6 @@ target_link_libraries(server
     absl::btree
     pthread
     nlohmann_json::nlohmann_json
-    OpenSSL::SSL
-    OpenSSL::Crypto
 )
 
 # Client executable

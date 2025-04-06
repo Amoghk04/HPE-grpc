@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>gRPC-Web Demo</title>
+    <script src="bundle.js"></script>
+</head>
+<body>
+    <h1>gRPC-Web Demo</h1>
+    <div>
+        <h2>Greeter Service</h2>
+        <input type="text" id="name" placeholder="Enter name">
+        <button onclick="sayHello()">Say Hello</button>
+        <button onclick="sayHelloAgain()">Say Hello Again</button>
+        <button onclick="getStatus()">Get Status</button>
+        <div id="response"></div>
+    </div>
+
+    <div>
+        <h2>File Service</h2>
+        <div>
+            <h3>Upload File</h3>
+            <input type="file" id="uploadFile">
+            <button onclick="uploadFile()">Upload</button>
+            <div id="uploadProgress"></div>
+        </div>
+        <div>
+            <h3>Download File</h3>
+            <input type="text" id="downloadPath" placeholder="Enter file path">
+            <button onclick="downloadFile()">Download</button>
+            <div id="downloadProgress"></div>
+        </div>
+    </div>
+</body>
+</html>
