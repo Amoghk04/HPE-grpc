@@ -9,6 +9,12 @@
 #include <sstream>
 #include <sys/resource.h>      // For setrlimit
 #include <stdexcept>
+#include <queue>
+#include <condition_variable>
+#include <thread>
+#include <functional>
+#include <future>
+#include <atomic>
 
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/security/server_credentials.h>
@@ -42,6 +48,142 @@ const int MAX_MESSAGE_LENGTH = 50 * 1024 * 1024;
 
 namespace fs = std::filesystem;
 
+// Thread-safe logging function
+std::mutex log_mutex;
+template<typename... Args>
+void log(Args&&... args) {
+    std::lock_guard<std::mutex> lock(log_mutex);
+    (std::cout << ... << std::forward<Args>(args));
+    std::cout << std::endl;
+}
+
+// Request Queue Implementation with detailed logging
+class RequestQueue {
+public:
+    RequestQueue(int num_workers = 1) : stop_(false), task_counter_(0), completed_counter_(0) {
+        log("RequestQueue: Initializing with ", num_workers, " worker thread(s)");
+        
+        // Start worker threads
+        for (int i = 0; i < num_workers; ++i) {
+            workers_.emplace_back(&RequestQueue::WorkerThread, this, i);
+        }
+    }
+
+    ~RequestQueue() {
+        log("RequestQueue: Shutting down, processed ", completed_counter_, " tasks total");
+        
+        // Signal to stop
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            stop_ = true;
+        }
+        cv_.notify_all();
+        
+        // Join all worker threads
+        for (auto& worker : workers_) {
+            if (worker.joinable()) {
+                worker.join();
+            }
+        }
+    }
+
+    // Add a task to the queue and return a future for the result
+    template<typename Func, typename... Args>
+    auto Enqueue(const std::string& task_name, Func&& func, Args&&... args) 
+        -> std::future<typename std::invoke_result<Func, Args...>::type> {
+        
+        using ReturnType = typename std::invoke_result<Func, Args...>::type;
+        
+        // Generate unique task ID
+        int task_id = ++task_counter_;
+        
+        log("RequestQueue: Enqueuing task #", task_id, " (", task_name, ")");
+        
+        // Create a packaged task to execute the function
+        auto task = std::make_shared<std::packaged_task<ReturnType()>>(
+            [this, task_id, task_name, func = std::forward<Func>(func), 
+             args = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+                
+                log("RequestQueue: Starting task #", task_id, " (", task_name, ")");
+                
+                // Execute the actual function using the tuple of arguments
+                auto start_time = std::chrono::high_resolution_clock::now();
+                
+                auto result = std::apply(func, args);
+                
+                auto end_time = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+                
+                log("RequestQueue: Completed task #", task_id, " (", task_name, ") in ", duration, "ms");
+                ++completed_counter_;
+                
+                return result;
+            }
+        );
+        
+        // Get the future result before adding to queue
+        std::future<ReturnType> result = task->get_future();
+        
+        // Add to queue
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            tasks_.emplace([task]() { (*task)(); });
+            log("RequestQueue: Task #", task_id, " queued. Queue size: ", tasks_.size());
+        }
+        
+        // Notify one worker
+        cv_.notify_one();
+        
+        return result;
+    }
+    
+    // Get queue statistics
+    size_t GetQueueSize() const {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return tasks_.size();
+    }
+    
+    int GetTasksProcessed() const {
+        return completed_counter_;
+    }
+
+private:
+    void WorkerThread(int worker_id) {
+        log("RequestQueue: Worker #", worker_id, " started");
+        
+        while (true) {
+            std::function<void()> task;
+            
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                cv_.wait(lock, [this] { 
+                    return stop_ || !tasks_.empty(); 
+                });
+                
+                if (stop_ && tasks_.empty()) {
+                    log("RequestQueue: Worker #", worker_id, " stopping");
+                    return;
+                }
+                
+                task = std::move(tasks_.front());
+                tasks_.pop();
+                log("RequestQueue: Worker #", worker_id, " dequeued task. Queue size: ", tasks_.size());
+            }
+            
+            // Execute the task
+            task();
+        }
+    }
+
+    std::queue<std::function<void()>> tasks_;
+    mutable std::mutex mutex_;
+    std::condition_variable cv_;
+    std::vector<std::thread> workers_;
+    bool stop_;
+    std::atomic<int> task_counter_;
+    std::atomic<int> completed_counter_;
+};
+
 // Helper function to read files
 std::string ReadFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -67,41 +209,102 @@ void set_memory_limit(size_t limit_bytes) {
     }
 }
 
-// Updated GreeterServiceImpl with configuration passed in its constructor
+// Updated GreeterServiceImpl with request queue and detailed logging
 class GreeterServiceImpl final : public Greeter::Service {
 public:
-    GreeterServiceImpl(const std::string& ip, int port, int max_memory_mb)
-      : server_ip_(ip), server_port_(port), max_memory_mb_(max_memory_mb) {}
+    GreeterServiceImpl(const std::string& ip, int port, int max_memory_mb, std::shared_ptr<RequestQueue> queue)
+      : server_ip_(ip), server_port_(port), max_memory_mb_(max_memory_mb), queue_(queue) {
+        log("GreeterService: Initialized with IP:", ip, " Port:", port);
+    }
 
     grpc::Status SayHello(ServerContext* context, 
         const HelloRequest* request,
         HelloReply* reply) override {
+        
+        log("GreeterService: Received SayHello request for: ", request->name());
+        
+        // Extract client IP from context
+        std::string peer = context->peer();
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("SayHello", &GreeterServiceImpl::ProcessSayHello, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
+        log("GreeterService: Received SayHelloAgain request for: ", request->name());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("SayHelloAgain", &GreeterServiceImpl::ProcessSayHelloAgain, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status Hi(ServerContext* context, const EmptyRequest* request, HelloReply* reply) override {
+        log("GreeterService: Received Hi request");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("Hi", &GreeterServiceImpl::ProcessHi, this, 
+                                     context, request, reply);
+        return future.get();
+    }
+
+    grpc::Status Status(ServerContext* context, const EmptyRequest* request, StatusResponse* response) override {
+        log("GreeterService: Received Status request");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("Status", &GreeterServiceImpl::ProcessStatus, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    // Actual implementation methods that will be queued
+    grpc::Status ProcessSayHello(ServerContext* context, 
+        const HelloRequest* request,
+        HelloReply* reply) {
         // Get metadata from the client
         auto metadata = context->client_metadata();
         for (auto it = metadata.begin(); it != metadata.end(); ++it) {
             std::string key(it->first.data(), it->first.length());
             std::string value(it->second.data(), it->second.length());
-            std::cout << "Metadata: " << key << " = " << value << std::endl;
+            log("GreeterService: Metadata: ", key, " = ", value);
         }
         context->AddInitialMetadata("content-type", "application/grpc-web+proto");
         context->AddInitialMetadata("x-grpc-web", "1");
 
+        // Add log to show request is being processed from queue
+        log("GreeterService: Processing SayHello request for: ", request->name());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
         reply->set_message("Hello " + request->name());
+        log("GreeterService: SayHello response created: ", reply->message());
         return grpc::Status::OK;
     }
 
-    grpc::Status SayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) override {
+    grpc::Status ProcessSayHelloAgain(ServerContext* context, const HelloRequest* request, HelloReply* reply) {
+        log("GreeterService: Processing SayHelloAgain request for: ", request->name());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
         reply->set_message("Hello again " + request->name());
+        log("GreeterService: SayHelloAgain response created: ", reply->message());
         return Status::OK;
     }
 
-    grpc::Status Hi(ServerContext* context, const EmptyRequest* request, HelloReply* reply) override {
+    grpc::Status ProcessHi(ServerContext* context, const EmptyRequest* request, HelloReply* reply) {
+        log("GreeterService: Processing Hi request");
         reply->set_message("Hi! Secure gRPC server is running");
+        log("GreeterService: Hi response created: ", reply->message());
         return Status::OK;
     }
 
-    // The Status RPC now returns the correct configuration including the RAM allotment.
-    grpc::Status Status(ServerContext* context, const EmptyRequest* request, StatusResponse* response) override {
+    grpc::Status ProcessStatus(ServerContext* context, const EmptyRequest* request, StatusResponse* response) {
+        log("GreeterService: Processing Status request");
         response->set_status("running");
         response->set_timestamp(std::chrono::system_clock::to_time_t(
             std::chrono::system_clock::now()));
@@ -112,20 +315,39 @@ public:
         config->set_port(server_port_);
         config->set_max_memory(max_memory_mb_);  // In MB
         
+        log("GreeterService: Status response created, timestamp: ", response->timestamp());
         return Status::OK;
     }
 
-private:
     std::string server_ip_;
     int server_port_;
     int max_memory_mb_;
+    std::shared_ptr<RequestQueue> queue_;
 };
 
 class NetworkConfigImpl final : public NetworkConfig::Service {
 public:
+    NetworkConfigImpl(std::shared_ptr<RequestQueue> queue) : queue_(queue) {
+        log("NetworkConfigService: Initialized");
+    }
+    
     Status ConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* response) override {
-        std::cout << "Received IP configuration request for interface: " 
-                  << request->interface_name() << std::endl;
+        log("NetworkConfigService: Received ConfigureIP request for interface: ", request->interface_name());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("ConfigureIP", &NetworkConfigImpl::ProcessConfigureIP, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    Status ProcessConfigureIP(ServerContext* context, const IPConfigRequest* request, IPConfigResponse* response) {
+        log("NetworkConfigService: Processing ConfigureIP request for interface: ", 
+            request->interface_name(), ", DHCP: ", request->use_dhcp() ? "Yes" : "No");
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        
         if (request->use_dhcp()) {
             response->set_status_message("DHCP configuration successful");
             response->set_ip_address("192.168.1.100");
@@ -142,15 +364,18 @@ public:
                 response->add_dns_servers(dns);
             }
         }
-        std::cout << "IP configuration completed for interface: " 
-                  << request->interface_name() << std::endl;
+        log("NetworkConfigService: ConfigureIP response created for interface: ", 
+            request->interface_name(), ", IP: ", response->ip_address());
         return Status::OK;
     }
+    
+    std::shared_ptr<RequestQueue> queue_;
 };
 
 class FileServiceImpl final : public FileService::Service {
 private:
     const std::string upload_dir = "uploads/";
+    std::shared_ptr<RequestQueue> queue_;
 
     bool ensure_upload_directory() {
         try {
@@ -159,15 +384,46 @@ private:
             }
             return true;
         } catch (const std::exception& e) {
-            std::cerr << "Error creating upload directory: " << e.what() << std::endl;
+            log("FileService: Error creating upload directory: ", e.what());
             return false;
         }
     }
 
 public:
+    FileServiceImpl(std::shared_ptr<RequestQueue> queue) : queue_(queue) {
+        log("FileService: Initialized");
+    }
+    
     Status UploadFile(ServerContext* context, const FileUploadRequest* request,
                       FileUploadResponse* response) override {
-        std::cout << "Received FileUploadRequest: " << request->DebugString() << std::endl;
+        log("FileService: Received UploadFile request for file: ", request->filename(), 
+            " (size: ", request->content().size(), " bytes)");
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("UploadFile", &FileServiceImpl::ProcessUploadFile, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+    Status DownloadFile(ServerContext* context, const FileDownloadRequest* request,
+                        FileDownloadResponse* response) override {
+        log("FileService: Received DownloadFile request for file: ", request->filename());
+        
+        // Enqueue the request and wait for the result
+        auto future = queue_->Enqueue("DownloadFile", &FileServiceImpl::ProcessDownloadFile, this, 
+                                     context, request, response);
+        return future.get();
+    }
+
+private:
+    Status ProcessUploadFile(ServerContext* context, const FileUploadRequest* request,
+                      FileUploadResponse* response) {
+        log("FileService: Processing UploadFile request for: ", request->filename(),
+            " (size: ", request->content().size(), " bytes)");
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        
         if (!ensure_upload_directory()) {
             return Status(grpc::StatusCode::INTERNAL, "Failed to create upload directory");
         }
@@ -186,27 +442,35 @@ public:
         response->set_filepath(filepath);
         response->set_message("File uploaded successfully");
 
-        std::cout << "File uploaded: " << filepath << " (size: " 
-                  << request->content().size() << " bytes)" << std::endl;
+        log("FileService: File uploaded successfully: ", filepath);
         return Status::OK;
     }
 
-    Status DownloadFile(ServerContext* context, const FileDownloadRequest* request,
-                        FileDownloadResponse* response) override {
+    Status ProcessDownloadFile(ServerContext* context, const FileDownloadRequest* request,
+                        FileDownloadResponse* response) {
+        log("FileService: Processing DownloadFile request for: ", request->filename());
+        
+        // Add artificial delay to demonstrate queue behavior (remove in production)
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
         const std::string filepath = upload_dir + request->filename();
         if (!fs::exists(filepath)) {
+            log("FileService: File not found: ", filepath);
             return Status(grpc::StatusCode::NOT_FOUND, "File not found: " + request->filename());
         }
+        
         std::ifstream file(filepath, std::ios::binary);
         if (!file) {
+            log("FileService: Failed to open file: ", filepath);
             return Status(grpc::StatusCode::INTERNAL, "Failed to open file: " + filepath);
         }
+        
         std::string content((std::istreambuf_iterator<char>(file)), 
                             std::istreambuf_iterator<char>());
         file.close();
         response->set_content(content);
-        std::cout << "File downloaded: " << filepath << " (size: " 
-                  << content.size() << " bytes)" << std::endl;
+        
+        log("FileService: File downloaded: ", filepath, " (size: ", content.size(), " bytes)");
         return Status::OK;
     }
 };
@@ -223,6 +487,11 @@ std::string read_file(const std::string& filepath) {
 
 int main() {
     try {
+        // Setup logging with timestamps
+        std::cout << std::fixed;
+        
+        log("Server: Starting up");
+        
         // Read configuration from config.json
         std::ifstream config_file("../config.json");
         if (!config_file.is_open()) {
@@ -238,6 +507,14 @@ int main() {
         int max_memory_mb = config_json["limits"]["max_memory"];
         size_t max_memory_bytes = static_cast<size_t>(max_memory_mb) * 1024 * 1024;
 
+        // Get the number of worker threads for the queue (default to 1 for sequential processing)
+        int queue_workers = 1;
+        if (config_json.contains("server") && config_json["server"].contains("queue_workers")) {
+            queue_workers = config_json["server"]["queue_workers"];
+        }
+
+        log("Server: Request queue will use ", queue_workers, " worker thread(s)");
+
         // Enforce the memory limit on the process
         set_memory_limit(max_memory_bytes);
 
@@ -245,6 +522,7 @@ int main() {
         std::string server_address = ip + ":" + std::to_string(port);
 
         // Read SSL certificate files
+        log("Server: Reading SSL certificates");
         std::string server_key = read_file("../../certs/server.key");
         std::string server_cert = read_file("../../certs/server.crt");
         std::string ca_cert = read_file("../../certs/ca.crt");
@@ -260,10 +538,14 @@ int main() {
         ssl_opts.pem_root_certs = ca_cert;
         ssl_opts.pem_key_cert_pairs.push_back(pkcp);
 
-        // Create service implementations and pass configuration to the Greeter service
-        GreeterServiceImpl greeter_service(ip, port, max_memory_mb);
-        NetworkConfigImpl network_service;
-        FileServiceImpl file_service;
+        // Create a shared request queue
+        auto request_queue = std::make_shared<RequestQueue>(queue_workers);
+
+        // Create service implementations and pass configuration and queue to the services
+        log("Server: Initializing services");
+        GreeterServiceImpl greeter_service(ip, port, max_memory_mb, request_queue);
+        NetworkConfigImpl network_service(request_queue);
+        FileServiceImpl file_service(request_queue);
 
         ServerBuilder builder;
         // Use SSL credentials and bind to the configured address
@@ -279,13 +561,35 @@ int main() {
         // Create upload directory if it doesn't exist
         if (!fs::exists("uploads")) {
             fs::create_directory("uploads");
+            log("Server: Created uploads directory");
         }
 
+        // Start a monitoring thread for queue statistics
+        bool monitor_running = true;
+        std::thread monitor_thread([&monitor_running, &request_queue]() {
+            while (monitor_running) {
+                std::this_thread::sleep_for(std::chrono::seconds(5));
+                log("Monitor: Queue size: ", request_queue->GetQueueSize(), 
+                    ", Tasks processed: ", request_queue->GetTasksProcessed());
+            }
+        });
+
+        // Build and start the server
+        log("Server: Building and starting server");
         std::unique_ptr<Server> server(builder.BuildAndStart());
-        std::cout << "Server listening on " << server_address << std::endl;
+        log("Server: Listening on ", server_address);
+        
+        // Wait for the server to shut down
         server->Wait();
+        
+        // Clean up the monitoring thread
+        monitor_running = false;
+        if (monitor_thread.joinable()) {
+            monitor_thread.join();
+        }
+        
     } catch (const std::exception& e) {
-        std::cerr << "Server error: " << e.what() << std::endl;
+        log("Server: Fatal error: ", e.what());
         return 1;
     }
 
