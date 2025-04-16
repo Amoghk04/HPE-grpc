@@ -29,6 +29,7 @@ using myservice::ConfigInfo;
 using json = nlohmann::json;
 
 // Helper function to read file contents
+//  Reads the contents of a file (used for SSL credentials).
 std::string read_file(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -37,6 +38,11 @@ std::string read_file(const std::string& path) {
     return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
 
+/*
+Communicates with the GreeterService on the server.
+Implements methods like SayHello, SayHelloAgain, Hi, and GetStatus.
+Sends requests and receives responses using gRPC stubs.
+*/
 class GreeterClient {
 public:
     GreeterClient(std::shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
@@ -46,6 +52,10 @@ public:
         request.set_name(name);
         HelloReply reply;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
         Status status = stub_->SayHello(&context, request, &reply);
 
         if (status.ok()) {
@@ -61,6 +71,10 @@ public:
         request.set_name(name);
         HelloReply reply;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+        
         Status status = stub_->SayHelloAgain(&context, request, &reply);
 
         if (status.ok()) {
@@ -75,6 +89,10 @@ public:
         EmptyRequest request;
         HelloReply reply;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
         Status status = stub_->Hi(&context, request, &reply);
 
         if (status.ok()) {
@@ -101,6 +119,10 @@ public:
         EmptyRequest request;
         StatusResponse response;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
         Status status = stub_->Status(&context, request, &response);
 
         StatusInfo info;
@@ -122,6 +144,11 @@ private:
     std::unique_ptr<Greeter::Stub> stub_;
 };
 
+/*
+Communicates with the NetworkConfigService.
+Implements methods like ConfigureIP for DHCP or static IP configuration.
+Sends configuration requests and receives responses.
+*/
 class NetworkConfigClient {
 public:
     NetworkConfigClient(std::shared_ptr<Channel> channel) : stub_(NetworkConfig::NewStub(channel)) {}
@@ -144,6 +171,10 @@ public:
 
         IPConfigResponse response;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
         Status status = stub_->ConfigureIP(&context, request, &response);
 
         if (!status.ok()) {
@@ -157,6 +188,11 @@ private:
     std::unique_ptr<NetworkConfig::Stub> stub_;
 };
 
+/*
+Communicates with the FileService.
+Implements methods like UploadFile and DownloadFile.
+Handles file operations like uploading a test file and downloading it back.
+*/
 class FileClient {
 public:
     FileClient(std::shared_ptr<Channel> channel) : stub_(FileService::NewStub(channel)) {}
@@ -177,6 +213,11 @@ public:
 
         FileUploadResponse response;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
+
         Status status = stub_->UploadFile(&context, request, &response);
 
         if (status.ok()) {
@@ -194,6 +235,11 @@ public:
 
         FileDownloadResponse response;
         ClientContext context;
+
+        // // Enable gRPC compression
+        context.set_compression_algorithm(GRPC_COMPRESS_GZIP);
+
+
         Status status = stub_->DownloadFile(&context, request, &response);
 
         if (status.ok()) {
@@ -216,6 +262,11 @@ private:
     std::unique_ptr<FileService::Stub> stub_;
 };
 
+/*
+Creates SSL credentials for secure communication.
+Initializes gRPC clients (GreeterClient, NetworkConfigClient, FileClient).
+Tests the services by invoking methods like SayHello, ConfigureIP, UploadFile, and DownloadFile.
+*/
 int main() {
     // Create SSL credentials for gRPC
     grpc::SslCredentialsOptions ssl_opts;
@@ -224,6 +275,8 @@ int main() {
     ssl_opts.pem_cert_chain = read_file("../../certs/client.crt");
     
     auto channel_creds = grpc::SslCredentials(ssl_opts);
+    
+    // creates a secure gRPC channel to the server at localhost:50051 with the SSL credentials
     auto channel = grpc::CreateChannel("localhost:50051", channel_creds);
 
     std::cout << "Creating secure channel to localhost:50051..." << std::endl;
