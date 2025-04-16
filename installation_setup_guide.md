@@ -68,6 +68,20 @@ source certs.sh
 3. Download and install envoy - https://www.envoyproxy.io/docs/envoy/latest/start/start
 
 ----------------------------------------------------------------------------------------------------------------------------------------
+
+Download npm:
+```
+sudo apt install nodejs npm -y
+```
+
+Check versions:
+```
+ $ node -v
+ v12.22.5
+ $ npm -v
+ 7.5.2
+```
+
 4. Generate the proto files (for both server and webUI)
 ``` 
 npm install -g protoc-gen-grpc-web
