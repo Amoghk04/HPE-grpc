@@ -60,7 +60,7 @@ make -j$(nproc)
 run this from the root of the project directory if theres a certifcates fatal error
 ```
 source certs.sh
-
+```
 
 ### Envoy Proxy Installation and Setup
 
@@ -69,7 +69,8 @@ source certs.sh
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 4. Generate the proto files (for both server and webUI)
-``` npm install -g protoc-gen-grpc-web
+``` 
+npm install -g protoc-gen-grpc-web
 ```
 
 for the grpc server side follow the original protoc command in the readme file
