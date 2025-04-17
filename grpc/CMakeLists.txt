@@ -184,3 +184,38 @@ target_link_libraries(consistency_test_client
     OpenSSL::SSL
     OpenSSL::Crypto
 )
+
+add_executable(benchmark_client
+    benchmark_client.cpp
+)
+
+target_link_libraries(benchmark_client
+    proto
+    ${GRPC_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    gRPC::grpc++
+    gRPC::grpc
+    gRPC::gpr
+    protobuf::libprotobuf
+    absl::synchronization
+    absl::time
+    absl::strings
+    absl::str_format
+    absl::base
+    absl::log
+    absl::log_internal_message
+    absl::log_internal_check_op
+    absl::log_internal_log_sink_set
+    absl::log_internal_conditions
+    absl::log_internal_format
+    absl::log_internal_globals
+    absl::log_internal_proto
+    absl::log_severity
+    absl::cord
+    absl::hash
+    absl::btree
+    pthread
+    nlohmann_json::nlohmann_json
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
