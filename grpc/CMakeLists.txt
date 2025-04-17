@@ -36,6 +36,7 @@ include_directories(${GRPC_INCLUDE_DIRS})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(/usr/include)
 
+
 # Download cpp-httplib if not exists
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/httplib.h)
     file(DOWNLOAD
@@ -185,6 +186,7 @@ target_link_libraries(consistency_test_client
     OpenSSL::Crypto
 )
 
+
 add_executable(benchmark_client
     benchmark_client.cpp
 )
@@ -219,3 +221,4 @@ target_link_libraries(benchmark_client
     OpenSSL::SSL
     OpenSSL::Crypto
 )
+

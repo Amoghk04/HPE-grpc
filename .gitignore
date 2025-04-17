@@ -20,3 +20,5 @@ certs/
 .vscode
 web/node_modules
 web/dist
+grpc/node_modules
+grpc/cmake

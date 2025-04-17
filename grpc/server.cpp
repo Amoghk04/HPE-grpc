@@ -44,11 +44,13 @@ using myservice::FileDownloadResponse;
 constexpr auto SERVER_CERT = "../../certs/server.crt";
 constexpr auto SERVER_KEY = "../../certs/server.key";
 constexpr auto ROOT_CERT = "../../certs/ca.crt";
+
+// const int MAX_MESSAGE_LENGTH = 10 * 1024 * 1024; // 10MB
 const int MAX_MESSAGE_LENGTH = 50 * 1024 * 1024;
 
 namespace fs = std::filesystem;
 
-// Thread-safe logging function
+// Thread-safe logging function for debugging and monitoring.
 std::mutex log_mutex;
 template<typename... Args>
 void log(Args&&... args) {
@@ -58,6 +60,11 @@ void log(Args&&... args) {
 }
 
 // Request Queue Implementation with detailed logging
+/*
+A thread-safe task queue that manages incoming requests using worker threads.
+Tasks are enqueued with Enqueue() and processed by worker threads in WorkerThread().
+Provides statistics like queue size (GetQueueSize()) and tasks processed (GetTasksProcessed()).
+*/
 class RequestQueue {
 public:
     RequestQueue(int num_workers = 1) : stop_(false), task_counter_(0), completed_counter_(0) {
@@ -127,8 +134,20 @@ public:
         // Add to queue
         {
             std::unique_lock<std::mutex> lock(mutex_);
+            int MAX_QUEUE_SIZE = 100;
+
+            if (tasks_.size() > MAX_QUEUE_SIZE) {
+                log("RequestQueue: Task #", task_id, " (", task_name, ") rejected due to queue size limit (", MAX_QUEUE_SIZE, ")");
+                throw std::runtime_error("Queue size limit exceeded");
+            }
+
             tasks_.emplace([task]() { (*task)(); });
             log("RequestQueue: Task #", task_id, " queued. Queue size: ", tasks_.size());
+
+            // std::unique_lock<std::mutex> lock(mutex_);
+            // tasks_.emplace([task]() { (*task)(); });
+            // log("RequestQueue: Task #", task_id, " queued. Queue size: ", tasks_.size());
+        
         }
         
         // Notify one worker
@@ -210,6 +229,11 @@ void set_memory_limit(size_t limit_bytes) {
 }
 
 // Updated GreeterServiceImpl with request queue and detailed logging
+/*
+Implements the Greeter service defined in the protobuf file.
+Handles methods like SayHello, SayHelloAgain, Hi, and Status.
+Uses the RequestQueue to process requests asynchronously.
+*/
 class GreeterServiceImpl final : public Greeter::Service {
 public:
     GreeterServiceImpl(const std::string& ip, int port, int max_memory_mb, std::shared_ptr<RequestQueue> queue)
@@ -325,6 +349,11 @@ private:
     std::shared_ptr<RequestQueue> queue_;
 };
 
+/*
+Implements the NetworkConfig service.
+Handles IP configuration requests (ConfigureIP) for DHCP or static IP setups.
+Uses the RequestQueue for asynchronous processing.
+*/
 class NetworkConfigImpl final : public NetworkConfig::Service {
 public:
     NetworkConfigImpl(std::shared_ptr<RequestQueue> queue) : queue_(queue) {
@@ -372,6 +401,11 @@ private:
     std::shared_ptr<RequestQueue> queue_;
 };
 
+/*
+Implements the FileService for file upload and download.
+Handles UploadFile and DownloadFile requests.
+Ensures the upload directory exists and processes file operations asynchronously.
+*/
 class FileServiceImpl final : public FileService::Service {
 private:
     const std::string upload_dir = "uploads/";
@@ -485,6 +519,52 @@ std::string read_file(const std::string& filepath) {
     return content;
 }
 
+
+#include <fstream>
+#include <string>
+#include <sstream>
+
+void log_memory_usage() {
+    log("log_memory_usage: Reading /proc/self/status");
+    std::ifstream status_file("/proc/self/status");
+    if (!status_file.is_open()) {
+        log("log_memory_usage: Failed to open /proc/self/status");
+        return;
+    }
+    std::string line;
+    while (std::getline(status_file, line)) {
+        if (line.rfind("VmRSS:", 0) == 0) {
+            std::istringstream iss(line);
+            std::string label;
+            long memory_kb;
+            iss >> label >> memory_kb;
+            log("Memory Usage: ", memory_kb, " KB");
+            return;
+        }
+    }
+    log("log_memory_usage: VmRSS not found in /proc/self/status");
+}
+
+#include <sys/resource.h>
+
+void log_cpu_usage() {
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+
+    long user_cpu_time_ms = usage.ru_utime.tv_sec * 1000 + usage.ru_utime.tv_usec / 1000;
+    long sys_cpu_time_ms = usage.ru_stime.tv_sec * 1000 + usage.ru_stime.tv_usec / 1000;
+
+    log("CPU Usage: [User: ", user_cpu_time_ms, " ms, System: ", sys_cpu_time_ms, " ms]");
+}
+
+/*
+Reads server configuration from config.json.
+Initializes SSL credentials using certificate files.
+Creates a shared RequestQueue for handling tasks.
+Instantiates service implementations (GreeterServiceImpl, NetworkConfigImpl, FileServiceImpl) and registers them with the gRPC server.
+Starts a monitoring thread to log queue statistics.
+Builds and starts the gRPC server.
+*/
 int main() {
     try {
         // Setup logging with timestamps
@@ -508,6 +588,7 @@ int main() {
         size_t max_memory_bytes = static_cast<size_t>(max_memory_mb) * 1024 * 1024;
 
         // Get the number of worker threads for the queue (default to 1 for sequential processing)
+        // int queue_workers = 2;
         int queue_workers = 1;
         if (config_json.contains("server") && config_json["server"].contains("queue_workers")) {
             queue_workers = config_json["server"]["queue_workers"];
@@ -553,6 +634,12 @@ int main() {
         // Set max message length limits
         builder.SetMaxReceiveMessageSize(MAX_MESSAGE_LENGTH);
         builder.SetMaxSendMessageSize(MAX_MESSAGE_LENGTH);
+
+        // Limit concurrent streams
+        // // Enable gRPC compression
+        builder.SetDefaultCompressionAlgorithm(GRPC_COMPRESS_GZIP); 
+
+
         // Register all services
         builder.RegisterService(&greeter_service);
         builder.RegisterService(&network_service);
@@ -568,10 +655,43 @@ int main() {
         bool monitor_running = true;
         std::thread monitor_thread([&monitor_running, &request_queue]() {
             while (monitor_running) {
-                std::this_thread::sleep_for(std::chrono::seconds(5));
+
+                std::this_thread::sleep_for(std::chrono::seconds(10)); // Increase interval
+                log_memory_usage();
+                log_cpu_usage();
+                // std::this_thread::sleep_for(std::chrono::seconds(5));
                 log("Monitor: Queue size: ", request_queue->GetQueueSize(), 
                     ", Tasks processed: ", request_queue->GetTasksProcessed());
             }
+
+            // while (monitor_running) {
+            //     std::this_thread::sleep_for(std::chrono::seconds(5));
+        
+            //     // Get CPU and memory stats
+            //     struct rusage usage;
+            //     getrusage(RUSAGE_SELF, &usage);
+        
+            //     long user_cpu_time_ms = usage.ru_utime.tv_sec * 1000 + usage.ru_utime.tv_usec / 1000;
+            //     long sys_cpu_time_ms = usage.ru_stime.tv_sec * 1000 + usage.ru_stime.tv_usec / 1000;
+        
+            //     // Linux specific: Read current memory usage from /proc/self/status
+            //     long memory_kb = 0;
+            //     std::ifstream status_file("/proc/self/status");
+            //     std::string line;
+            //     while (std::getline(status_file, line)) {
+            //         if (line.rfind("VmRSS:", 0) == 0) { // Resident Set Size
+            //             std::istringstream iss(line);
+            //             std::string label;
+            //             iss >> label >> memory_kb;
+            //             break;
+            //         }
+            //     }
+        
+            //     log("Monitor: Queue size: ", request_queue->GetQueueSize(), 
+            //         ", Tasks processed: ", request_queue->GetTasksProcessed(),
+            //         ", CPU time: [user: ", user_cpu_time_ms, "ms, sys: ", sys_cpu_time_ms, "ms]",
+            //         ", Memory: ", memory_kb, " KB");
+            // }
         });
 
         // Build and start the server
