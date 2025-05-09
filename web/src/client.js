@@ -8,7 +8,7 @@ const client = new GreeterClient("http://localhost:8080", null, {
 });
 
 const clientOptions = {
-    format: 'text',
+    format: 'binary',
     withCredentials: false
 };
 

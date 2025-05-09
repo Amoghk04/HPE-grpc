@@ -46,7 +46,7 @@ constexpr auto SERVER_KEY = "../../certs/server.key";
 constexpr auto ROOT_CERT = "../../certs/ca.crt";
 
 // const int MAX_MESSAGE_LENGTH = 10 * 1024 * 1024; // 10MB
-const int MAX_MESSAGE_LENGTH = 50 * 1024 * 1024;
+const int MAX_MESSAGE_LENGTH = 10 * 1024 * 1024;
 
 namespace fs = std::filesystem;
 
@@ -501,8 +501,10 @@ private:
         
         std::string content((std::istreambuf_iterator<char>(file)), 
                             std::istreambuf_iterator<char>());
+        
+        std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
         file.close();
-        response->set_content(content);
+        response->set_content(std::string(buffer.data(), buffer.size()));
         
         log("FileService: File downloaded: ", filepath, " (size: ", content.size(), " bytes)");
         return Status::OK;

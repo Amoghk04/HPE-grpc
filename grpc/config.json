@@ -4,6 +4,6 @@
       "port": 50051
     },
     "limits": {
-      "max_memory": 2000
+      "max_memory": 8000
     }
   }

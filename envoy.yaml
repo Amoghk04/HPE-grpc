@@ -51,7 +51,8 @@ static_resources:
                       inline_code: |
                         function envoy_on_request(request_handle)
                           local path = request_handle:headers():get(":path")
-                          if path and string.find(path, "/myservice.FileService/UploadFile") then
+                          if path and string.find(path, "/myservice.FileService/UploadFile") or
+                            string.find(path, "/myservice.FileService/DownloadFile") then
                             request_handle:headers():add("te", "trailers")
                           end
                         end
